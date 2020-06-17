@@ -3,9 +3,9 @@ package service
 import (
 	"flag"
 	"fmt"
-	pb "github.com/alexmeli/remit/users/pkg/grpc/pb"
 	endpoint "github.com/alexmeli100/remit/users/pkg/endpoint"
 	grpc "github.com/alexmeli100/remit/users/pkg/grpc"
+	pb "github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	service "github.com/alexmeli100/remit/users/pkg/service"
 	"net"
 	"os"

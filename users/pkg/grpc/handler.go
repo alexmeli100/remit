@@ -49,7 +49,7 @@ func makeGetUserByIDHandler(endpoints endpoint.Endpoints, options []grpc.ServerO
 func decodeGetUserByIDRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(pb.GetUserByIDRequest)
 
-	return endpoint.GetUserByIDRequest{Id: req.ID}, nil
+	return endpoint.GetUserByIDRequest{Id: req.Id}, nil
 }
 
 // encodeGetUserByIDResponse is a transport/grpc.EncodeResponseFunc that converts
