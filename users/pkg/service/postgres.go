@@ -1,10 +1,9 @@
-package postgres
+package service
 
 import (
 	"context"
 	"fmt"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
-	"github.com/alexmeli100/remit/users/pkg/service"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
@@ -16,7 +15,7 @@ type PostgService struct {
 	DB *sqlx.DB
 }
 
-func NewPostgService() service.UsersService {
+func NewPostgService() UsersService {
 	pass := os.Getenv("POSTGRES_PASSWORD")
 	userName := os.Getenv("POSTGRES_USER")
 	dbName := os.Getenv("POSTGRES_DB")
