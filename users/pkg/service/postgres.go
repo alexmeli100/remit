@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"log"
@@ -24,7 +25,7 @@ func NewPostgService() UsersService {
 	db, err := sqlx.Open("postgres", connString)
 
 	if err != nil {
-		log.Fatal("failed to open database connection")
+		log.Fatal(err)
 	}
 
 	return &PostgService{DB: db}
