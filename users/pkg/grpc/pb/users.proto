@@ -20,7 +20,8 @@ message User {
  string email     = 3;
  string password  = 4;
  int64  id        = 5;
- string confirmed = 6;
+ string address   = 6;
+ bool   confirmed = 7;
 }
 
 message CreateRequest {
