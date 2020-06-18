@@ -89,7 +89,7 @@ func (s *PostgService) Create(ctx context.Context, u *pb.User) error {
 	u.Password = string(pass)
 
 	_, err = s.DB.NamedExec(
-		`INSERT INTO users(first_name, last_name, email, address, password, id, confirmed) 
+		`INSERT INTO users(firstName, lastName, email, address, password, id, confirmed) 
 		values(:firstName, :lastName, :email, :address, :password, :id, FALSE) `, u)
 
 	return err
