@@ -6,8 +6,6 @@ import (
 	endpoint "github.com/go-kit/kit/endpoint"
 	log "github.com/go-kit/kit/log"
 	metrics "github.com/go-kit/kit/metrics"
-	"reflect"
-	"strings"
 	"time"
 )
 
@@ -40,12 +38,15 @@ func LoggingMiddleware(logger log.Logger) endpoint.Middleware {
 }
 
 func AddDefaultEndPointMiddleware(logger log.Logger, mw map[string][]endpoint.Middleware) {
-	v := reflect.ValueOf(Endpoints{})
-	t := v.Type()
-
-	for i := 0; i < t.NumField(); i++ {
-		name := strings.TrimSuffix(t.Field(i).Name, "Endpoint")
+	for _, name := range GetEndpointList() {
 		logMw := LoggingMiddleware(logger)
-		mw[name] = append(mw[name], logMw)
+
+		m, ok := mw[name]
+
+		if !ok {
+			m = make([]endpoint.Middleware, 0, 2)
+		}
+
+		mw[name] = append(m, logMw)
 	}
 }

@@ -4,6 +4,8 @@ package endpoint
 import (
 	service "github.com/alexmeli100/remit/users/pkg/service"
 	endpoint "github.com/go-kit/kit/endpoint"
+	"reflect"
+	"strings"
 )
 
 // Endpoints collects all of the endpoints that compose a profile service. It's
@@ -48,4 +50,17 @@ func New(s service.UsersService, mdw map[string][]endpoint.Middleware) Endpoints
 		eps.UpdateStatusEndpoint = m(eps.UpdateStatusEndpoint)
 	}
 	return eps
+}
+
+func GetEndpointList() []string {
+	v := reflect.ValueOf(Endpoints{})
+	t := v.Type()
+	l := make([]string, 0)
+
+	for i := 0; i < t.NumField(); i++ {
+		name := strings.TrimSuffix(t.Field(i).Name, "Endpoint")
+		l = append(l, name)
+	}
+
+	return l
 }
