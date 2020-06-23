@@ -9,9 +9,9 @@ import (
 type UsersService interface {
 	Create(ctx context.Context, user *pb.User) error
 	GetUserByID(ctx context.Context, id int64) (*pb.User, error)
+	GetUserByUUID(ctx context.Context, uuid string) (*pb.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*pb.User, error)
 	UpdateEmail(ctx context.Context, user *pb.User) error
-	UpdatePassword(ctx context.Context, user *pb.User) error
 	UpdateStatus(ctx context.Context, user *pb.User) error
 }
 

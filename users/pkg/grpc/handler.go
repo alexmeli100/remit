@@ -104,6 +104,53 @@ func (g *grpcServer) GetUserByID(ctx context.Context, req *pb.GetUserByIDRequest
 	return rep.(*pb.GetUserByIDReply), nil
 }
 
+// makeGetUserByUUIDHandler creates the handler logic
+func makeGetUserByUUIDHandler(endpoints endpoint.Endpoints, options []grpcTrans.ServerOption) grpcTrans.Handler {
+	return grpcTrans.NewServer(endpoints.GetUserByUUIDEndpoint, decodeGetUserByUUIDRequest, encodeGetUserByUUIDResponse, options...)
+}
+
+func makeGetUserByUUIDClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
+	return grpcTrans.NewClient(conn, "pb.Users", "GetUserByUUID", encodeGetUserByUUIDRequest, decodeGetUserByUUIDResponse, pb.GetUserByUUIDReply{}, options...)
+}
+
+// decodeGetUserByUUIDResponse is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC request to a user-domain GetUserByID request.
+func decodeGetUserByUUIDRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(*pb.GetUserByUUIDRequest)
+
+	return endpoint.GetUserByUUIDRequest{UUID: req.UUID}, nil
+}
+
+func decodeGetUserByUUIDResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(*pb.GetUserByIDReply)
+
+	return endpoint.GetUserByIDResponse{User: res.User, Err: str2err(res.Err)}, nil
+}
+
+// encodeGetUserByUUIDResponse is a transport/grpc.EncodeResponseFunc that converts
+// a user-domain response to a gRPC reply.
+func encodeGetUserByUUIDResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(endpoint.GetUserByIDResponse)
+
+	return &pb.GetUserByIDReply{Err: err2str(res.Err), User: res.User}, nil
+}
+
+func encodeGetUserByUUIDRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(endpoint.GetUserByUUIDRequest)
+
+	return &pb.GetUserByUUIDRequest{UUID: req.UUID}, nil
+}
+
+func (g *grpcServer) GetUserByUUID(ctx context.Context, req *pb.GetUserByUUIDRequest) (*pb.GetUserByUUIDReply, error) {
+	_, rep, err := g.getUserByUUID.ServeGRPC(ctx, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rep.(*pb.GetUserByUUIDReply), nil
+}
+
 // makeGetUserByEmailHandler creates the handler logic
 func makeGetUserByEmailHandler(endpoints endpoint.Endpoints, options []grpcTrans.ServerOption) grpcTrans.Handler {
 	return grpcTrans.NewServer(endpoints.GetUserByEmailEndpoint, decodeGetUserByEmailRequest, encodeGetUserByEmailResponse, options...)
@@ -192,52 +239,6 @@ func (g *grpcServer) UpdateEmail(ctx context.Context, req *pb.UpdateEmailRequest
 		return nil, err
 	}
 	return rep.(*pb.UpdateEmailReply), nil
-}
-
-// makeUpdatePasswordHandler creates the handler logic
-func makeUpdatePasswordHandler(endpoints endpoint.Endpoints, options []grpcTrans.ServerOption) grpcTrans.Handler {
-	return grpcTrans.NewServer(endpoints.UpdatePasswordEndpoint, decodeUpdatePasswordRequest, encodeUpdatePasswordResponse, options...)
-}
-
-func makeUpdatePasswordClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
-	return grpcTrans.NewClient(conn, "pb.Users", "UpdatePassword", encodeUpdatePasswordRequest, decodeUpdatePasswordResponse, pb.UpdatePasswordReply{}, options...)
-}
-
-// decodeUpdatePasswordResponse is a transport/grpc.DecodeRequestFunc that converts a
-// gRPC request to a user-domain UpdatePassword request.
-
-func decodeUpdatePasswordRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(*pb.UpdatePasswordRequest)
-
-	return endpoint.UpdatePasswordRequest{User: req.User}, nil
-}
-
-func decodeUpdatePasswordResponse(_ context.Context, r interface{}) (interface{}, error) {
-	res := r.(*pb.UpdatePasswordReply)
-
-	return endpoint.UpdatePasswordResponse{Err: str2err(res.Err)}, nil
-}
-
-// encodeUpdatePasswordResponse is a transport/grpc.EncodeResponseFunc that converts
-// a user-domain response to a gRPC reply.
-func encodeUpdatePasswordResponse(_ context.Context, r interface{}) (interface{}, error) {
-	res := r.(endpoint.UpdatePasswordResponse)
-
-	return &pb.UpdatePasswordReply{Err: err2str(res.Err)}, nil
-}
-
-func encodeUpdatePasswordRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(endpoint.UpdatePasswordRequest)
-
-	return &pb.UpdatePasswordRequest{User: req.User}, nil
-}
-
-func (g *grpcServer) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordRequest) (*pb.UpdatePasswordReply, error) {
-	_, rep, err := g.updatePassword.ServeGRPC(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-	return rep.(*pb.UpdatePasswordReply), nil
 }
 
 // makeUpdateStatusHandler creates the handler logic

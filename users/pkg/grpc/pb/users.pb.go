@@ -28,7 +28,7 @@ type User struct {
 	FirstName            string   `protobuf:"bytes,1,opt,name=firstName,proto3" json:"firstName,omitempty"`
 	LastName             string   `protobuf:"bytes,2,opt,name=lastName,proto3" json:"lastName,omitempty"`
 	Email                string   `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
-	Password             string   `protobuf:"bytes,4,opt,name=password,proto3" json:"password,omitempty"`
+	Uuid                 string   `protobuf:"bytes,4,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	Id                   int64    `protobuf:"varint,5,opt,name=id,proto3" json:"id,omitempty"`
 	Address              string   `protobuf:"bytes,6,opt,name=address,proto3" json:"address,omitempty"`
 	Confirmed            bool     `protobuf:"varint,7,opt,name=confirmed,proto3" json:"confirmed,omitempty"`
@@ -83,9 +83,9 @@ func (m *User) GetEmail() string {
 	return ""
 }
 
-func (m *User) GetPassword() string {
+func (m *User) GetUuid() string {
 	if m != nil {
-		return m.Password
+		return m.Uuid
 	}
 	return ""
 }
@@ -275,6 +275,92 @@ func (m *GetUserByIDReply) GetErr() string {
 	return ""
 }
 
+type GetUserByUUIDRequest struct {
+	UUID                 string   `protobuf:"bytes,1,opt,name=UUID,proto3" json:"UUID,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetUserByUUIDRequest) Reset()         { *m = GetUserByUUIDRequest{} }
+func (m *GetUserByUUIDRequest) String() string { return proto.CompactTextString(m) }
+func (*GetUserByUUIDRequest) ProtoMessage()    {}
+func (*GetUserByUUIDRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_030765f334c86cea, []int{5}
+}
+
+func (m *GetUserByUUIDRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetUserByUUIDRequest.Unmarshal(m, b)
+}
+func (m *GetUserByUUIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetUserByUUIDRequest.Marshal(b, m, deterministic)
+}
+func (m *GetUserByUUIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetUserByUUIDRequest.Merge(m, src)
+}
+func (m *GetUserByUUIDRequest) XXX_Size() int {
+	return xxx_messageInfo_GetUserByUUIDRequest.Size(m)
+}
+func (m *GetUserByUUIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetUserByUUIDRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetUserByUUIDRequest proto.InternalMessageInfo
+
+func (m *GetUserByUUIDRequest) GetUUID() string {
+	if m != nil {
+		return m.UUID
+	}
+	return ""
+}
+
+type GetUserByUUIDReply struct {
+	User                 *User    `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	Err                  string   `protobuf:"bytes,2,opt,name=err,proto3" json:"err,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetUserByUUIDReply) Reset()         { *m = GetUserByUUIDReply{} }
+func (m *GetUserByUUIDReply) String() string { return proto.CompactTextString(m) }
+func (*GetUserByUUIDReply) ProtoMessage()    {}
+func (*GetUserByUUIDReply) Descriptor() ([]byte, []int) {
+	return fileDescriptor_030765f334c86cea, []int{6}
+}
+
+func (m *GetUserByUUIDReply) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetUserByUUIDReply.Unmarshal(m, b)
+}
+func (m *GetUserByUUIDReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetUserByUUIDReply.Marshal(b, m, deterministic)
+}
+func (m *GetUserByUUIDReply) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetUserByUUIDReply.Merge(m, src)
+}
+func (m *GetUserByUUIDReply) XXX_Size() int {
+	return xxx_messageInfo_GetUserByUUIDReply.Size(m)
+}
+func (m *GetUserByUUIDReply) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetUserByUUIDReply.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetUserByUUIDReply proto.InternalMessageInfo
+
+func (m *GetUserByUUIDReply) GetUser() *User {
+	if m != nil {
+		return m.User
+	}
+	return nil
+}
+
+func (m *GetUserByUUIDReply) GetErr() string {
+	if m != nil {
+		return m.Err
+	}
+	return ""
+}
+
 type GetUserByEmailRequest struct {
 	Email                string   `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -286,7 +372,7 @@ func (m *GetUserByEmailRequest) Reset()         { *m = GetUserByEmailRequest{} }
 func (m *GetUserByEmailRequest) String() string { return proto.CompactTextString(m) }
 func (*GetUserByEmailRequest) ProtoMessage()    {}
 func (*GetUserByEmailRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{5}
+	return fileDescriptor_030765f334c86cea, []int{7}
 }
 
 func (m *GetUserByEmailRequest) XXX_Unmarshal(b []byte) error {
@@ -326,7 +412,7 @@ func (m *GetUserByEmailReply) Reset()         { *m = GetUserByEmailReply{} }
 func (m *GetUserByEmailReply) String() string { return proto.CompactTextString(m) }
 func (*GetUserByEmailReply) ProtoMessage()    {}
 func (*GetUserByEmailReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{6}
+	return fileDescriptor_030765f334c86cea, []int{8}
 }
 
 func (m *GetUserByEmailReply) XXX_Unmarshal(b []byte) error {
@@ -372,7 +458,7 @@ func (m *UpdateEmailRequest) Reset()         { *m = UpdateEmailRequest{} }
 func (m *UpdateEmailRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateEmailRequest) ProtoMessage()    {}
 func (*UpdateEmailRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{7}
+	return fileDescriptor_030765f334c86cea, []int{9}
 }
 
 func (m *UpdateEmailRequest) XXX_Unmarshal(b []byte) error {
@@ -411,7 +497,7 @@ func (m *UpdateEmailReply) Reset()         { *m = UpdateEmailReply{} }
 func (m *UpdateEmailReply) String() string { return proto.CompactTextString(m) }
 func (*UpdateEmailReply) ProtoMessage()    {}
 func (*UpdateEmailReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{8}
+	return fileDescriptor_030765f334c86cea, []int{10}
 }
 
 func (m *UpdateEmailReply) XXX_Unmarshal(b []byte) error {
@@ -450,7 +536,7 @@ func (m *UpdatePasswordRequest) Reset()         { *m = UpdatePasswordRequest{} }
 func (m *UpdatePasswordRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdatePasswordRequest) ProtoMessage()    {}
 func (*UpdatePasswordRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{9}
+	return fileDescriptor_030765f334c86cea, []int{11}
 }
 
 func (m *UpdatePasswordRequest) XXX_Unmarshal(b []byte) error {
@@ -489,7 +575,7 @@ func (m *UpdatePasswordReply) Reset()         { *m = UpdatePasswordReply{} }
 func (m *UpdatePasswordReply) String() string { return proto.CompactTextString(m) }
 func (*UpdatePasswordReply) ProtoMessage()    {}
 func (*UpdatePasswordReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{10}
+	return fileDescriptor_030765f334c86cea, []int{12}
 }
 
 func (m *UpdatePasswordReply) XXX_Unmarshal(b []byte) error {
@@ -528,7 +614,7 @@ func (m *UpdateStatusRequest) Reset()         { *m = UpdateStatusRequest{} }
 func (m *UpdateStatusRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateStatusRequest) ProtoMessage()    {}
 func (*UpdateStatusRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{11}
+	return fileDescriptor_030765f334c86cea, []int{13}
 }
 
 func (m *UpdateStatusRequest) XXX_Unmarshal(b []byte) error {
@@ -567,7 +653,7 @@ func (m *UpdateStatusReply) Reset()         { *m = UpdateStatusReply{} }
 func (m *UpdateStatusReply) String() string { return proto.CompactTextString(m) }
 func (*UpdateStatusReply) ProtoMessage()    {}
 func (*UpdateStatusReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{12}
+	return fileDescriptor_030765f334c86cea, []int{14}
 }
 
 func (m *UpdateStatusReply) XXX_Unmarshal(b []byte) error {
@@ -601,6 +687,8 @@ func init() {
 	proto.RegisterType((*CreateReply)(nil), "pb.CreateReply")
 	proto.RegisterType((*GetUserByIDRequest)(nil), "pb.GetUserByIDRequest")
 	proto.RegisterType((*GetUserByIDReply)(nil), "pb.GetUserByIDReply")
+	proto.RegisterType((*GetUserByUUIDRequest)(nil), "pb.GetUserByUUIDRequest")
+	proto.RegisterType((*GetUserByUUIDReply)(nil), "pb.GetUserByUUIDReply")
 	proto.RegisterType((*GetUserByEmailRequest)(nil), "pb.GetUserByEmailRequest")
 	proto.RegisterType((*GetUserByEmailReply)(nil), "pb.GetUserByEmailReply")
 	proto.RegisterType((*UpdateEmailRequest)(nil), "pb.UpdateEmailRequest")
@@ -616,35 +704,37 @@ func init() {
 }
 
 var fileDescriptor_030765f334c86cea = []byte{
-	// 437 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x54, 0x5d, 0x6b, 0xe2, 0x40,
-	0x14, 0x25, 0xf1, 0xfb, 0x66, 0xd7, 0xd5, 0x51, 0x77, 0xb3, 0x41, 0x58, 0x09, 0x2e, 0xeb, 0xc3,
-	0xea, 0x83, 0xd2, 0xa7, 0x42, 0x1f, 0xac, 0x52, 0xfa, 0x52, 0x4a, 0x8a, 0x3f, 0x60, 0x6c, 0x46,
-	0x08, 0xc4, 0x26, 0x9d, 0x19, 0x29, 0xfe, 0xb5, 0xfe, 0xb5, 0xbe, 0x94, 0xc9, 0x64, 0x34, 0x63,
-	0x82, 0x48, 0xdf, 0x32, 0xf7, 0x9e, 0x73, 0xee, 0x99, 0x7b, 0x86, 0x80, 0xb5, 0x63, 0x84, 0xb2,
-	0x49, 0x4c, 0x23, 0x1e, 0x21, 0x33, 0x5e, 0xbb, 0xef, 0x06, 0x94, 0x57, 0x8c, 0x50, 0xd4, 0x87,
-	0xc6, 0x26, 0xa0, 0x8c, 0x3f, 0xe0, 0x2d, 0xb1, 0x8d, 0x81, 0x31, 0x6a, 0x78, 0xc7, 0x02, 0x72,
-	0xa0, 0x1e, 0xe2, 0xb4, 0x69, 0x26, 0xcd, 0xc3, 0x19, 0x75, 0xa1, 0x42, 0xb6, 0x38, 0x08, 0xed,
-	0x52, 0xd2, 0x90, 0x07, 0xc1, 0x88, 0x31, 0x63, 0x6f, 0x11, 0xf5, 0xed, 0xb2, 0x64, 0xa8, 0x33,
-	0x6a, 0x82, 0x19, 0xf8, 0x76, 0x65, 0x60, 0x8c, 0x4a, 0x9e, 0x19, 0xf8, 0xc8, 0x86, 0x1a, 0xf6,
-	0x7d, 0x4a, 0x18, 0xb3, 0xab, 0x09, 0x54, 0x1d, 0x85, 0xab, 0xe7, 0xe8, 0x65, 0x13, 0xd0, 0x2d,
-	0xf1, 0xed, 0xda, 0xc0, 0x18, 0xd5, 0xbd, 0x63, 0xc1, 0x1d, 0xc3, 0xf7, 0x5b, 0x4a, 0x30, 0x27,
-	0x1e, 0x79, 0xdd, 0x11, 0xc6, 0x51, 0x1f, 0xca, 0xe2, 0x82, 0x89, 0x7f, 0x6b, 0x5a, 0x9f, 0xc4,
-	0xeb, 0x89, 0xb8, 0x9c, 0x97, 0x54, 0xdd, 0x3f, 0x60, 0x29, 0x78, 0x1c, 0xee, 0x51, 0x0b, 0x4a,
-	0x84, 0xd2, 0xf4, 0xae, 0xe2, 0xd3, 0x1d, 0x02, 0xba, 0x23, 0x5c, 0x30, 0xe6, 0xfb, 0xfb, 0x85,
-	0x12, 0x95, 0x6e, 0x0d, 0xe5, 0xd6, 0x9d, 0x43, 0x4b, 0x43, 0x09, 0xad, 0xb3, 0x83, 0xd5, 0x24,
-	0xf3, 0x38, 0x69, 0x0c, 0xbd, 0x83, 0xc6, 0x52, 0xec, 0x4b, 0x0d, 0x3b, 0x2c, 0xd3, 0xc8, 0x2c,
-	0xd3, 0x5d, 0x42, 0xe7, 0x14, 0xfe, 0x95, 0xa9, 0x53, 0x40, 0xab, 0xd8, 0xc7, 0x9c, 0x68, 0x23,
-	0xcf, 0x2f, 0x6d, 0x08, 0x2d, 0x8d, 0x53, 0xbc, 0xb9, 0x2b, 0xe8, 0x49, 0xd4, 0x63, 0x9a, 0xf1,
-	0x65, 0xe2, 0xff, 0xa0, 0x73, 0x4a, 0x2b, 0xd6, 0x9f, 0x29, 0xe0, 0x13, 0xc7, 0x7c, 0xc7, 0x2e,
-	0x53, 0xff, 0x0b, 0x6d, 0x9d, 0x54, 0xa8, 0x3d, 0xfd, 0x30, 0xa1, 0x22, 0x58, 0x0c, 0xfd, 0x87,
-	0xaa, 0x7c, 0x20, 0xa8, 0x2d, 0xa4, 0xb4, 0xb7, 0xe5, 0xfc, 0xc8, 0x96, 0x84, 0xd2, 0x35, 0x58,
-	0x99, 0x77, 0x80, 0x7e, 0x8a, 0x7e, 0xfe, 0xf9, 0x38, 0xdd, 0x5c, 0x5d, 0x90, 0x17, 0xd0, 0xd4,
-	0x13, 0x45, 0xbf, 0x35, 0x5c, 0x36, 0x21, 0xe7, 0x57, 0x51, 0x2b, 0xb5, 0x90, 0x09, 0x47, 0x5a,
-	0xc8, 0x27, 0x2c, 0x2d, 0xe4, 0x52, 0x5c, 0x40, 0x53, 0x5f, 0xbe, 0xb4, 0x50, 0x98, 0xa3, 0xb4,
-	0x50, 0x94, 0xd5, 0x0d, 0x7c, 0xcb, 0x2e, 0x19, 0x65, 0x80, 0x5a, 0x56, 0x4e, 0x2f, 0xdf, 0x88,
-	0xc3, 0xfd, 0xba, 0x9a, 0xfc, 0x8b, 0x66, 0x9f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x71, 0x2c, 0xb0,
-	0xae, 0x9a, 0x04, 0x00, 0x00,
+	// 466 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x54, 0x4d, 0x6b, 0xdb, 0x40,
+	0x10, 0x45, 0xb2, 0xec, 0x38, 0xe3, 0x26, 0x75, 0x26, 0x76, 0xb2, 0x15, 0x81, 0x1a, 0x91, 0x52,
+	0x53, 0x1a, 0x1f, 0x1c, 0x7a, 0x2a, 0x14, 0x9a, 0x3a, 0x94, 0x5e, 0x4a, 0x51, 0xf1, 0x0f, 0x58,
+	0x77, 0x37, 0x20, 0xb0, 0x2b, 0x75, 0x77, 0x45, 0xf1, 0xdf, 0xea, 0xaf, 0xeb, 0x31, 0xec, 0xea,
+	0x6b, 0x37, 0x12, 0x21, 0xe4, 0xb6, 0x33, 0xf3, 0xe6, 0xcd, 0x8c, 0xde, 0x43, 0x30, 0xca, 0x25,
+	0x17, 0x72, 0x91, 0x89, 0x54, 0xa5, 0xe8, 0x67, 0x9b, 0xe8, 0x9f, 0x07, 0xc1, 0x5a, 0x72, 0x81,
+	0x17, 0x70, 0x78, 0x97, 0x08, 0xa9, 0xbe, 0xd3, 0x1d, 0x27, 0xde, 0xcc, 0x9b, 0x1f, 0xc6, 0x4d,
+	0x02, 0x43, 0x18, 0x6e, 0x69, 0x59, 0xf4, 0x4d, 0xb1, 0x8e, 0x71, 0x02, 0x7d, 0xbe, 0xa3, 0xc9,
+	0x96, 0xf4, 0x4c, 0xa1, 0x08, 0x10, 0x21, 0xc8, 0xf3, 0x84, 0x91, 0xc0, 0x24, 0xcd, 0x1b, 0x8f,
+	0xc1, 0x4f, 0x18, 0xe9, 0xcf, 0xbc, 0x79, 0x2f, 0xf6, 0x13, 0x86, 0x04, 0x0e, 0x28, 0x63, 0x82,
+	0x4b, 0x49, 0x06, 0x06, 0x56, 0x85, 0x7a, 0x9b, 0x5f, 0xe9, 0xef, 0xbb, 0x44, 0xec, 0x38, 0x23,
+	0x07, 0x33, 0x6f, 0x3e, 0x8c, 0x9b, 0x44, 0x74, 0x05, 0x47, 0x5f, 0x04, 0xa7, 0x8a, 0xc7, 0xfc,
+	0x4f, 0xce, 0xa5, 0xc2, 0x0b, 0x08, 0xf4, 0x61, 0x66, 0xef, 0xd1, 0x72, 0xb8, 0xc8, 0x36, 0x0b,
+	0x7d, 0x54, 0x6c, 0xb2, 0xd1, 0x6b, 0x18, 0x55, 0xf0, 0x6c, 0xbb, 0xc7, 0x31, 0xf4, 0xb8, 0x10,
+	0xe5, 0x8d, 0xfa, 0x19, 0x5d, 0x02, 0x7e, 0xe5, 0x4a, 0x77, 0xdc, 0xec, 0xbf, 0xad, 0x2a, 0xd2,
+	0x62, 0x5b, 0xaf, 0xda, 0x36, 0xba, 0x81, 0xb1, 0x83, 0xd2, 0x5c, 0x8f, 0x0e, 0xae, 0x26, 0xf9,
+	0xcd, 0xa4, 0x77, 0x30, 0xa9, 0x39, 0xd6, 0xeb, 0x66, 0x16, 0x42, 0xa0, 0xc3, 0x72, 0x29, 0xf3,
+	0x8e, 0x56, 0xd6, 0x56, 0x05, 0xf6, 0x39, 0x13, 0xaf, 0x60, 0x5a, 0xb3, 0xdc, 0x6a, 0x65, 0xaa,
+	0x91, 0xb5, 0x6c, 0x9e, 0x25, 0x5b, 0x74, 0x0b, 0xa7, 0x0f, 0xe1, 0xcf, 0x99, 0xba, 0x04, 0x5c,
+	0x67, 0x8c, 0x2a, 0xee, 0x8c, 0x7c, 0x5c, 0xa6, 0x4b, 0x18, 0x3b, 0x3d, 0xdd, 0x5a, 0x7d, 0x80,
+	0x69, 0x81, 0xfa, 0x41, 0xa5, 0xfc, 0x9b, 0x0a, 0xf6, 0x34, 0xf2, 0xb7, 0x70, 0xfa, 0xb0, 0xad,
+	0x9b, 0xff, 0xba, 0x02, 0xfe, 0x54, 0x54, 0xe5, 0xf2, 0x69, 0xec, 0x6f, 0xe0, 0xc4, 0x6d, 0xea,
+	0xe4, 0x5e, 0xfe, 0xf7, 0xa1, 0xaf, 0xbb, 0x24, 0xbe, 0x87, 0x41, 0x61, 0x49, 0x3c, 0xd1, 0x54,
+	0x8e, 0x9b, 0xc3, 0x97, 0x76, 0x4a, 0x33, 0x7d, 0x84, 0x91, 0xe5, 0x3c, 0x3c, 0xd3, 0xf5, 0xb6,
+	0x61, 0xc3, 0x49, 0x2b, 0xaf, 0x9b, 0x57, 0x70, 0xec, 0x2a, 0x8a, 0xaf, 0x1c, 0x9c, 0xad, 0x50,
+	0x78, 0xde, 0x55, 0xd2, 0x2c, 0x9f, 0xe1, 0xc8, 0x31, 0x23, 0x12, 0x07, 0x69, 0x79, 0x39, 0x3c,
+	0xeb, 0xa8, 0x94, 0x57, 0x58, 0xfa, 0x16, 0x57, 0xb4, 0x4d, 0x52, 0x5c, 0xd1, 0x32, 0xc2, 0x27,
+	0x78, 0x61, 0x7f, 0x61, 0x3c, 0x6f, 0x50, 0x8e, 0x50, 0xe1, 0xb4, 0x5d, 0xc8, 0xb6, 0xfb, 0xcd,
+	0xc0, 0xfc, 0xf2, 0xae, 0xef, 0x03, 0x00, 0x00, 0xff, 0xff, 0xba, 0xf9, 0xad, 0xa9, 0x01, 0x05,
+	0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -662,8 +752,8 @@ type UsersClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateReply, error)
 	GetUserByID(ctx context.Context, in *GetUserByIDRequest, opts ...grpc.CallOption) (*GetUserByIDReply, error)
 	GetUserByEmail(ctx context.Context, in *GetUserByEmailRequest, opts ...grpc.CallOption) (*GetUserByEmailReply, error)
+	GetUserByUUID(ctx context.Context, in *GetUserByUUIDRequest, opts ...grpc.CallOption) (*GetUserByUUIDReply, error)
 	UpdateEmail(ctx context.Context, in *UpdateEmailRequest, opts ...grpc.CallOption) (*UpdateEmailReply, error)
-	UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordReply, error)
 	UpdateStatus(ctx context.Context, in *UpdateStatusRequest, opts ...grpc.CallOption) (*UpdateStatusReply, error)
 }
 
@@ -702,18 +792,18 @@ func (c *usersClient) GetUserByEmail(ctx context.Context, in *GetUserByEmailRequ
 	return out, nil
 }
 
-func (c *usersClient) UpdateEmail(ctx context.Context, in *UpdateEmailRequest, opts ...grpc.CallOption) (*UpdateEmailReply, error) {
-	out := new(UpdateEmailReply)
-	err := c.cc.Invoke(ctx, "/pb.Users/UpdateEmail", in, out, opts...)
+func (c *usersClient) GetUserByUUID(ctx context.Context, in *GetUserByUUIDRequest, opts ...grpc.CallOption) (*GetUserByUUIDReply, error) {
+	out := new(GetUserByUUIDReply)
+	err := c.cc.Invoke(ctx, "/pb.Users/GetUserByUUID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *usersClient) UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordReply, error) {
-	out := new(UpdatePasswordReply)
-	err := c.cc.Invoke(ctx, "/pb.Users/UpdatePassword", in, out, opts...)
+func (c *usersClient) UpdateEmail(ctx context.Context, in *UpdateEmailRequest, opts ...grpc.CallOption) (*UpdateEmailReply, error) {
+	out := new(UpdateEmailReply)
+	err := c.cc.Invoke(ctx, "/pb.Users/UpdateEmail", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -734,8 +824,8 @@ type UsersServer interface {
 	Create(context.Context, *CreateRequest) (*CreateReply, error)
 	GetUserByID(context.Context, *GetUserByIDRequest) (*GetUserByIDReply, error)
 	GetUserByEmail(context.Context, *GetUserByEmailRequest) (*GetUserByEmailReply, error)
+	GetUserByUUID(context.Context, *GetUserByUUIDRequest) (*GetUserByUUIDReply, error)
 	UpdateEmail(context.Context, *UpdateEmailRequest) (*UpdateEmailReply, error)
-	UpdatePassword(context.Context, *UpdatePasswordRequest) (*UpdatePasswordReply, error)
 	UpdateStatus(context.Context, *UpdateStatusRequest) (*UpdateStatusReply, error)
 }
 
@@ -752,11 +842,11 @@ func (*UnimplementedUsersServer) GetUserByID(ctx context.Context, req *GetUserBy
 func (*UnimplementedUsersServer) GetUserByEmail(ctx context.Context, req *GetUserByEmailRequest) (*GetUserByEmailReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserByEmail not implemented")
 }
+func (*UnimplementedUsersServer) GetUserByUUID(ctx context.Context, req *GetUserByUUIDRequest) (*GetUserByUUIDReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByUUID not implemented")
+}
 func (*UnimplementedUsersServer) UpdateEmail(ctx context.Context, req *UpdateEmailRequest) (*UpdateEmailReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateEmail not implemented")
-}
-func (*UnimplementedUsersServer) UpdatePassword(ctx context.Context, req *UpdatePasswordRequest) (*UpdatePasswordReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdatePassword not implemented")
 }
 func (*UnimplementedUsersServer) UpdateStatus(ctx context.Context, req *UpdateStatusRequest) (*UpdateStatusReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateStatus not implemented")
@@ -820,6 +910,24 @@ func _Users_GetUserByEmail_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Users_GetUserByUUID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByUUIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).GetUserByUUID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.Users/GetUserByUUID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).GetUserByUUID(ctx, req.(*GetUserByUUIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Users_UpdateEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateEmailRequest)
 	if err := dec(in); err != nil {
@@ -834,24 +942,6 @@ func _Users_UpdateEmail_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UsersServer).UpdateEmail(ctx, req.(*UpdateEmailRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Users_UpdatePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdatePasswordRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UsersServer).UpdatePassword(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/pb.Users/UpdatePassword",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UsersServer).UpdatePassword(ctx, req.(*UpdatePasswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -891,12 +981,12 @@ var _Users_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Users_GetUserByEmail_Handler,
 		},
 		{
-			MethodName: "UpdateEmail",
-			Handler:    _Users_UpdateEmail_Handler,
+			MethodName: "GetUserByUUID",
+			Handler:    _Users_GetUserByUUID_Handler,
 		},
 		{
-			MethodName: "UpdatePassword",
-			Handler:    _Users_UpdatePassword_Handler,
+			MethodName: "UpdateEmail",
+			Handler:    _Users_UpdateEmail_Handler,
 		},
 		{
 			MethodName: "UpdateStatus",

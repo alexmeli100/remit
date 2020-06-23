@@ -13,9 +13,9 @@ import (
 type grpcServer struct {
 	create         grpcTrans.Handler
 	getUserByID    grpcTrans.Handler
+	getUserByUUID  grpcTrans.Handler
 	getUserByEmail grpcTrans.Handler
 	updateEmail    grpcTrans.Handler
-	updatePassword grpcTrans.Handler
 	updateStatus   grpcTrans.Handler
 }
 
@@ -24,8 +24,8 @@ func NewGRPCServer(endpoints endpoint.Endpoints, options map[string][]grpcTrans.
 		create:         makeCreateHandler(endpoints, options["Create"]),
 		getUserByEmail: makeGetUserByEmailHandler(endpoints, options["GetUserByEmail"]),
 		getUserByID:    makeGetUserByIDHandler(endpoints, options["GetUserByID"]),
+		getUserByUUID:  makeGetUserByUUIDHandler(endpoints, options["GetUserByUUID"]),
 		updateEmail:    makeUpdateEmailHandler(endpoints, options["UpdateEmail"]),
-		updatePassword: makeUpdatePasswordHandler(endpoints, options["UpdatePassword"]),
 		updateStatus:   makeUpdateStatusHandler(endpoints, options["UpdateStatus"]),
 	}
 }
@@ -35,8 +35,8 @@ func NewGRPCClient(conn *grpc.ClientConn, options map[string][]grpcTrans.ClientO
 		CreateEndpoint:         makeCreateClient(conn, options["Create"]).Endpoint(),
 		GetUserByEmailEndpoint: makeGetUserByEmailClient(conn, options["GetUserByEmail"]).Endpoint(),
 		GetUserByIDEndpoint:    makeGetUserByIDClient(conn, options["GetUserByID"]).Endpoint(),
+		GetUserByUUIDEndpoint:  makeGetUserByUUIDClient(conn, options["GetUserByUUID"]).Endpoint(),
 		UpdateEmailEndpoint:    makeUpdateEmailClient(conn, options["UpdateEmail"]).Endpoint(),
-		UpdatePasswordEndpoint: makeUpdatePasswordClient(conn, options["UpdatePassword"]).Endpoint(),
 		UpdateStatusEndpoint:   makeUpdateStatusClient(conn, options["UpdateStatus"]).Endpoint(),
 	}
 }

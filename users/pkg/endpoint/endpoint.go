@@ -39,18 +39,6 @@ type Failure interface {
 	Failed() error
 }
 
-// Create implements Service. Primarily useful in a client.
-func (e Endpoints) Create(ctx context.Context, user *pb.User) error {
-	request := CreateRequest{User: user}
-	response, err := e.CreateEndpoint(ctx, request)
-
-	if err != nil {
-		return err
-	}
-
-	return response.(CreateResponse).Err
-}
-
 // GetUserByIDRequest collects the request parameters for the GetUserByID method.
 type GetUserByIDRequest struct {
 	Id int64 `json:"id"`
@@ -77,6 +65,35 @@ func MakeGetUserByIDEndpoint(s service.UsersService) endpoint.Endpoint {
 
 // Failed implements Failer.
 func (r GetUserByIDResponse) Failed() error {
+	return r.Err
+}
+
+// GetUserByIDRequest collects the request parameters for the GetUserByID method.
+type GetUserByUUIDRequest struct {
+	UUID string `json:"uuid"`
+}
+
+// GetUserByIDResponse collects the response parameters for the GetUserByID method.
+type GetUserByUUIDResponse struct {
+	User *pb.User `json:"user"`
+	Err  error    `json:"err"`
+}
+
+// MakeGetUserByIDEndpoint returns an endpoint that invokes GetUserByID on the service.
+func MakeGetUserByUUIDEndpoint(s service.UsersService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(GetUserByUUIDRequest)
+		user, err := s.GetUserByUUID(ctx, req.UUID)
+
+		return GetUserByIDResponse{
+			Err:  err,
+			User: user,
+		}, nil
+	}
+}
+
+// Failed implements Failer.
+func (r GetUserByUUIDResponse) Failed() error {
 	return r.Err
 }
 
@@ -132,31 +149,6 @@ func (r UpdateEmailResponse) Failed() error {
 	return r.Err
 }
 
-// UpdatePasswordRequest collects the request parameters for the UpdatePassword method.
-type UpdatePasswordRequest struct {
-	User *pb.User `json:"user"`
-}
-
-// UpdatePasswordResponse collects the response parameters for the UpdatePassword method.
-type UpdatePasswordResponse struct {
-	Err error `json:"err"`
-}
-
-// MakeUpdatePasswordEndpoint returns an endpoint that invokes UpdatePassword on the service.
-func MakeUpdatePasswordEndpoint(s service.UsersService) endpoint.Endpoint {
-	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(UpdatePasswordRequest)
-		err := s.UpdatePassword(ctx, req.User)
-
-		return UpdatePasswordResponse{Err: err}, nil
-	}
-}
-
-// Failed implements Failer.
-func (r UpdatePasswordResponse) Failed() error {
-	return r.Err
-}
-
 // UpdateStatusRequest collects the request parameters for the UpdateStatus method.
 type UpdateStatusRequest struct {
 	User *pb.User `json:"user"`
@@ -182,6 +174,18 @@ func (r UpdateStatusResponse) Failed() error {
 	return r.Err
 }
 
+// Create implements Service. Primarily useful in a client.
+func (e Endpoints) Create(ctx context.Context, user *pb.User) error {
+	request := CreateRequest{User: user}
+	response, err := e.CreateEndpoint(ctx, request)
+
+	if err != nil {
+		return err
+	}
+
+	return response.(CreateResponse).Err
+}
+
 // GetUserByID implements Service. Primarily useful in a client.
 func (e Endpoints) GetUserByID(ctx context.Context, id int64) (*pb.User, error) {
 	request := GetUserByIDRequest{Id: id}
@@ -191,6 +195,16 @@ func (e Endpoints) GetUserByID(ctx context.Context, id int64) (*pb.User, error) 
 	}
 
 	return response.(GetUserByIDResponse).User, response.(GetUserByIDResponse).Err
+}
+
+func (e Endpoints) GetUserByUUID(ctx context.Context, uuid string) (*pb.User, error) {
+	request := GetUserByUUIDRequest{UUID: uuid}
+	response, err := e.GetUserByUUIDEndpoint(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.(GetUserByUUIDResponse).User, response.(GetUserByUUIDResponse).Err
 }
 
 // GetUserByEmail implements Service. Primarily useful in a client.
@@ -213,17 +227,6 @@ func (e Endpoints) UpdateEmail(ctx context.Context, user *pb.User) (e0 error) {
 	}
 
 	return response.(UpdateEmailResponse).Err
-}
-
-// UpdatePassword implements Service. Primarily useful in a client.
-func (e Endpoints) UpdatePassword(ctx context.Context, user *pb.User) error {
-	request := UpdatePasswordRequest{User: user}
-	response, err := e.UpdatePasswordEndpoint(ctx, request)
-	if err != nil {
-		return err
-	}
-
-	return response.(UpdatePasswordResponse).Err
 }
 
 // UpdateStatus implements Service. Primarily useful in a client.

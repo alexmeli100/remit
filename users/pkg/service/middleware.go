@@ -35,6 +35,16 @@ func (l loggingMiddleware) GetUserByID(ctx context.Context, id int64) (*pb.User,
 	return user, err
 }
 
+func (l loggingMiddleware) GetUserByUUID(ctx context.Context, uuid string) (*pb.User, error) {
+	user, err := l.next.GetUserByUUID(ctx, uuid)
+
+	defer func() {
+		_ = l.logger.Log("method", "GetUserByUUId", "user", user, "err", err)
+	}()
+
+	return user, err
+}
+
 func (l loggingMiddleware) GetUserByEmail(ctx context.Context, email string) (*pb.User, error) {
 	user, err := l.next.GetUserByEmail(ctx, email)
 
@@ -50,16 +60,6 @@ func (l loggingMiddleware) UpdateEmail(ctx context.Context, user *pb.User) error
 
 	defer func() {
 		_ = l.logger.Log("method", "UpdateEmail", "user", user, "err", err)
-	}()
-
-	return err
-}
-
-func (l loggingMiddleware) UpdatePassword(ctx context.Context, user *pb.User) error {
-	err := l.next.UpdatePassword(ctx, user)
-
-	defer func() {
-		_ = l.logger.Log("method", "UpdatePassword", "user", user, "err", err)
 	}()
 
 	return err

@@ -6,8 +6,6 @@ import (
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"github.com/pkg/errors"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 	"os"
 )
@@ -34,7 +32,19 @@ func NewPostgService() UsersService {
 func (s *PostgService) GetUserByID(ctx context.Context, id int64) (*pb.User, error) {
 	u := &pb.User{Id: id}
 
-	err := s.DB.Get(u, "SELECT * FROM users WHERE id=$1 Limit 1", u.Email)
+	err := s.DB.Get(u, "SELECT * FROM users WHERE id=$1 Limit 1", u.Id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
+}
+
+func (s *PostgService) GetUserByUUID(ctx context.Context, uuid string) (*pb.User, error) {
+	u := &pb.User{Uuid: uuid}
+
+	err := s.DB.Get(u, "SELECT * FROM users WHERE uuid=$1 Limit 1", u.Uuid)
 
 	if err != nil {
 		return nil, err
@@ -67,30 +77,10 @@ func (s *PostgService) UpdateStatus(ctx context.Context, u *pb.User) error {
 	return err
 }
 
-func (s *PostgService) UpdatePassword(ctx context.Context, u *pb.User) error {
-	pass, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
-
-	if err != nil {
-		return errors.Wrap(err, "bcrypt error")
-	}
-
-	_, err = s.DB.Exec("UPDATE users SET password=$1 WHERE email=$2", string(pass), u.Email)
-
-	return err
-}
-
 func (s *PostgService) Create(ctx context.Context, u *pb.User) error {
-	pass, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
-
-	if err != nil {
-		return errors.Wrap(err, "bcrypt error")
-	}
-
-	u.Password = string(pass)
-
-	_, err = s.DB.NamedExec(
-		`INSERT INTO users(firstName, lastName, email, address, password, id, confirmed) 
-		values(:firstName, :lastName, :email, :address, :password, :id, FALSE) `, u)
+	_, err := s.DB.NamedExec(
+		`INSERT INTO users(firstName, lastName, email, address, uuid, id, confirmed) 
+		values(:firstName, :lastName, :email, :address, :uuid, :id, FALSE) `, u)
 
 	return err
 }

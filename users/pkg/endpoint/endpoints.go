@@ -14,9 +14,9 @@ import (
 type Endpoints struct {
 	CreateEndpoint         endpoint.Endpoint
 	GetUserByIDEndpoint    endpoint.Endpoint
+	GetUserByUUIDEndpoint  endpoint.Endpoint
 	GetUserByEmailEndpoint endpoint.Endpoint
 	UpdateEmailEndpoint    endpoint.Endpoint
-	UpdatePasswordEndpoint endpoint.Endpoint
 	UpdateStatusEndpoint   endpoint.Endpoint
 }
 
@@ -27,24 +27,25 @@ func New(s service.UsersService, mdw map[string][]endpoint.Middleware) Endpoints
 		CreateEndpoint:         MakeCreateEndpoint(s),
 		GetUserByEmailEndpoint: MakeGetUserByEmailEndpoint(s),
 		GetUserByIDEndpoint:    MakeGetUserByIDEndpoint(s),
+		GetUserByUUIDEndpoint:  MakeGetUserByUUIDEndpoint(s),
 		UpdateEmailEndpoint:    MakeUpdateEmailEndpoint(s),
-		UpdatePasswordEndpoint: MakeUpdatePasswordEndpoint(s),
 		UpdateStatusEndpoint:   MakeUpdateStatusEndpoint(s),
 	}
+
 	for _, m := range mdw["Create"] {
 		eps.CreateEndpoint = m(eps.CreateEndpoint)
 	}
 	for _, m := range mdw["GetUserByID"] {
 		eps.GetUserByIDEndpoint = m(eps.GetUserByIDEndpoint)
 	}
+	for _, m := range mdw["GetUserByUUID"] {
+		eps.GetUserByUUIDEndpoint = m(eps.GetUserByUUIDEndpoint)
+	}
 	for _, m := range mdw["GetUserByEmail"] {
 		eps.GetUserByEmailEndpoint = m(eps.GetUserByEmailEndpoint)
 	}
 	for _, m := range mdw["UpdateEmail"] {
 		eps.UpdateEmailEndpoint = m(eps.UpdateEmailEndpoint)
-	}
-	for _, m := range mdw["UpdatePassword"] {
-		eps.UpdatePasswordEndpoint = m(eps.UpdatePasswordEndpoint)
 	}
 	for _, m := range mdw["UpdateStatus"] {
 		eps.UpdateStatusEndpoint = m(eps.UpdateStatusEndpoint)

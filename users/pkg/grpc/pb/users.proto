@@ -9,8 +9,8 @@ service Users {
  rpc Create         (CreateRequest        ) returns (CreateReply        );
  rpc GetUserByID    (GetUserByIDRequest   ) returns (GetUserByIDReply   );
  rpc GetUserByEmail (GetUserByEmailRequest) returns (GetUserByEmailReply);
+ rpc GetUserByUUID  (GetUserByUUIDRequest ) returns (GetUserByUUIDReply );
  rpc UpdateEmail    (UpdateEmailRequest   ) returns (UpdateEmailReply   );
- rpc UpdatePassword (UpdatePasswordRequest) returns (UpdatePasswordReply);
  rpc UpdateStatus   (UpdateStatusRequest  ) returns (UpdateStatusReply  );
 }
 
@@ -18,7 +18,7 @@ message User {
  string firstName = 1;
  string lastName  = 2;
  string email     = 3;
- string password  = 4;
+ string uuid      = 4;
  int64  id        = 5;
  string address   = 6;
  bool   confirmed = 7;
@@ -37,6 +37,15 @@ message GetUserByIDRequest {
 }
 
 message GetUserByIDReply {
+ User user = 1;
+ string err = 2;
+}
+
+message GetUserByUUIDRequest {
+ string UUID = 1;
+}
+
+message GetUserByUUIDReply {
  User user = 1;
  string err = 2;
 }
