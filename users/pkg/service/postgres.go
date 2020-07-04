@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	"github.com/jmoiron/sqlx"

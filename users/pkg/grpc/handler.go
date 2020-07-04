@@ -24,7 +24,7 @@ func makeCreateClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *
 func decodeCreateRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(*pb.CreateRequest)
 
-	return endpoint.CreateRequest{User: req.User}, nil
+	return &endpoint.CreateRequest{User: req.User}, nil
 }
 
 func encodeCreateRequest(_ context.Context, r interface{}) (interface{}, error) {
@@ -36,7 +36,7 @@ func encodeCreateRequest(_ context.Context, r interface{}) (interface{}, error) 
 // encodeCreateResponse is a transport/grpc.EncodeResponseFunc that converts
 // a user-domain response to a gRPC reply.
 func encodeCreateResponse(_ context.Context, r interface{}) (interface{}, error) {
-	res := r.(endpoint.CreateResponse)
+	res := r.(*endpoint.CreateResponse)
 
 	return &pb.CreateReply{Err: err2str(res.Err)}, nil
 }
@@ -44,7 +44,7 @@ func encodeCreateResponse(_ context.Context, r interface{}) (interface{}, error)
 func decodeCreateResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.CreateReply)
 
-	return endpoint.CreateResponse{Err: str2err(res.Err)}, nil
+	return &endpoint.CreateResponse{Err: str2err(res.Err)}, nil
 }
 
 func (g *grpcServer) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateReply, error) {
@@ -71,13 +71,13 @@ func makeGetUserByIDClient(conn *grpc.ClientConn, options []grpcTrans.ClientOpti
 func decodeGetUserByIDRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(*pb.GetUserByIDRequest)
 
-	return endpoint.GetUserByIDRequest{Id: req.Id}, nil
+	return &endpoint.GetUserByIDRequest{Id: req.Id}, nil
 }
 
 func decodeGetUserByIDResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.GetUserByIDReply)
 
-	return endpoint.GetUserByIDResponse{User: res.User, Err: str2err(res.Err)}, nil
+	return &endpoint.GetUserByIDResponse{User: res.User, Err: str2err(res.Err)}, nil
 }
 
 // encodeGetUserByIDResponse is a transport/grpc.EncodeResponseFunc that converts
@@ -89,7 +89,7 @@ func encodeGetUserByIDResponse(_ context.Context, r interface{}) (interface{}, e
 }
 
 func encodeGetUserByIDRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(endpoint.GetUserByIDRequest)
+	req := r.(*endpoint.GetUserByIDRequest)
 
 	return &pb.GetUserByIDRequest{Id: req.Id}, nil
 }
@@ -118,25 +118,25 @@ func makeGetUserByUUIDClient(conn *grpc.ClientConn, options []grpcTrans.ClientOp
 func decodeGetUserByUUIDRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(*pb.GetUserByUUIDRequest)
 
-	return endpoint.GetUserByUUIDRequest{UUID: req.UUID}, nil
+	return &endpoint.GetUserByUUIDRequest{UUID: req.UUID}, nil
 }
 
 func decodeGetUserByUUIDResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.GetUserByIDReply)
 
-	return endpoint.GetUserByIDResponse{User: res.User, Err: str2err(res.Err)}, nil
+	return &endpoint.GetUserByIDResponse{User: res.User, Err: str2err(res.Err)}, nil
 }
 
 // encodeGetUserByUUIDResponse is a transport/grpc.EncodeResponseFunc that converts
 // a user-domain response to a gRPC reply.
 func encodeGetUserByUUIDResponse(_ context.Context, r interface{}) (interface{}, error) {
-	res := r.(endpoint.GetUserByIDResponse)
+	res := r.(*endpoint.GetUserByIDResponse)
 
 	return &pb.GetUserByIDReply{Err: err2str(res.Err), User: res.User}, nil
 }
 
 func encodeGetUserByUUIDRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(endpoint.GetUserByUUIDRequest)
+	req := r.(*endpoint.GetUserByUUIDRequest)
 
 	return &pb.GetUserByUUIDRequest{UUID: req.UUID}, nil
 }
@@ -165,25 +165,25 @@ func makeGetUserByEmailClient(conn *grpc.ClientConn, options []grpcTrans.ClientO
 func decodeGetUserByEmailRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(*pb.GetUserByEmailRequest)
 
-	return endpoint.GetUserByEmailRequest{Email: req.Email}, nil
+	return &endpoint.GetUserByEmailRequest{Email: req.Email}, nil
 }
 
 func decodeGetUserByEmailResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.GetUserByEmailReply)
 
-	return endpoint.GetUserByEmailResponse{User: res.User, Err: str2err(res.Err)}, nil
+	return &endpoint.GetUserByEmailResponse{User: res.User, Err: str2err(res.Err)}, nil
 }
 
 // encodeGetUserByEmailResponse is a transport/grpc.EncodeResponseFunc that converts
 // a user-domain response to a gRPC reply.
 func encodeGetUserByEmailResponse(_ context.Context, r interface{}) (interface{}, error) {
-	res := r.(endpoint.GetUserByEmailResponse)
+	res := r.(*endpoint.GetUserByEmailResponse)
 
 	return &pb.GetUserByIDReply{User: res.User, Err: err2str(res.Err)}, nil
 }
 
 func encodeGetUserByEmailRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(endpoint.GetUserByEmailRequest)
+	req := r.(*endpoint.GetUserByEmailRequest)
 
 	return &pb.GetUserByEmailRequest{Email: req.Email}, nil
 }
@@ -210,25 +210,25 @@ func makeUpdateEmailClient(conn *grpc.ClientConn, options []grpcTrans.ClientOpti
 func decodeUpdateEmailRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(*pb.UpdateEmailRequest)
 
-	return endpoint.UpdateEmailRequest{User: req.User}, nil
+	return &endpoint.UpdateEmailRequest{User: req.User}, nil
 }
 
 func decodeUpdateEmailResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.UpdateEmailReply)
 
-	return endpoint.UpdateEmailResponse{Err: str2err(res.Err)}, nil
+	return &endpoint.UpdateEmailResponse{Err: str2err(res.Err)}, nil
 }
 
 // encodeUpdateEmailResponse is a transport/grpc.EncodeResponseFunc that converts
 // a user-domain response to a gRPC reply.
 func encodeUpdateEmailResponse(_ context.Context, r interface{}) (interface{}, error) {
-	res := r.(endpoint.UpdateEmailResponse)
+	res := r.(*endpoint.UpdateEmailResponse)
 
 	return &pb.UpdateEmailReply{Err: err2str(res.Err)}, nil
 }
 
 func encodeUpdateEmailRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(endpoint.UpdateEmailRequest)
+	req := r.(*endpoint.UpdateEmailRequest)
 
 	return &pb.UpdateEmailRequest{User: req.User}, nil
 }
@@ -255,25 +255,25 @@ func makeUpdateStatusClient(conn *grpc.ClientConn, options []grpcTrans.ClientOpt
 func decodeUpdateStatusRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(*pb.UpdateStatusRequest)
 
-	return endpoint.UpdateStatusRequest{User: req.User}, nil
+	return &endpoint.UpdateStatusRequest{User: req.User}, nil
 }
 
 func decodeUpdateStatusResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.UpdateStatusReply)
 
-	return endpoint.UpdateStatusResponse{Err: str2err(res.Err)}, nil
+	return &endpoint.UpdateStatusResponse{Err: str2err(res.Err)}, nil
 }
 
 // encodeUpdateStatusResponse is a transport/grpc.EncodeResponseFunc that converts
 // a user-domain response to a gRPC reply.
 func encodeUpdateStatusResponse(_ context.Context, r interface{}) (interface{}, error) {
-	res := r.(endpoint.UpdateStatusResponse)
+	res := r.(*endpoint.UpdateStatusResponse)
 
 	return &pb.UpdateStatusReply{Err: err2str(res.Err)}, nil
 }
 
 func encodeUpdateStatusRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(endpoint.UpdateStatusRequest)
+	req := r.(*endpoint.UpdateStatusRequest)
 
 	return &pb.UpdateStatusRequest{User: req.User}, nil
 }

@@ -3,9 +3,9 @@ package endpoint
 import (
 	"context"
 	"fmt"
-	endpoint "github.com/go-kit/kit/endpoint"
-	log "github.com/go-kit/kit/log"
-	metrics "github.com/go-kit/kit/metrics"
+	"github.com/go-kit/kit/endpoint"
+	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/metrics"
 	"time"
 )
 
@@ -34,19 +34,5 @@ func LoggingMiddleware(logger log.Logger) endpoint.Middleware {
 			}(time.Now())
 			return next(ctx, request)
 		}
-	}
-}
-
-func AddDefaultEndPointMiddleware(logger log.Logger, mw map[string][]endpoint.Middleware) {
-	for _, name := range GetEndpointList() {
-		logMw := LoggingMiddleware(logger)
-
-		m, ok := mw[name]
-
-		if !ok {
-			m = make([]endpoint.Middleware, 0, 2)
-		}
-
-		mw[name] = append(m, logMw)
 	}
 }

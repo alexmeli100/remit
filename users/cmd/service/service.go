@@ -1,22 +1,16 @@
 package service
 
 import (
+	"context"
 	"flag"
-	"fmt"
 	"github.com/alexmeli100/remit/users/pkg/endpoint"
-	"github.com/alexmeli100/remit/users/pkg/grpc"
-	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	"github.com/alexmeli100/remit/users/pkg/service"
-	"net"
 	"os"
 	"os/signal"
-	"syscall"
 
-	endpoint1 "github.com/go-kit/kit/endpoint"
+	kitEndpoint "github.com/go-kit/kit/endpoint"
 	log "github.com/go-kit/kit/log"
-	group "github.com/oklog/oklog/pkg/group"
 	opentracinggo "github.com/opentracing/opentracing-go"
-	grpc1 "google.golang.org/grpc"
 )
 
 var tracer opentracinggo.Tracer
@@ -33,60 +27,69 @@ func Run() {
 	logger = log.With(logger, "caller", log.DefaultCaller)
 	tracer = opentracinggo.GlobalTracer()
 
-	svc := service.New(getServiceMiddleware(logger))
-	eps := endpoint.New(svc, getEndpointMiddleware(logger))
-	g := createService(eps)
-	initCancelInterrupt(g)
-	logger.Log("exit", g.Run())
+	el := endpoint.GetEndpointList()
+	svc := getService(serviceWithLogger(logger))
+	eps := getEndpoint(svc, endpointWithLogger(logger, el...))
+	server := createService(eps, withLogger(logger, el...), withTracer(tracer, logger, el...))
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	go func() {
+		oscall := <-c
+		logger.Log("system call", oscall)
+		cancel()
+	}()
+
+	logger.Log("exit", runServer(ctx, server))
 }
 
-func getServiceMiddleware(logger log.Logger) []service.Middleware {
-	var mw []service.Middleware
-	mw = append(mw, service.LoggingMiddleware(logger))
+// add logger to notificator service
+func serviceWithLogger(logger log.Logger) func([]service.Middleware) []service.Middleware {
+	return func(mw []service.Middleware) []service.Middleware {
+		mw = append(mw, service.LoggingMiddleware(logger))
 
-	return mw
-}
-func getEndpointMiddleware(logger log.Logger) map[string][]endpoint1.Middleware {
-	mw := make(map[string][]endpoint1.Middleware)
-	endpoint.AddDefaultEndPointMiddleware(logger, mw)
-
-	return mw
+		return mw
+	}
 }
 
-func initCancelInterrupt(g *group.Group) {
-	cancelInterrupt := make(chan struct{})
+// add logger to endpoint
+func endpointWithLogger(logger log.Logger, eps ...string) func(map[string][]kitEndpoint.Middleware) {
+	return func(mw map[string][]kitEndpoint.Middleware) {
+		for _, name := range eps {
+			logMw := endpoint.LoggingMiddleware(logger)
 
-	g.Add(func() error {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-		select {
-		case sig := <-c:
-			return fmt.Errorf("received signal %s", sig)
-		case <-cancelInterrupt:
-			return nil
+			m, ok := mw[name]
+
+			if !ok {
+				m = make([]kitEndpoint.Middleware, 0, 2)
+			}
+
+			mw[name] = append(m, logMw)
 		}
-	}, func(error) {
-		close(cancelInterrupt)
-	})
+	}
 }
 
-func initGRPCHandler(endpoints endpoint.Endpoints, g *group.Group) {
-	options := defaultGRPCOptions(logger, tracer)
+// add the middlewares and get the user service
+func getService(opts ...func([]service.Middleware) []service.Middleware) service.UsersService {
+	mw := make([]service.Middleware, 0, 4)
 
-	grpcServer := grpc.NewGRPCServer(endpoints, options)
-	grpcListener, err := net.Listen("tcp", *grpcAddr)
-
-	if err != nil {
-		logger.Log("transport", "gRPC", "during", "Listen", "err", err)
+	for _, opt := range opts {
+		mw = opt(mw)
 	}
 
-	g.Add(func() error {
-		logger.Log("transport", "gRPC", "addr", *grpcAddr)
-		baseServer := grpc1.NewServer()
-		pb.RegisterUsersServer(baseServer, grpcServer)
+	return service.New(mw)
+}
 
-		return baseServer.Serve(grpcListener)
-	}, func(error) {
-		grpcListener.Close()
-	})
+// add the middlewares and get the endpoints from the user service
+func getEndpoint(svc service.UsersService, opts ...func(map[string][]kitEndpoint.Middleware)) endpoint.Endpoints {
+	mw := make(map[string][]kitEndpoint.Middleware)
+
+	for _, opt := range opts {
+		opt(mw)
+	}
+
+	return endpoint.New(svc, mw)
 }

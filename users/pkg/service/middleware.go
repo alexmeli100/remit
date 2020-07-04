@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	pb "github.com/alexmeli100/remit/users/pkg/grpc/pb"
+	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 
-	log "github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log"
 )
 
 // Middleware describes a service middleware.

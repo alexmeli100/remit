@@ -20,10 +20,10 @@ type CreateResponse struct {
 // MakeCreateEndpoint returns an endpoint that invokes Create on the service.
 func MakeCreateEndpoint(s service.UsersService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(CreateRequest)
+		req := request.(*CreateRequest)
 		err := s.Create(ctx, req.User)
 
-		return CreateResponse{Err: err}, nil
+		return &CreateResponse{Err: err}, nil
 	}
 }
 
@@ -53,10 +53,10 @@ type GetUserByIDResponse struct {
 // MakeGetUserByIDEndpoint returns an endpoint that invokes GetUserByID on the service.
 func MakeGetUserByIDEndpoint(s service.UsersService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(GetUserByIDRequest)
+		req := request.(*GetUserByIDRequest)
 		user, err := s.GetUserByID(ctx, req.Id)
 
-		return GetUserByIDResponse{
+		return &GetUserByIDResponse{
 			Err:  err,
 			User: user,
 		}, nil
@@ -82,10 +82,10 @@ type GetUserByUUIDResponse struct {
 // MakeGetUserByIDEndpoint returns an endpoint that invokes GetUserByID on the service.
 func MakeGetUserByUUIDEndpoint(s service.UsersService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(GetUserByUUIDRequest)
+		req := request.(*GetUserByUUIDRequest)
 		user, err := s.GetUserByUUID(ctx, req.UUID)
 
-		return GetUserByIDResponse{
+		return &GetUserByIDResponse{
 			Err:  err,
 			User: user,
 		}, nil
@@ -111,9 +111,9 @@ type GetUserByEmailResponse struct {
 // MakeGetUserByEmailEndpoint returns an endpoint that invokes GetUserByEmail on the service.
 func MakeGetUserByEmailEndpoint(s service.UsersService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(GetUserByEmailRequest)
+		req := request.(*GetUserByEmailRequest)
 		user, err := s.GetUserByEmail(ctx, req.Email)
-		res := GetUserByEmailResponse{Err: err, User: user}
+		res := &GetUserByEmailResponse{Err: err, User: user}
 
 		return res, nil
 	}
@@ -137,10 +137,10 @@ type UpdateEmailResponse struct {
 // MakeUpdateEmailEndpoint returns an endpoint that invokes UpdateEmail on the service.
 func MakeUpdateEmailEndpoint(s service.UsersService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(UpdateEmailRequest)
+		req := request.(*UpdateEmailRequest)
 		err := s.UpdateEmail(ctx, req.User)
 
-		return UpdateEmailResponse{Err: err}, nil
+		return &UpdateEmailResponse{Err: err}, nil
 	}
 }
 
@@ -162,10 +162,10 @@ type UpdateStatusResponse struct {
 // MakeUpdateStatusEndpoint returns an endpoint that invokes UpdateStatus on the service.
 func MakeUpdateStatusEndpoint(s service.UsersService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(UpdateStatusRequest)
+		req := request.(*UpdateStatusRequest)
 		err := s.UpdateStatus(ctx, req.User)
 
-		return UpdateStatusResponse{Err: err}, nil
+		return &UpdateStatusResponse{Err: err}, nil
 	}
 }
 
@@ -176,66 +176,72 @@ func (r UpdateStatusResponse) Failed() error {
 
 // Create implements Service. Primarily useful in a client.
 func (e Endpoints) Create(ctx context.Context, user *pb.User) error {
-	request := CreateRequest{User: user}
+	request := &CreateRequest{User: user}
 	response, err := e.CreateEndpoint(ctx, request)
 
 	if err != nil {
 		return err
 	}
 
-	return response.(CreateResponse).Err
+	return response.(*CreateResponse).Err
 }
 
 // GetUserByID implements Service. Primarily useful in a client.
 func (e Endpoints) GetUserByID(ctx context.Context, id int64) (*pb.User, error) {
-	request := GetUserByIDRequest{Id: id}
+	request := &GetUserByIDRequest{Id: id}
 	response, err := e.GetUserByIDEndpoint(ctx, request)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.(GetUserByIDResponse).User, response.(GetUserByIDResponse).Err
+	r := response.(*GetUserByIDResponse)
+
+	return r.User, r.Err
 }
 
 func (e Endpoints) GetUserByUUID(ctx context.Context, uuid string) (*pb.User, error) {
-	request := GetUserByUUIDRequest{UUID: uuid}
+	request := &GetUserByUUIDRequest{UUID: uuid}
 	response, err := e.GetUserByUUIDEndpoint(ctx, request)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.(GetUserByUUIDResponse).User, response.(GetUserByUUIDResponse).Err
+	r := response.(*GetUserByUUIDResponse)
+
+	return r.User, r.Err
 }
 
 // GetUserByEmail implements Service. Primarily useful in a client.
 func (e Endpoints) GetUserByEmail(ctx context.Context, email string) (*pb.User, error) {
-	request := GetUserByEmailRequest{Email: email}
+	request := &GetUserByEmailRequest{Email: email}
 	response, err := e.GetUserByEmailEndpoint(ctx, request)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.(GetUserByEmailResponse).User, response.(GetUserByEmailResponse).Err
+	r := response.(*GetUserByEmailResponse)
+
+	return r.User, r.Err
 }
 
 // UpdateEmail implements Service. Primarily useful in a client.
 func (e Endpoints) UpdateEmail(ctx context.Context, user *pb.User) (e0 error) {
-	request := UpdateEmailRequest{User: user}
+	request := &UpdateEmailRequest{User: user}
 	response, err := e.UpdateEmailEndpoint(ctx, request)
 	if err != nil {
 		return
 	}
 
-	return response.(UpdateEmailResponse).Err
+	return response.(*UpdateEmailResponse).Err
 }
 
 // UpdateStatus implements Service. Primarily useful in a client.
 func (e Endpoints) UpdateStatus(ctx context.Context, user *pb.User) (e0 error) {
-	request := UpdateStatusRequest{User: user}
+	request := &UpdateStatusRequest{User: user}
 	response, err := e.UpdateStatusEndpoint(ctx, request)
 	if err != nil {
 		return
 	}
 
-	return response.(UpdateStatusResponse).Err
+	return response.(*UpdateStatusResponse).Err
 }

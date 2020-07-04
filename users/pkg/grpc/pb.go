@@ -2,8 +2,8 @@
 package grpc
 
 import (
-	endpoint "github.com/alexmeli100/remit/users/pkg/endpoint"
-	pb "github.com/alexmeli100/remit/users/pkg/grpc/pb"
+	"github.com/alexmeli100/remit/users/pkg/endpoint"
+	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	"github.com/alexmeli100/remit/users/pkg/service"
 	grpcTrans "github.com/go-kit/kit/transport/grpc"
 	"google.golang.org/grpc"
@@ -21,22 +21,22 @@ type grpcServer struct {
 
 func NewGRPCServer(endpoints endpoint.Endpoints, options map[string][]grpcTrans.ServerOption) pb.UsersServer {
 	return &grpcServer{
-		create:         makeCreateHandler(endpoints, options["Create"]),
-		getUserByEmail: makeGetUserByEmailHandler(endpoints, options["GetUserByEmail"]),
-		getUserByID:    makeGetUserByIDHandler(endpoints, options["GetUserByID"]),
-		getUserByUUID:  makeGetUserByUUIDHandler(endpoints, options["GetUserByUUID"]),
-		updateEmail:    makeUpdateEmailHandler(endpoints, options["UpdateEmail"]),
-		updateStatus:   makeUpdateStatusHandler(endpoints, options["UpdateStatus"]),
+		create:         makeCreateHandler(endpoints, options[endpoint.Create]),
+		getUserByEmail: makeGetUserByEmailHandler(endpoints, options[endpoint.GetUserByEmail]),
+		getUserByID:    makeGetUserByIDHandler(endpoints, options[endpoint.GetUserById]),
+		getUserByUUID:  makeGetUserByUUIDHandler(endpoints, options[endpoint.GetUserByUUID]),
+		updateEmail:    makeUpdateEmailHandler(endpoints, options[endpoint.UpdateEmail]),
+		updateStatus:   makeUpdateStatusHandler(endpoints, options[endpoint.UpdateStatus]),
 	}
 }
 
 func NewGRPCClient(conn *grpc.ClientConn, options map[string][]grpcTrans.ClientOption) service.UsersService {
 	return endpoint.Endpoints{
-		CreateEndpoint:         makeCreateClient(conn, options["Create"]).Endpoint(),
-		GetUserByEmailEndpoint: makeGetUserByEmailClient(conn, options["GetUserByEmail"]).Endpoint(),
-		GetUserByIDEndpoint:    makeGetUserByIDClient(conn, options["GetUserByID"]).Endpoint(),
-		GetUserByUUIDEndpoint:  makeGetUserByUUIDClient(conn, options["GetUserByUUID"]).Endpoint(),
-		UpdateEmailEndpoint:    makeUpdateEmailClient(conn, options["UpdateEmail"]).Endpoint(),
-		UpdateStatusEndpoint:   makeUpdateStatusClient(conn, options["UpdateStatus"]).Endpoint(),
+		CreateEndpoint:         makeCreateClient(conn, options[endpoint.Create]).Endpoint(),
+		GetUserByEmailEndpoint: makeGetUserByEmailClient(conn, options[endpoint.GetUserByEmail]).Endpoint(),
+		GetUserByIDEndpoint:    makeGetUserByIDClient(conn, options[endpoint.GetUserById]).Endpoint(),
+		GetUserByUUIDEndpoint:  makeGetUserByUUIDClient(conn, options[endpoint.GetUserByUUID]).Endpoint(),
+		UpdateEmailEndpoint:    makeUpdateEmailClient(conn, options[endpoint.UpdateEmail]).Endpoint(),
+		UpdateStatusEndpoint:   makeUpdateStatusClient(conn, options[endpoint.UpdateStatus]).Endpoint(),
 	}
 }
