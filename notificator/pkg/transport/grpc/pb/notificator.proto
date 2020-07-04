@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package pb;
+
+
+
+//The Notificator service definition.
+service Notificator {
+ rpc SendConfirmEmail       (SendConfirmEmailRequest      ) returns (SendConfirmEmailReply      );
+ rpc SendPasswordResetEmail (SendPasswordResetEmailRequest) returns (SendPasswordResetEmailReply);
+ rpc SendWelcomeEmail       (SendWelcomeEmailRequest      ) returns (SendWelcomeEmailReply      );
+}
+
+message SendConfirmEmailRequest {
+ string name = 1;
+ string link = 2;
+ string addr = 3;
+}
+
+message SendConfirmEmailReply {
+ string err = 1;
+}
+
+message SendPasswordResetEmailRequest {
+ string link = 1;
+ string addr = 2;
+}
+
+message SendPasswordResetEmailReply {
+ string err = 1;
+}
+
+message SendWelcomeEmailRequest {
+ string name = 1;
+ string addr = 2;
+}
+
+message SendWelcomeEmailReply {
+ string err = 1;
+}
+
