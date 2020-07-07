@@ -8,7 +8,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-// NewGRPCServer makes a set of endpoints available as a gRPC AddServer
 type grpcServer struct {
 	create         grpcTrans.Handler
 	getUserByID    grpcTrans.Handler
@@ -18,6 +17,7 @@ type grpcServer struct {
 	updateStatus   grpcTrans.Handler
 }
 
+// NewGRPCServer makes a set of endpoints available as a gRPC NotificatorServer
 func NewGRPCServer(endpoints endpoint.Endpoints, options map[string][]grpcTrans.ServerOption) pb.UsersServer {
 	return &grpcServer{
 		create:         makeCreateHandler(endpoints, options[endpoint.Create]),

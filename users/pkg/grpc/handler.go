@@ -28,7 +28,7 @@ func decodeCreateRequest(_ context.Context, r interface{}) (interface{}, error) 
 }
 
 func encodeCreateRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(endpoint.CreateRequest)
+	req := r.(*endpoint.CreateRequest)
 
 	return &pb.CreateRequest{User: req.User}, nil
 }
