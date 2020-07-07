@@ -2,21 +2,31 @@ package grpc
 
 import (
 	"github.com/alexmeli100/remit/notificator/pkg/endpoint"
+	"github.com/alexmeli100/remit/notificator/pkg/service"
 	"github.com/alexmeli100/remit/notificator/pkg/transport/grpc/pb"
-	grpc "github.com/go-kit/kit/transport/grpc"
+	grpcTrans "github.com/go-kit/kit/transport/grpc"
+	"google.golang.org/grpc"
 )
 
-// NewGRPCServer makes a set of endpoints available as a gRPC AddServer
 type grpcServer struct {
-	sendConfirmEmail       grpc.Handler
-	sendPasswordResetEmail grpc.Handler
-	sendWelcomeEmail       grpc.Handler
+	sendConfirmEmail       grpcTrans.Handler
+	sendPasswordResetEmail grpcTrans.Handler
+	sendWelcomeEmail       grpcTrans.Handler
 }
 
-func NewGRPCServer(endpoints endpoint.Endpoints, options map[string][]grpc.ServerOption) pb.NotificatorServer {
+// NewGRPCServer makes a set of endpoints available as a gRPC NotificatorServer
+func NewGRPCServer(endpoints endpoint.Endpoints, options map[string][]grpcTrans.ServerOption) pb.NotificatorServer {
 	return &grpcServer{
 		sendConfirmEmail:       makeSendConfirmEmailHandler(endpoints, options[endpoint.SendConfirmEmail]),
 		sendPasswordResetEmail: makeSendPasswordResetEmailHandler(endpoints, options[endpoint.SendPasswordResetEmail]),
 		sendWelcomeEmail:       makeSendWelcomeEmailHandler(endpoints, options[endpoint.SendWelcomeEmail]),
+	}
+}
+
+func NewGRPCClient(conn *grpc.ClientConn, options map[string][]grpcTrans.ClientOption) service.NotificatorService {
+	return endpoint.Endpoints{
+		SendConfirmEmailEndpoint:       makeSendConfirmEmailClient(conn, options[endpoint.SendConfirmEmail]).Endpoint(),
+		SendPasswordResetEmailEndpoint: makeSendPasswordResetEmailClient(conn, options[endpoint.SendPasswordResetEmail]).Endpoint(),
+		SendWelcomeEmailEndpoint:       makeSendWelcomeEmailClient(conn, options[endpoint.SendWelcomeEmail]).Endpoint(),
 	}
 }

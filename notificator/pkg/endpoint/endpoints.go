@@ -28,13 +28,14 @@ func New(s service.NotificatorService, mdw map[string][]endpoint.Middleware) End
 		SendPasswordResetEmailEndpoint: MakeSendPasswordResetEmailEndpoint(s),
 		SendWelcomeEmailEndpoint:       MakeSendWelcomeEmailEndpoint(s),
 	}
-	for _, m := range mdw["SendConfirmEmail"] {
+
+	for _, m := range mdw[SendConfirmEmail] {
 		eps.SendConfirmEmailEndpoint = m(eps.SendConfirmEmailEndpoint)
 	}
-	for _, m := range mdw["SendPasswordResetEmail"] {
+	for _, m := range mdw[SendPasswordResetEmail] {
 		eps.SendPasswordResetEmailEndpoint = m(eps.SendPasswordResetEmailEndpoint)
 	}
-	for _, m := range mdw["SendWelcomeEmail"] {
+	for _, m := range mdw[SendWelcomeEmail] {
 		eps.SendWelcomeEmailEndpoint = m(eps.SendWelcomeEmailEndpoint)
 	}
 	return eps
