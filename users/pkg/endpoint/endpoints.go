@@ -5,10 +5,6 @@ import (
 	endpoint "github.com/go-kit/kit/endpoint"
 )
 
-// Endpoints collects all of the endpoints that compose a user service. It's
-// meant to be used as a helper struct, to collect all of the endpoints into a
-// single parameter.
-
 const (
 	// list of endpoints
 	Create         = "Create"
@@ -19,6 +15,9 @@ const (
 	UpdateStatus   = "UpdateStatus"
 )
 
+// Endpoints collects all of the endpoints that compose a user service. It's
+// meant to be used as a helper struct, to collect all of the endpoints into a
+// single parameter.
 type Endpoints struct {
 	CreateEndpoint         endpoint.Endpoint
 	GetUserByIDEndpoint    endpoint.Endpoint
