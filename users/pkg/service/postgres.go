@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	"github.com/jmoiron/sqlx"
@@ -80,8 +79,8 @@ func (s *PostgService) UpdateStatus(ctx context.Context, u *pb.User) error {
 
 func (s *PostgService) Create(ctx context.Context, u *pb.User) error {
 	_, err := s.DB.NamedExec(
-		`INSERT INTO users(firstName, lastName, email, address, uuid, id, confirmed) 
-		values(:firstName, :lastName, :email, :address, :uuid, :id, FALSE) `, u)
+		`INSERT INTO users(firstName, lastName, email, country, uuid, id, confirmed) 
+		values(:firstName, :lastName, :email, :country, :uuid, :id, FALSE) `, u)
 
 	return err
 }
