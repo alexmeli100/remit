@@ -110,10 +110,26 @@ func appWithNotificatorService(ctx context.Context, instance string, opts ...app
 	}
 }
 
-//func appWithUserEventListener(ctx context.Context, natsInstance string) func(*app.App) error {
-//	return func(a *app.App) error {
+// add a listener for user events
+func appWithUserEventListener(ctx context.Context, natsInstance string) func(*app.App) error {
+	return func(a *app.App) error {
+		conn, err := events.Connect(natsInstance)
+
+		if err != nil {
+			return err
+		}
+
+		go func() {
+			defer conn.Close()
+			<-ctx.Done()
+		}()
+
+		return events.ListenUserEvents(ctx, conn, a)
+	}
+}
+
+//func appWithEventSender(ctx context.Context, natsInstance string) func(*app.App) error {
 //
-//	}
 //}
 
 func appWithFirebase(ctx context.Context, service string) func(*app.App) error {
