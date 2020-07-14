@@ -23,8 +23,7 @@ type UserEvent struct {
 }
 
 type EventSender struct {
-	hostname string
-	nats     *nats.EncodedConn
+	nats *nats.EncodedConn
 }
 
 func (e *EventSender) OnUserCreated(ctx context.Context, u *pb.User) error {
@@ -35,14 +34,8 @@ func (e *EventSender) OnPasswordReset(ctx context.Context, u *pb.User) error {
 	return e.nats.Publish("user-events", UserEvent{UserPasswordReset, u})
 }
 
-func NewEventSender(instance string) (EventManager, error) {
-	conn, err := Connect(instance)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &EventSender{instance, conn}, nil
+func NewEventSender(conn *nats.EncodedConn) EventManager {
+	return &EventSender{conn}
 }
 
 func Connect(url string) (*nats.EncodedConn, error) {
@@ -57,7 +50,7 @@ func Connect(url string) (*nats.EncodedConn, error) {
 }
 
 func ListenUserEvents(ctx context.Context, conn *nats.EncodedConn, sink UserEventManager) error {
-	conn.QueueSubscribe(UserEvents, "user-events", func(e *UserEvent) {
+	subs, err := conn.QueueSubscribe(UserEvents, "user-events", func(e *UserEvent) {
 		switch e.EventKind {
 		case UserCreated:
 			sink.OnUserCreated(ctx, e.User)
@@ -65,6 +58,15 @@ func ListenUserEvents(ctx context.Context, conn *nats.EncodedConn, sink UserEven
 			sink.OnPasswordReset(ctx, e.User)
 		}
 	})
+
+	if err != nil {
+		return err
+	}
+
+	go func() {
+		subs.Unsubscribe()
+		<-ctx.Done()
+	}()
 
 	return nil
 }
