@@ -7,6 +7,7 @@ import (
 	"firebase.google.com/go/v4/auth"
 	"fmt"
 	notificator "github.com/alexmeli100/remit/notificator/pkg/service"
+	"github.com/alexmeli100/remit/pkg/events"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	user "github.com/alexmeli100/remit/users/pkg/service"
 	"github.com/gorilla/mux"
