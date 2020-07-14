@@ -188,6 +188,50 @@ func (a *App) signIn() http.HandlerFunc {
 	}
 }
 
+func (a *App) OnUserCreated(ctx context.Context, u *pb.User) error {
+	client, err := a.FireApp.Auth(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	url, err := client.EmailVerificationLink(ctx, u.Email)
+
+	if err != nil {
+		return errors.Wrap(err, "error getting email confirmation link")
+	}
+
+	if err = a.Notificator.SendConfirmEmail(ctx, u.FirstName, u.Email, url); err != nil {
+		return errors.Wrap(err, "error sending confirmation email")
+	}
+
+	if err = a.Notificator.SendWelcomeEmail(ctx, u.FirstName, u.Email); err != nil {
+		return errors.Wrap(err, "error sending welcome email")
+	}
+
+	return nil
+}
+
+func (a *App) OnPasswordReset(ctx context.Context, u *pb.User) error {
+	client, err := a.FireApp.Auth(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	url, err := client.PasswordResetLink(ctx, u.Email)
+
+	if err != nil {
+		return errors.Wrap(err, "error getting password reset link")
+	}
+
+	if err = a.Notificator.SendPasswordResetEmail(ctx, u.Email, url); err != nil {
+		return errors.Wrap(err, "error sending password reset link")
+	}
+
+	return nil
+}
+
 // decode body of a request containing using information.
 // used in create user method
 func decodeBody(body io.ReadCloser) (*createUserRequest, error) {

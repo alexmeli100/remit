@@ -1,6 +1,8 @@
 package service
 
-import "context"
+import (
+	"context"
+)
 
 // NotificatorService describes the service.
 type NotificatorService interface {

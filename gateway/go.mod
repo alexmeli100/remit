@@ -3,7 +3,7 @@ module github.com/alexmeli100/remit/gateway
 go 1.14
 
 require (
-	firebase.google.com/go v3.13.0+incompatible
+	firebase.google.com/go v3.13.0+incompatible // indirect
 	firebase.google.com/go/v4 v4.0.0
 	github.com/alexmeli100/remit/notificator v0.0.0-20200707190004-4a0b52b4dce1
 	github.com/alexmeli100/remit/users v0.0.0-20200707190004-4a0b52b4dce1
