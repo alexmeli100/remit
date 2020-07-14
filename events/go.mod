@@ -1,4 +1,4 @@
-module github.com/alexmeli100/remit/pkg/events
+module github.com/alexmeli100/remit/events
 
 go 1.14
 
