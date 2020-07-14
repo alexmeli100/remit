@@ -61,9 +61,13 @@ github.com/alexmeli100/remit/events v0.0.0-20200714175951-b446d5ae1143 h1:2g8Lw3
 github.com/alexmeli100/remit/events v0.0.0-20200714175951-b446d5ae1143/go.mod h1:Zqnde3i+p0109m9h53xlqikwQJkBm5SY5MbaPtqDhEc=
 github.com/alexmeli100/remit/notificator v0.0.0-20200714175951-b446d5ae1143 h1:YyJ6hGTpxnBLT/Hb6mFiunXcRZjUo6Yq3psFBi2VHK0=
 github.com/alexmeli100/remit/notificator v0.0.0-20200714175951-b446d5ae1143/go.mod h1:yJOPxrGFGUtJdf4XabAXnfK3hC7CH9cW/BqODtCT/So=
+github.com/alexmeli100/remit/notificator v0.0.0-20200714190917-a6f7237e9fa0 h1:U+DoSgmJ7uH+ALzNiQ/GdY2nMf13dR2zD2fiqKLwt6k=
+github.com/alexmeli100/remit/notificator v0.0.0-20200714190917-a6f7237e9fa0/go.mod h1:yJOPxrGFGUtJdf4XabAXnfK3hC7CH9cW/BqODtCT/So=
 github.com/alexmeli100/remit/users v0.0.0-20200709212116-d4e8520e8b9d/go.mod h1:fO7SRupMF84TXLQz+tR2EjBbgoPUpaAFWoC7Y/qA8D8=
 github.com/alexmeli100/remit/users v0.0.0-20200714175237-e9826c515f85 h1:BMwitdo8IzfoxtOdPAklPhloXKPvR000OwFZGX6babg=
 github.com/alexmeli100/remit/users v0.0.0-20200714175237-e9826c515f85/go.mod h1:fO7SRupMF84TXLQz+tR2EjBbgoPUpaAFWoC7Y/qA8D8=
+github.com/alexmeli100/remit/users v0.0.0-20200714175951-b446d5ae1143 h1:fPvmDbHwklz27P7BQHVTgMOxr5a+J52wsOqq/dIHZ1U=
+github.com/alexmeli100/remit/users v0.0.0-20200714175951-b446d5ae1143/go.mod h1:fO7SRupMF84TXLQz+tR2EjBbgoPUpaAFWoC7Y/qA8D8=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/apache/thrift v0.13.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=

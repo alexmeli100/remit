@@ -36,7 +36,7 @@ func (e *EventSender) OnPasswordReset(ctx context.Context, u *pb.User) error {
 }
 
 func NewEventSender(instance string) (EventManager, error) {
-	conn, err := connect(instance)
+	conn, err := Connect(instance)
 
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func NewEventSender(instance string) (EventManager, error) {
 	return &EventSender{instance, conn}, nil
 }
 
-func connect(url string) (*nats.EncodedConn, error) {
+func Connect(url string) (*nats.EncodedConn, error) {
 	conn, err := nats.Connect(url)
 
 	if err != nil {

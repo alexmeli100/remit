@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	firebase "firebase.google.com/go/v4"
+	"github.com/alexmeli100/remit/events"
 	"github.com/alexmeli100/remit/gateway/app"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/tracing/opentracing"
@@ -109,11 +110,11 @@ func appWithNotificatorService(ctx context.Context, instance string, opts ...app
 	}
 }
 
-func appWithUserEventListener(ctx context.Context, natsInstance string) func(*app.App) error {
-	return func(a *app.App) error {
-
-	}
-}
+//func appWithUserEventListener(ctx context.Context, natsInstance string) func(*app.App) error {
+//	return func(a *app.App) error {
+//
+//	}
+//}
 
 func appWithFirebase(ctx context.Context, service string) func(*app.App) error {
 	return func(a *app.App) error {
