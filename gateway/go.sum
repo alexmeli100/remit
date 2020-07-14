@@ -38,6 +38,7 @@ github.com/alecthomas/units v0.0.0-20190717042225-c3de453c63f4/go.mod h1:ybxpYRF
 github.com/alexmeli100/remit v0.0.0-20200623220803-80d7f4efac85 h1:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=
 github.com/alexmeli100/remit v0.0.0-20200704203156-c10e61983c02 h1:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=
 github.com/alexmeli100/remit v0.0.0-20200709212116-d4e8520e8b9d h1:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=
+github.com/alexmeli100/remit v0.0.0-20200714175237-e9826c515f85 h1:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=
 github.com/alexmeli100/remit/notificator v0.0.0-20200704203156-c10e61983c02 h1:N4hijrIqTTZgouCux4sI044zEgztgQxTuw8DdJqai/E=
 github.com/alexmeli100/remit/notificator v0.0.0-20200704203156-c10e61983c02/go.mod h1:QxorSPb14bGsuspO29Jmw3YFlzG9XsjOznqLkPT8VHw=
 github.com/alexmeli100/remit/notificator v0.0.0-20200707190004-4a0b52b4dce1 h1:L/4JzvLfia0rUcHgto2ohnsMxZkqdOkTPPGPW+kLr3c=
