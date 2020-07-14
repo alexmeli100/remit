@@ -109,6 +109,12 @@ func appWithNotificatorService(ctx context.Context, instance string, opts ...app
 	}
 }
 
+func appWithUserEventListener(ctx context.Context, natsInstance string) func(*app.App) error {
+	return func(a *app.App) error {
+
+	}
+}
+
 func appWithFirebase(ctx context.Context, service string) func(*app.App) error {
 	return func(a *app.App) error {
 		opt := option.WithCredentialsFile(service)

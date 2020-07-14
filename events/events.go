@@ -9,6 +9,10 @@ import (
 type EventType int
 
 const (
+	UserEvents = "user-events"
+)
+
+const (
 	UserCreated EventType = iota
 	UserPasswordReset
 )
@@ -50,4 +54,17 @@ func connect(url string) (*nats.EncodedConn, error) {
 
 	return nats.NewEncodedConn(conn, nats.JSON_ENCODER)
 
+}
+
+func ListenUserEvents(ctx context.Context, conn *nats.EncodedConn, sink UserEventManager) error {
+	conn.QueueSubscribe(UserEvents, "user-events", func(e *UserEvent) {
+		switch e.EventKind {
+		case UserCreated:
+			sink.OnUserCreated(ctx, e.User)
+		case UserPasswordReset:
+			sink.OnPasswordReset(ctx, e.User)
+		}
+	})
+
+	return nil
 }

@@ -19,6 +19,7 @@ import (
 
 type App struct {
 	Server       *http.Server
+	Events       events.EventManager
 	UsersService user.UsersService
 	Notificator  notificator.NotificatorService
 	FireApp      *firebase.App
@@ -98,27 +99,8 @@ func (a *App) createUser() http.HandlerFunc {
 		}
 
 		respondWithJson(w, http.StatusCreated, map[string]string{"message": "user created"})
-		a.sendInitializationEmail(r.Context(), client, req.User.FirstName, req.User.Email)
+		a.Events.OnUserCreated(r.Context(), req.User)
 	}
-}
-
-// send account activation and welcome email to the user
-func (a *App) sendInitializationEmail(ctx context.Context, client *auth.Client, name, addr string) error {
-	url, err := client.EmailVerificationLink(ctx, addr)
-
-	if err != nil {
-		return errors.Wrap(err, "error getting email confirmation link")
-	}
-
-	if err = a.Notificator.SendConfirmEmail(ctx, name, addr, url); err != nil {
-		return errors.Wrap(err, "error sending confirmation email")
-	}
-
-	if err = a.Notificator.SendWelcomeEmail(ctx, name, addr); err != nil {
-		return errors.Wrap(err, "error sending welcome email")
-	}
-
-	return nil
 }
 
 func (a *App) getUser() http.HandlerFunc {
