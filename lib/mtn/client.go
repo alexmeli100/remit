@@ -11,6 +11,8 @@ type Config struct {
 	primaryKey string
 	apiSecret  string
 	userId     string
+	baseUrl    string
+	targetEnv  string
 }
 
 type clientOpts func(c *MomoClient)

@@ -64,7 +64,7 @@ type Remittance struct {
 	config *Config
 }
 
-func NewRemittance(config *Config) (*Remittance, error) {
+func NewRemittance(config *Config) *Remittance {
 	refresher := &tokenRefresher{
 		config:     config,
 		authorizer: authRemittance,
@@ -77,7 +77,7 @@ func NewRemittance(config *Config) (*Remittance, error) {
 
 	r := &Remittance{client, config}
 
-	return r, nil
+	return r
 }
 
 func (m *Remittance) Transfer(t *TransferRequest) (string, error) {
@@ -87,7 +87,7 @@ func (m *Remittance) Transfer(t *TransferRequest) (string, error) {
 		return "", errors.Wrap(err, "error creating request body")
 	}
 
-	req, err := http.NewRequest("POST", BaseURL+"/remittance/v1_0/transfer", bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest("POST", m.config.baseUrl+"/remittance/v1_0/transfer", bytes.NewBuffer(reqBody))
 
 	if err != nil {
 		return "", errors.Wrap(err, "error creating transfer request")
@@ -96,7 +96,7 @@ func (m *Remittance) Transfer(t *TransferRequest) (string, error) {
 	refId := uuid.NewV4()
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Reference-Id", refId.String())
-	req.Header.Set("X-Target-Environment", TargetEnv)
+	req.Header.Set("X-Target-Environment", m.config.targetEnv)
 	req.Header.Set("Ocp-Apim-Subscription-Key", m.config.primaryKey)
 
 	res, err := m.client.reqHandler.Do(req)
@@ -116,7 +116,7 @@ func (m *Remittance) Transfer(t *TransferRequest) (string, error) {
 }
 
 func (m *Remittance) GetTransactionStatus(refId string) (*TransferResponse, error) {
-	url := fmt.Sprintf("%s/remittance/v1_0/transfer/%s", BaseURL, refId)
+	url := fmt.Sprintf("%s/remittance/v1_0/transfer/%s", m.config.baseUrl, refId)
 	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
@@ -144,8 +144,8 @@ func (m *Remittance) GetTransactionStatus(refId string) (*TransferResponse, erro
 }
 
 // get the final status of the transaction
-// this function keeps pooling the api until it responds with a failed or successful status
-// The interval time for pooling is specified in milliseconds
+// this function keeps polling the api until it responds with a failed or successful status
+// The interval time for polling is specified in milliseconds
 func (m *Remittance) GetFinalStatus(refId string, interval int64, maxTime int64) (*TransferResponse, error) {
 	end := time.Now().UnixNano()/millisConversion + maxTime
 

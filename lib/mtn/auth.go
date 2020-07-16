@@ -71,7 +71,7 @@ func authRemittance(config *Config) (*AccessToken, error) {
 
 func authService(path string, config *Config) (*AccessToken, error) {
 	client := createClient(withErrorHandler(&ErrorHandler{handler: tokenErrHandler}))
-	url := BaseURL + path
+	url := config.baseUrl + path
 	req, err := http.NewRequest("POST", url, nil)
 
 	if err != nil {
