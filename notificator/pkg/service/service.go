@@ -12,8 +12,8 @@ type NotificatorService interface {
 }
 
 // New returns a NotificatorService with all of the expected middleware wired in.
-func New(middleware []Middleware) NotificatorService {
-	var svc = NewEmailService()
+func New(svc NotificatorService, middleware []Middleware) NotificatorService {
+
 	for _, m := range middleware {
 		svc = m(svc)
 	}

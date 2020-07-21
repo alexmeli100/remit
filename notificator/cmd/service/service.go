@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"flag"
 	"os"
 	"os/signal"
 
@@ -16,13 +15,11 @@ import (
 var tracer opentracinggo.Tracer
 var logger log.Logger
 
-// Define our flags. Your service probably won't need to bind listeners for
-// all* supported transports, but we do it here for demonstration purposes.
-var fs = flag.NewFlagSet("notificator", flag.ExitOnError)
-var grpcAddr = fs.String("grpc-addr", ":8082", "gRPC listen address")
+var grpcAddr string
 
-func Run() {
-	fs.Parse(os.Args[1:])
+func Run(n service.NotificatorService) {
+	port := os.Getenv("PORT")
+	grpcAddr = ":" + port
 
 	// Create a single logger, which we'll use and give to other components.
 	logger = log.NewLogfmtLogger(os.Stderr)
@@ -31,7 +28,7 @@ func Run() {
 	tracer = opentracinggo.GlobalTracer()
 
 	el := endpoint.GetEndpointList()
-	svc := getService(serviceWithLogger(logger))
+	svc := getService(n, serviceWithLogger(logger))
 	eps := getEndpoint(svc, endpointWithLogger(logger, el...))
 
 	server := createService(eps, withLogger(logger, el...), withTracer(tracer, logger, el...))
@@ -78,14 +75,14 @@ func endpointWithLogger(logger log.Logger, eps ...string) func(map[string][]kitE
 }
 
 // add the middlewares and get the notificator service
-func getService(opts ...func([]service.Middleware) []service.Middleware) service.NotificatorService {
+func getService(n service.NotificatorService, opts ...func([]service.Middleware) []service.Middleware) service.NotificatorService {
 	mw := make([]service.Middleware, 0, 4)
 
 	for _, opt := range opts {
 		mw = opt(mw)
 	}
 
-	return service.New(mw)
+	return service.New(n, mw)
 }
 
 // add the middlewares and get the endpoints from the notificator service
