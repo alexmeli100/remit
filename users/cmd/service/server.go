@@ -33,7 +33,7 @@ func createService(endpoints endpoint.Endpoints, opts ...UserServerOptFunc) *grp
 }
 
 func runServer(ctx context.Context, server *grpc.Server) error {
-	grpcListener, err := net.Listen("tcp", *grpcAddr)
+	grpcListener, err := net.Listen("tcp", grpcAddr)
 	errc := make(chan error, 1)
 
 	if err != nil {
@@ -47,7 +47,7 @@ func runServer(ctx context.Context, server *grpc.Server) error {
 		}
 	}()
 
-	logger.Log("transport", "gRPC", "addr", *grpcAddr)
+	logger.Log("transport", "gRPC", "addr", grpcAddr)
 
 	select {
 	case <-ctx.Done():
