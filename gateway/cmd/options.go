@@ -128,9 +128,26 @@ func appWithUserEventListener(ctx context.Context, natsInstance string) func(*ap
 	}
 }
 
-//func appWithEventSender(ctx context.Context, natsInstance string) func(*app.App) error {
-//
-//}
+func appWithEventSender(ctx context.Context, natsInstance string) func(*app.App) error {
+	return func(a *app.App) error {
+		conn, err := events.Connect(natsInstance)
+
+		if err != nil {
+			return err
+		}
+
+		go func() {
+			defer conn.Close()
+			<-ctx.Done()
+		}()
+
+		sender := events.NewEventSender(conn)
+
+		a.Events = sender
+		return nil
+	}
+
+}
 
 func appWithFirebase(ctx context.Context, service string) func(*app.App) error {
 	return func(a *app.App) error {

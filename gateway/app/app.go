@@ -36,14 +36,14 @@ func (a *App) isAuthenticated(next http.Handler) http.Handler {
 
 		if err != nil {
 			err = errors.New("session cookie unavailable")
-			respondWithError(w, http.StatusUnauthorized, err)
+			a.unauthorized(w, err)
 			return
 		}
 
 		token, err := getToken(r.Context(), a.FireApp, cookie.Value)
 
 		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, err)
+			a.serverError(w, err)
 			return
 		}
 
@@ -61,7 +61,7 @@ func (a *App) createUser() http.HandlerFunc {
 		req, err := decodeBody(r.Body)
 
 		if err != nil {
-			respondWithError(w, http.StatusBadRequest, err)
+			a.badRequest(w, err)
 			return
 		}
 
@@ -69,12 +69,7 @@ func (a *App) createUser() http.HandlerFunc {
 		client, err := a.FireApp.Auth(r.Context())
 
 		if err != nil {
-			if auth.IsEmailAlreadyExists(err) {
-				err = errors.Wrap(err, "user already exists")
-				respondWithError(w, http.StatusBadRequest, err)
-			} else {
-				respondWithError(w, http.StatusInternalServerError, err)
-			}
+			a.serverError(w, err)
 			return
 		}
 
@@ -87,14 +82,18 @@ func (a *App) createUser() http.HandlerFunc {
 		u, err := client.CreateUser(r.Context(), params)
 
 		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, err)
+			if auth.IsEmailAlreadyExists(err) {
+				a.badRequest(w, err)
+			} else {
+				a.serverError(w, err)
+			}
 			return
 		}
 
 		// if the user service fails, delete the user from firebase and report the error
 		if err = a.UsersService.Create(r.Context(), req.User); err != nil {
 			_ = client.DeleteUser(r.Context(), u.UID)
-			respondWithError(w, http.StatusInternalServerError, err)
+			a.serverError(w, err)
 			return
 		}
 
@@ -110,7 +109,7 @@ func (a *App) getUser() http.HandlerFunc {
 		u, err := a.UsersService.GetUserByUUID(r.Context(), id)
 
 		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, err)
+			a.serverError(w, err)
 			return
 		}
 
@@ -124,7 +123,7 @@ func (a *App) signIn() http.HandlerFunc {
 		idToken, err := getIdToken(r)
 
 		if err != nil {
-			respondWithError(w, http.StatusBadRequest, err)
+			a.badRequest(w, err)
 			return
 		}
 
@@ -133,7 +132,7 @@ func (a *App) signIn() http.HandlerFunc {
 		client, err := a.FireApp.Auth(r.Context())
 
 		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, err)
+			a.serverError(w, err)
 			return
 		}
 
@@ -141,13 +140,13 @@ func (a *App) signIn() http.HandlerFunc {
 
 		if err != nil {
 			err = errors.Wrap(err, "invalid ID token")
-			respondWithError(w, http.StatusUnauthorized, err)
+			a.unauthorized(w, err)
 			return
 		}
 
 		if time.Now().Unix()-decoded.Claims["auth_time"].(int64) > 5*60 {
 			err = errors.New("recent sign-in required")
-			respondWithError(w, http.StatusUnauthorized, err)
+			a.unauthorized(w, err)
 			return
 		}
 
@@ -155,7 +154,8 @@ func (a *App) signIn() http.HandlerFunc {
 
 		if err != nil {
 			err = errors.Wrap(err, "failed to create session cookie")
-			respondWithError(w, http.StatusInternalServerError, err)
+			a.serverError(w, err)
+			return
 		}
 
 		http.SetCookie(w, &http.Cookie{

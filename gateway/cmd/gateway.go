@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"github.com/alexmeli100/remit/gateway/app"
 	userEndpoint "github.com/alexmeli100/remit/users/pkg/endpoint"
 	"github.com/go-kit/kit/log"
@@ -15,10 +14,12 @@ import (
 
 var tracer opentracinggo.Tracer
 var logger log.Logger
-var fs = flag.NewFlagSet("gateway", flag.ExitOnError)
+var usersInstance string
+var notificatorInstance string
+var natsInstance string
 
 func main() {
-	fs.Parse(os.Args[1:])
+	initFromEnv()
 
 	logger = log.NewLogfmtLogger(os.Stderr)
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
@@ -32,7 +33,7 @@ func main() {
 	el := userEndpoint.GetEndpointList()
 
 	serverFunc := appWithServer(
-		serverWithAddress(":8085"),
+		serverWithAddress(":5000"),
 		serverWithHandler(r),
 		serverWithReadTimeout(time.Second*15),
 		serverWithWriteTimeout(time.Second*15))
@@ -40,8 +41,10 @@ func main() {
 	err := a.Initialize(
 		serverFunc,
 		appWithFirebase(ctx, "firebase-service-account.json"),
-		appWithUserService(ctx, ":8081", userWithTracer(tracer, logger, el...)),
-		appWithNotificatorService(ctx, ":8083", notificatorWithTracer(tracer, logger, el...)))
+		appWithEventSender(ctx, natsInstance),
+		appWithUserEventListener(ctx, natsInstance),
+		appWithUserService(ctx, usersInstance, userWithTracer(tracer, logger, el...)),
+		appWithNotificatorService(ctx, notificatorInstance, notificatorWithTracer(tracer, logger, el...)))
 
 	if err != nil {
 		logger.Log("error", err)
@@ -58,4 +61,16 @@ func main() {
 	}()
 
 	logger.Log("exit", a.Run(ctx))
+}
+
+func initFromEnv() {
+	usersHost := os.Getenv("USER_MANAGER_SERVICE_HOST")
+	usersPort := os.Getenv("USER_MANAGER_SERVICE_PORT")
+	notificatorHost := os.Getenv("NOTIFICATOR_MANAGER_SERVICE_HOST")
+	notificatorPort := os.Getenv("NOTIFICATOR_MANAGER_SERVICE_PORT")
+	natsHost := os.Getenv("NATS_CLUSTER_SERVICE_HOST")
+	natsPort := os.Getenv("NATS_CLUSTER_SERVICE_PORT")
+	usersInstance = usersHost + ":" + usersPort
+	notificatorInstance = notificatorHost + ":" + notificatorPort
+	natsInstance = natsHost + ":" + natsPort
 }
