@@ -2,30 +2,16 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"log"
-	"os"
 )
 
 type PostgService struct {
 	DB *sqlx.DB
 }
 
-func NewPostgService() UsersService {
-	pass := os.Getenv("POSTGRES_PASSWORD")
-	userName := os.Getenv("POSTGRES_USER")
-	dbName := os.Getenv("POSTGRES_DB")
-	connString := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", userName, pass, dbName)
-
-	db, err := sqlx.Open("postgres", connString)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
+func NewPostgService(db *sqlx.DB) UsersService {
 	return &PostgService{DB: db}
 }
 

@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
+	"github.com/gogo/protobuf/proto"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	uuid "github.com/satori/go.uuid"
 	"log"
 	"os"
@@ -72,11 +74,7 @@ func TestMain(m *testing.M) {
 }
 
 func compare(u1 *pb.User, u2 *pb.User) bool {
-	return u1.FirstName == u2.FirstName &&
-		u1.LastName == u2.LastName &&
-		u1.Uuid == u2.Uuid &&
-		u1.Country == u2.Country &&
-		u1.Confirmed == u2.Confirmed
+	return proto.Equal(u1, u2)
 }
 
 func TestPostgService_Create(t *testing.T) {

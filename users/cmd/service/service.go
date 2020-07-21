@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"flag"
 	"github.com/alexmeli100/remit/users/pkg/endpoint"
 	"github.com/alexmeli100/remit/users/pkg/service"
 	"os"
@@ -15,12 +14,12 @@ import (
 
 var tracer opentracinggo.Tracer
 var logger log.Logger
+var grpcAddr string
 
-var fs = flag.NewFlagSet("users", flag.ExitOnError)
-var grpcAddr = fs.String("grpc-addr", ":8082", "gRPC listen address")
+func Run(u service.UsersService) {
+	port := os.Getenv("PORT")
 
-func Run() {
-	fs.Parse(os.Args[1:])
+	grpcAddr = ":" + port
 
 	logger = log.NewLogfmtLogger(os.Stderr)
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
@@ -28,7 +27,7 @@ func Run() {
 	tracer = opentracinggo.GlobalTracer()
 
 	el := endpoint.GetEndpointList()
-	svc := getService(serviceWithLogger(logger))
+	svc := getService(u, serviceWithLogger(logger))
 	eps := getEndpoint(svc, endpointWithLogger(logger, el...))
 	server := createService(eps, withLogger(logger, el...), withTracer(tracer, logger, el...))
 
@@ -73,14 +72,14 @@ func endpointWithLogger(logger log.Logger, eps ...string) func(map[string][]kitE
 }
 
 // add the middlewares and get the user service
-func getService(opts ...func([]service.Middleware) []service.Middleware) service.UsersService {
+func getService(svc service.UsersService, opts ...func([]service.Middleware) []service.Middleware) service.UsersService {
 	mw := make([]service.Middleware, 0, 4)
 
 	for _, opt := range opts {
 		mw = opt(mw)
 	}
 
-	return service.New(mw)
+	return service.New(svc, mw)
 }
 
 // add the middlewares and get the endpoints from the user service

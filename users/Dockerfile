@@ -1,17 +1,21 @@
-FROM golang
+FROM golang As builder
 
-RUN mkdir -p /go/src/remit
+ADD ./cmd/main.go /src/main.go
+ADD go.mod /src
+ADD go.sum /src
+ADD ./cmd/service /src/service
 
-ADD . /go/src/remit
-
-WORKDIR /go/src/remit/users
-RUN ls "/go/src/remit/users/cmd"
+WORKDIR /src
 
 RUN go mod download
 
-WORKDIR cmd
-RUN go install
+RUN CGO_ENABLED=0 GOOS=linux go build -o /src/app/user_service -a -tags netgo -ldflags '-s -w'
 
-CMD cmd
+FROM scratch
+MAINTAINER Alex Meli <alexmeli100@gmail.com>
+COPY --from=builder /src/app/user_service /app/user_service
+EXPOSE 8081
+
+ENTRYPOINT ["/app/user_service"]
 
 

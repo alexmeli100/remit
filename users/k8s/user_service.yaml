@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-manager
+  labels:
+    svc: user
+    app: manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      svc: user
+      app: manager
+  template:
+    metadata:
+      labels:
+        svc: user
+        app: manager
+    spec:
+      containers:
+        - name: user-manager
+          image: alexmeli/wealow-user:0.0
+          ports:
+            - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-manager
+spec:
+  ports:
+    - port: 8081
+  selector:
+    svc: user
+    app: manager
+
+

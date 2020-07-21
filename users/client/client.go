@@ -19,7 +19,7 @@ func makeCreateClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *
 }
 
 func encodeCreateRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(*endpoint.CreateRequest)
+	req := r.(endpoint.CreateRequest)
 
 	return &pb.CreateRequest{User: req.User}, nil
 }
@@ -27,7 +27,7 @@ func encodeCreateRequest(_ context.Context, r interface{}) (interface{}, error) 
 func decodeCreateResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.CreateReply)
 
-	return &endpoint.CreateResponse{Err: str2err(res.Err)}, nil
+	return endpoint.CreateResponse{Err: str2err(res.Err)}, nil
 }
 
 func makeGetUserByIDClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
@@ -37,11 +37,11 @@ func makeGetUserByIDClient(conn *grpc.ClientConn, options []grpcTrans.ClientOpti
 func decodeGetUserByIDResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.GetUserByIDReply)
 
-	return &endpoint.GetUserByIDResponse{User: res.User, Err: str2err(res.Err)}, nil
+	return endpoint.GetUserByIDResponse{User: res.User, Err: str2err(res.Err)}, nil
 }
 
 func encodeGetUserByIDRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(*endpoint.GetUserByIDRequest)
+	req := r.(endpoint.GetUserByIDRequest)
 
 	return &pb.GetUserByIDRequest{Id: req.Id}, nil
 }
@@ -53,11 +53,11 @@ func makeGetUserByUUIDClient(conn *grpc.ClientConn, options []grpcTrans.ClientOp
 func decodeGetUserByUUIDResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.GetUserByIDReply)
 
-	return &endpoint.GetUserByIDResponse{User: res.User, Err: str2err(res.Err)}, nil
+	return endpoint.GetUserByIDResponse{User: res.User, Err: str2err(res.Err)}, nil
 }
 
 func encodeGetUserByUUIDRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(*endpoint.GetUserByUUIDRequest)
+	req := r.(endpoint.GetUserByUUIDRequest)
 
 	return &pb.GetUserByUUIDRequest{UUID: req.UUID}, nil
 }
@@ -69,11 +69,11 @@ func makeGetUserByEmailClient(conn *grpc.ClientConn, options []grpcTrans.ClientO
 func decodeGetUserByEmailResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.GetUserByEmailReply)
 
-	return &endpoint.GetUserByEmailResponse{User: res.User, Err: str2err(res.Err)}, nil
+	return endpoint.GetUserByEmailResponse{User: res.User, Err: str2err(res.Err)}, nil
 }
 
 func encodeGetUserByEmailRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(*endpoint.GetUserByEmailRequest)
+	req := r.(endpoint.GetUserByEmailRequest)
 
 	return &pb.GetUserByEmailRequest{Email: req.Email}, nil
 }
@@ -85,11 +85,11 @@ func makeUpdateEmailClient(conn *grpc.ClientConn, options []grpcTrans.ClientOpti
 func decodeUpdateEmailResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.UpdateEmailReply)
 
-	return &endpoint.UpdateEmailResponse{Err: str2err(res.Err)}, nil
+	return endpoint.UpdateEmailResponse{Err: str2err(res.Err)}, nil
 }
 
 func encodeUpdateEmailRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(*endpoint.UpdateEmailRequest)
+	req := r.(endpoint.UpdateEmailRequest)
 
 	return &pb.UpdateEmailRequest{User: req.User}, nil
 }
@@ -101,11 +101,11 @@ func makeUpdateStatusClient(conn *grpc.ClientConn, options []grpcTrans.ClientOpt
 func decodeUpdateStatusResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.UpdateStatusReply)
 
-	return &endpoint.UpdateStatusResponse{Err: str2err(res.Err)}, nil
+	return endpoint.UpdateStatusResponse{Err: str2err(res.Err)}, nil
 }
 
 func encodeUpdateStatusRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(*endpoint.UpdateStatusRequest)
+	req := r.(endpoint.UpdateStatusRequest)
 
 	return &pb.UpdateStatusRequest{User: req.User}, nil
 }
