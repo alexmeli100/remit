@@ -9,7 +9,7 @@ WORKDIR /gateway/cmd
 
 RUN go get -u ./...
 
-RUN CGO_ENABLED=0 GOOS=linux go build . -o /gateway/app/gateway -a -tags netgo -ldflags '-s -w'
+RUN CGO_ENABLED=0 GOOS=linux go build -o /gateway/app/gateway -a -tags netgo -ldflags '-s -w'
 
 FROM scratch
 MAINTAINER Alex Meli <alexmeli100@gmail.com>
