@@ -8,31 +8,31 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: wealow
-      working_directory: ~/remit
-      steps:
-        - checkout
-        - run:
-            name: Get all dependencies
-            command: |
-              go get ./...
-        - run:
-            name: Waiting for postgres to be ready
-            command: |
-              for i in `seq 1 10`;
-              do
-                nc -z localhost 5432 && echo Success && exit 0
-                echo -n .
-                sleep 1
-              done
-              echo Failed waiting for Postgres && exit 1
-        - run:
-            name: Run tests
-            command: go test ./...
-        - setup_remote_docker:
-            docker_layer_caching: true
-        - run:
-            name: build and push Docker images
-            shell: /bin/bash
-            command: |
-              chmod +x ./build.sh
-              ./build.sh
+    working_directory: ~/remit
+    steps:
+      - checkout
+      - run:
+          name: Get all dependencies
+          command: |
+            go get ./...
+      - run:
+          name: Waiting for postgres to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z localhost 5432 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for Postgres && exit 1
+      - run:
+          name: Run tests
+          command: go test ./...
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: build and push Docker images
+          shell: /bin/bash
+          command: |
+            chmod +x ./build.sh
+            ./build.sh
