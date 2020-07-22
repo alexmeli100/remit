@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	"github.com/gogo/protobuf/proto"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	uuid "github.com/satori/go.uuid"
 	"log"
 	"os"
 	"testing"
@@ -80,7 +80,7 @@ func compare(u1 *pb.User, u2 *pb.User) bool {
 func TestPostgService_Create(t *testing.T) {
 	clearTable()
 
-	uid := uuid.NewV4().String()
+	uid := uuid.New().String()
 	u := &pb.User{
 		FirstName: "Alex",
 		LastName:  "Meli",
@@ -108,7 +108,7 @@ func TestPostgService_Create(t *testing.T) {
 func TestPostgService_GetUserByID(t *testing.T) {
 	clearTable()
 
-	uid := uuid.NewV4().String()
+	uid := uuid.New().String()
 	u := &pb.User{
 		FirstName: "James",
 		LastName:  "Meli",
@@ -136,7 +136,7 @@ func TestPostgService_GetUserByID(t *testing.T) {
 func TestPostgService_GetUserByEmail(t *testing.T) {
 	clearTable()
 
-	uid := uuid.NewV4().String()
+	uid := uuid.New().String()
 	u := &pb.User{
 		FirstName: "James",
 		LastName:  "Meli",
@@ -164,7 +164,7 @@ func TestPostgService_GetUserByEmail(t *testing.T) {
 func TestLoggingMiddleware_GetUserByID(t *testing.T) {
 	clearTable()
 
-	uid := uuid.NewV4().String()
+	uid := uuid.New().String()
 	u := &pb.User{
 		FirstName: "James",
 		LastName:  "Meli",

@@ -1,7 +1,7 @@
 package mtn
 
 import (
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"testing"
 )
 
@@ -51,7 +51,7 @@ func createRemittance() *Remittance {
 }
 
 func createTransferRequest(n string) *TransferRequest {
-	id := uuid.NewV4()
+	id := uuid.New()
 	payee := &Payee{
 		PartyIdType: "MSISDN",
 		PartyId:     n,

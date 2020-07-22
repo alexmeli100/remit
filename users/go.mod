@@ -6,11 +6,11 @@ require (
 	github.com/go-kit/kit v0.10.0
 	github.com/gogo/protobuf v1.2.1
 	github.com/golang/protobuf v1.4.2
+	github.com/google/uuid v1.1.1
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.7.1
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1
-	github.com/satori/go.uuid v1.2.0
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
 	golang.org/x/sys v0.0.0-20200720211630-cb9d2d5c5666 // indirect
 	golang.org/x/text v0.3.3 // indirect
