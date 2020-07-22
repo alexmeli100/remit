@@ -1,5 +1,10 @@
 package mtn
 
+const (
+	BaseURL   = "https://sandbox.momodeveloper.mtn.com"
+	TargetEnv = "sandbox"
+)
+
 type GlobalConfig struct {
 	BaseUrl   string
 	TargetEnv string

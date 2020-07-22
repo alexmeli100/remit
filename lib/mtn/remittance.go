@@ -20,11 +20,6 @@ const (
 	TransferFailed     = "FAILED"
 )
 
-const (
-	BaseURL   = "https://sandbox.momodeveloper.mtn.com"
-	TargetEnv = "sandbox"
-)
-
 type Payee struct {
 	PartyIdType string `json:"partyIdType"`
 	PartyId     string `json:"partyId"`

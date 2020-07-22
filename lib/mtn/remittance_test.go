@@ -2,11 +2,25 @@ package mtn
 
 import (
 	"github.com/google/uuid"
+	"os"
 	"testing"
 )
 
+var r *Remittance
+
+func TestMain(m *testing.M) {
+	momo := CreateMomoApp(&GlobalConfig{})
+	r = momo.NewRemittance(&ProductConfig{
+		PrimaryKey: "15294124013343908f01ab8bbb0d95f4",
+		ApiSecret:  "87d26b2e19a048ce84c5634e2ceee6b7",
+		UserId:     "17465d3b-23ab-454c-82da-67ac6f09f0ce",
+	})
+
+	code := m.Run()
+	os.Exit(code)
+}
+
 func TestTransfer(t *testing.T) {
-	r := createRemittance()
 
 	tests := []struct {
 		testCase       string
@@ -38,16 +52,6 @@ func TestTransfer(t *testing.T) {
 			}
 		}
 	}
-}
-
-func createRemittance() *Remittance {
-	r := NewRemittance(&Config{
-		primaryKey: "15294124013343908f01ab8bbb0d95f4",
-		apiSecret:  "06bb32fe271d467d8d26ec31c6c2d6a3",
-		userId:     "8cb50e22-47ee-4047-b7fc-a0b530f54568",
-	})
-
-	return r
 }
 
 func createTransferRequest(n string) *TransferRequest {
