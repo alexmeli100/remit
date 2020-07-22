@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notificator-manager
+  labels:
+    svc: notificator
+    app: manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      svc: notificator
+      app: manager
+  template:
+    metadata:
+      labels:
+        svc: notificator
+        app: manager
+    spec:
+      containers:
+        - name: notificator-manager
+          image: alexmeli/wealow-notificator:0.0
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: notificator-config
+          env:
+            - name: EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: EMAIL_PASSWORD
+                  name: notificator-credentials
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notificator-manager
+spec:
+  ports:
+    - port: 8082
+  selector:
+    svc: notificator
+    app: manager

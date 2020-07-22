@@ -22,6 +22,9 @@ spec:
           image: alexmeli/wealow-user:0.0
           ports:
             - containerPort: 8081
+          envFrom:
+            - configMapRef:
+                name: database-config
 ---
 apiVersion: v1
 kind: Service

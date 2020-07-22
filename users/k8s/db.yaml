@@ -22,13 +22,9 @@ spec:
           image: postgres:11.1-alpine
           ports:
             - containerPort: 5432
-          env:
-            - name: POSTGRES_DB
-              value: user_service
-            - name: POSTGRES_USER
-              value: postgres
-            - name: POSTGRES_PASSWORD
-              value: postgres
+          envFrom:
+            - configMapRef:
+                name: database-config
 ---
 apiVersion: v1
 kind: Service
