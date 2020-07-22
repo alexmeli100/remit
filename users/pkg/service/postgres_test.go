@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
-	"github.com/gogo/protobuf/proto"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -75,7 +74,12 @@ func TestMain(m *testing.M) {
 }
 
 func compare(u1 *pb.User, u2 *pb.User) bool {
-	return proto.Equal(u1, u2)
+	return u1.FirstName == u2.FirstName &&
+		u1.LastName == u2.LastName &&
+		u1.Email == u2.Email &&
+		u1.Id == u2.Id &&
+		u1.Uuid == u2.Uuid &&
+		u1.Confirmed == u2.Confirmed
 }
 
 func TestPostgService_Create(t *testing.T) {
@@ -106,7 +110,7 @@ func TestPostgService_Create(t *testing.T) {
 	}
 }
 
-func TestPostgService_GetUserByID(t *testing.T) {
+func TestPostgService_GetUserByUUID(t *testing.T) {
 	clearTable()
 
 	uid := uuid.New().String()
@@ -162,7 +166,7 @@ func TestPostgService_GetUserByEmail(t *testing.T) {
 	}
 }
 
-func TestLoggingMiddleware_GetUserByID(t *testing.T) {
+func TestPostgService_GetUserByID(t *testing.T) {
 	clearTable()
 
 	uid := uuid.New().String()
@@ -179,7 +183,7 @@ func TestLoggingMiddleware_GetUserByID(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	tu, err := pg.GetUserByID(context.Background(), 1)
+	tu, err := pg.GetUserByID(context.Background(), 0)
 
 	if err != nil {
 		t.Errorf("%v", err)
