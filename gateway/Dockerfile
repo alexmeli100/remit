@@ -16,4 +16,4 @@ MAINTAINER Alex Meli <alexmeli100@gmail.com>
 COPY --from=builder /gateway/app/gateway /app/gateway
 EXPOSE 5000
 
-ENTRYPOINT ["/app/gateway_service"]
+ENTRYPOINT ["/app/gateway"]
