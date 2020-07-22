@@ -35,7 +35,7 @@ func createService(endpoints notificatorEndpoint.Endpoints, opts ...NotificatorS
 
 // run the server until an error is thrown or the context gets cancelled
 func runServer(ctx context.Context, server *grpc.Server) error {
-	grpcListener, err := net.Listen("tcp", *grpcAddr)
+	grpcListener, err := net.Listen("tcp", grpcAddr)
 	errc := make(chan error, 1)
 
 	if err != nil {
@@ -49,7 +49,7 @@ func runServer(ctx context.Context, server *grpc.Server) error {
 		}
 	}()
 
-	logger.Log("transport", "gRPC", "addr", *grpcAddr)
+	logger.Log("transport", "gRPC", "addr", grpcAddr)
 
 	select {
 	case <-ctx.Done():
