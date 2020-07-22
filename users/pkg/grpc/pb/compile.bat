@@ -8,3 +8,4 @@
 ::  https://github.com/grpc/grpc-go/tree/master/examples
 
 protoc users.proto --go_out=plugins=grpc:.
+protoc-go-inject-tag -input=users.pb.go
