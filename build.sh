@@ -10,7 +10,7 @@ TAG='0.0'
 docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
 
 for svc in "${Services[@]}"; do
-  cd "${ROOT_DIR}$svc"
+  cd "${ROOT_DIR}/$svc"
 
   if [[ ! -f Dockerfile ]]; then
     continue
