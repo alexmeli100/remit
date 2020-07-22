@@ -18,8 +18,9 @@ var pg PostgService
 const TableCreationQuery = `CREATE TABLE IF NOT EXISTS users
 (
     id         SERIAL,
-    firstName  TEXT    NOT NULL,
-    lastName   TEXT    NOT NULL,
+    uuid       TEXT    NOT NULL,
+    first_name  TEXT    NOT NULL,
+    last_name   TEXT    NOT NULL,
     email      TEXT    NOT NULL,
     confirmed  BOOLEAN NOT NULL,
     country    Text    Not NuLL,
