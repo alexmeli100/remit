@@ -64,9 +64,9 @@ func (s *PostgService) UpdateStatus(ctx context.Context, u *pb.User) error {
 }
 
 func (s *PostgService) Create(ctx context.Context, u *pb.User) error {
-	_, err := s.DB.NamedExec(
+	_, err := s.DB.Exec(
 		`INSERT INTO users(first_name, last_name, email, country, uuid, id, confirmed) 
-		values(:FirstName, :LastName, :Email, :country, :Uuid, :Id, FALSE) `, u)
+		values($1, $2, $3, $4, $5, $6, FALSE) `, u.FirstName, u.LastName, u.Email, u.Country, u.Uuid, u.Id)
 
 	return err
 }
