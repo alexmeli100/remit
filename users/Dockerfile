@@ -1,9 +1,9 @@
 FROM golang As builder
 
 ADD ./cmd /users/cmd
+ADD ./pkg /users/pkg
 ADD go.mod /users
 ADD go.sum /users
-ADD ./pkg /users/pkg
 
 WORKDIR /users/cmd
 
