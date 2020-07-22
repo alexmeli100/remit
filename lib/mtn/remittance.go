@@ -93,7 +93,12 @@ func (m *Remittance) Transfer(t *TransferRequest) (string, error) {
 		return "", errors.Wrap(err, "error creating transfer request")
 	}
 
-	refId := uuid.NewV4()
+	refId, err := uuid.NewV4()
+
+	if err != nil {
+		return "", errors.Wrap(err, "error generating uuid")
+	}
+
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Reference-Id", refId.String())
 	req.Header.Set("X-Target-Environment", m.config.targetEnv)

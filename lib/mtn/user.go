@@ -16,7 +16,12 @@ type User struct {
 }
 
 func NewUser(host string, pk string) (*User, error) {
-	userId := uuid.NewV4()
+	userId, err := uuid.NewV4()
+
+	if err != nil {
+		return nil, err
+	}
+
 	client := createClient(withErrorHandler(&ErrorHandler{handler: remittanceErrHandler}))
 	body, err := json.Marshal(map[string]string{"providerCallbackHost": host})
 
