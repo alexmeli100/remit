@@ -15,6 +15,7 @@ jobs:
           name: Get all dependencies
           command: |
             go get -u ./...
+            go get github.com/gogo/protobuf/proto
       - run:
           name: Waiting for postgres to be ready
           command: |
