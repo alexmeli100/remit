@@ -7,6 +7,8 @@ ADD ./pkg /notificator/pkg
 
 RUN go get ./...
 
+WORKDIR /notificator/cmd
+
 RUN CGO_ENABLED=0 GOOS=linux go build -o /notificator_service - a -tags netgo -ldflags '-s -w'
 
 FROM scratch
