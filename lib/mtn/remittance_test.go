@@ -2,7 +2,6 @@ package mtn
 
 import (
 	uuid "github.com/satori/go.uuid"
-	"log"
 	"testing"
 )
 
@@ -42,15 +41,11 @@ func TestTransfer(t *testing.T) {
 }
 
 func createRemittance() *Remittance {
-	r, err := NewRemittance(&Config{
+	r := NewRemittance(&Config{
 		primaryKey: "15294124013343908f01ab8bbb0d95f4",
 		apiSecret:  "06bb32fe271d467d8d26ec31c6c2d6a3",
 		userId:     "8cb50e22-47ee-4047-b7fc-a0b530f54568",
 	})
-
-	if err != nil {
-		log.Fatalf("failed to create remittance: %s\n", err.Error())
-	}
 
 	return r
 }

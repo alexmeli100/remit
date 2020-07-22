@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
-	uuid "github.com/satori/go.uuid"
 	"net/http"
 	"time"
 )
@@ -93,11 +93,7 @@ func (m *Remittance) Transfer(t *TransferRequest) (string, error) {
 		return "", errors.Wrap(err, "error creating transfer request")
 	}
 
-	refId, err := uuid.NewV4()
-
-	if err != nil {
-		return "", errors.Wrap(err, "error generating uuid")
-	}
+	refId := uuid.New()
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Reference-Id", refId.String())

@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
-	uuid "github.com/satori/go.uuid"
 	"net/http"
 )
 
@@ -16,11 +16,7 @@ type User struct {
 }
 
 func NewUser(host string, pk string) (*User, error) {
-	userId, err := uuid.NewV4()
-
-	if err != nil {
-		return nil, err
-	}
+	userId := uuid.New()
 
 	client := createClient(withErrorHandler(&ErrorHandler{handler: remittanceErrHandler}))
 	body, err := json.Marshal(map[string]string{"providerCallbackHost": host})
