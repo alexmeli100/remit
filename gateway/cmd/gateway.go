@@ -40,7 +40,7 @@ func main() {
 
 	err := a.Initialize(
 		serverFunc,
-		appWithFirebase(ctx, "firebase-service-account.json"),
+		appWithFirebase(ctx, "/opt/firebase/firebase-service-account.json"),
 		appWithEventSender(ctx, natsInstance),
 		appWithUserEventListener(ctx, natsInstance),
 		appWithUserService(ctx, usersInstance, userWithTracer(tracer, logger, el...)),

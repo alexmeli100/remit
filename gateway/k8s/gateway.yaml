@@ -20,6 +20,16 @@ spec:
       containers:
         - name: gateway
           image: alexmeli/wealow-gateway:0.0
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - mountPath: "/opt/firebase"
+              name: secret-volume
+              readOnly: true
+     volumes:
+       - name: secret-volume
+         secret:
+           secretName: firebase-service-account
 ---
 apiVersion: v1
 kind: Service
