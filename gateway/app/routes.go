@@ -11,5 +11,5 @@ func (a *App) InitializeRoutes(r *mux.Router) {
 	// authentication routes
 	s := api.PathPrefix("/auth").Subrouter()
 	s.Use(a.isAuthenticated)
-	s.HandleFunc("/user/:id", a.getUser())
+	s.HandleFunc("/user/:id", a.getUser()).Methods("GET")
 }

@@ -10,6 +10,7 @@ import (
 	notificator "github.com/alexmeli100/remit/notificator/pkg/service"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	user "github.com/alexmeli100/remit/users/pkg/service"
+	"github.com/google/martian/log"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"io"
@@ -89,13 +90,15 @@ func (a *App) createUser() http.HandlerFunc {
 			}
 			return
 		}
-
+		log.Infof("created firebase user")
 		// if the user service fails, delete the user from firebase and report the error
 		if err = a.UsersService.Create(r.Context(), req.User); err != nil {
 			_ = client.DeleteUser(r.Context(), u.UID)
 			a.serverError(w, err)
 			return
 		}
+
+		log.Infof("created user in user service\n")
 
 		respondWithJson(w, http.StatusCreated, map[string]string{"message": "user created"})
 		a.Events.OnUserCreated(r.Context(), req.User)
