@@ -77,7 +77,6 @@ func compare(u1 *pb.User, u2 *pb.User) bool {
 	return u1.FirstName == u2.FirstName &&
 		u1.LastName == u2.LastName &&
 		u1.Email == u2.Email &&
-		u1.Id == u2.Id &&
 		u1.Uuid == u2.Uuid &&
 		u1.Confirmed == u2.Confirmed
 }
@@ -91,6 +90,7 @@ func TestPostgService_Create(t *testing.T) {
 		LastName:  "Meli",
 		Uuid:      uid,
 		Email:     "alexmeli100@gmail.com",
+		Confirmed: false,
 		Country:   "Canada",
 	}
 
@@ -175,6 +175,7 @@ func TestPostgService_GetUserByID(t *testing.T) {
 		FirstName: "James",
 		LastName:  "Meli",
 		Uuid:      uid,
+		Id:        1,
 		Email:     "jamesmeli100@gmail.com",
 		Confirmed: false,
 		Country:   "USA",
@@ -184,7 +185,7 @@ func TestPostgService_GetUserByID(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	tu, err := pg.GetUserByID(context.Background(), 0)
+	tu, err := pg.GetUserByID(context.Background(), 1)
 
 	if err != nil {
 		t.Errorf("%v", err)
