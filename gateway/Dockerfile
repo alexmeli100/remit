@@ -11,10 +11,13 @@ RUN go get -u ./...
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /gateway/app/gateway -a -tags netgo -ldflags '-s -w'
 
+FROM alpine:3.6 as alpine
+RUN apk add -U --no-cache ca-certificates && update-ca-certificates
+
 FROM scratch
 MAINTAINER Alex Meli <alexmeli100@gmail.com>
 COPY --from=builder /gateway/app/gateway /app/gateway
-RUN apk add --no-cache ca-certificates && update-ca-certificates
+COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 EXPOSE 5000
 
 ENTRYPOINT ["/app/gateway"]
