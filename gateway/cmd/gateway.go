@@ -60,6 +60,7 @@ func main() {
 		cancel()
 	}()
 
+	logger.Log("server running at", a.Server.Addr)
 	logger.Log("exit", a.Run(ctx))
 }
 
