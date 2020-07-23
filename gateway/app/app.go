@@ -60,6 +60,7 @@ func (a *App) createUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		req, err := decodeBody(r.Body)
+		log.Infof("decoded body")
 
 		if err != nil {
 			a.badRequest(w, err)
@@ -74,6 +75,8 @@ func (a *App) createUser() http.HandlerFunc {
 			return
 		}
 
+		log.Infof("created firebase client")
+
 		params := (&auth.UserToCreate{}).
 			Email(req.User.Email).
 			DisplayName(name).
@@ -81,6 +84,7 @@ func (a *App) createUser() http.HandlerFunc {
 			EmailVerified(false)
 
 		u, err := client.CreateUser(r.Context(), params)
+		log.Infof("created firebase user")
 
 		if err != nil {
 			if auth.IsEmailAlreadyExists(err) {
@@ -90,7 +94,7 @@ func (a *App) createUser() http.HandlerFunc {
 			}
 			return
 		}
-		log.Infof("created firebase user")
+		log.Infof("email does not")
 		// if the user service fails, delete the user from firebase and report the error
 		if err = a.UsersService.Create(r.Context(), req.User); err != nil {
 			_ = client.DeleteUser(r.Context(), u.UID)
