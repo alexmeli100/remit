@@ -14,6 +14,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /gateway/app/gateway -a -tags netgo -ld
 FROM scratch
 MAINTAINER Alex Meli <alexmeli100@gmail.com>
 COPY --from=builder /gateway/app/gateway /app/gateway
+RUN apk add --no-cache ca-certificates && update-ca-certificates
 EXPOSE 5000
 
 ENTRYPOINT ["/app/gateway"]
