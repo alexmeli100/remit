@@ -42,6 +42,7 @@ func main() {
 		serverFunc,
 		appWithFirebase(ctx, "/opt/firebase/firebase-service-account.json"),
 		appWithEventSender(ctx, natsInstance),
+		appWithLogger(logger),
 		appWithUserEventListener(ctx, natsInstance),
 		appWithUserService(ctx, usersInstance, userWithTracer(tracer, logger, el...)),
 		appWithNotificatorService(ctx, notificatorInstance, notificatorWithTracer(tracer, logger, el...)))

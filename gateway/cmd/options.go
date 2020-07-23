@@ -163,3 +163,10 @@ func appWithFirebase(ctx context.Context, service string) func(*app.App) error {
 		return nil
 	}
 }
+
+func appWithLogger(logger log.Logger) func(*app.App) error {
+	return func(a *app.App) error {
+		a.Logger = logger
+		return nil
+	}
+}

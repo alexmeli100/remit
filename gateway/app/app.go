@@ -10,7 +10,7 @@ import (
 	notificator "github.com/alexmeli100/remit/notificator/pkg/service"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	user "github.com/alexmeli100/remit/users/pkg/service"
-	"github.com/google/martian/log"
+	"github.com/go-kit/kit/log"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"io"
@@ -24,6 +24,7 @@ type App struct {
 	UsersService user.UsersService
 	Notificator  notificator.NotificatorService
 	FireApp      *firebase.App
+	Logger       log.Logger
 }
 
 type createUserRequest struct {
@@ -60,7 +61,7 @@ func (a *App) createUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		req, err := decodeBody(r.Body)
-		log.Infof("decoded body")
+		a.Logger.Log("body", req)
 
 		if err != nil {
 			a.badRequest(w, err)
@@ -75,7 +76,7 @@ func (a *App) createUser() http.HandlerFunc {
 			return
 		}
 
-		log.Infof("created firebase client")
+		a.Logger.Log("client", "created")
 
 		params := (&auth.UserToCreate{}).
 			Email(req.User.Email).
@@ -84,7 +85,7 @@ func (a *App) createUser() http.HandlerFunc {
 			EmailVerified(false)
 
 		u, err := client.CreateUser(r.Context(), params)
-		log.Infof("created firebase user")
+		a.Logger.Log("firebase user", "created")
 
 		if err != nil {
 			if auth.IsEmailAlreadyExists(err) {
@@ -94,7 +95,7 @@ func (a *App) createUser() http.HandlerFunc {
 			}
 			return
 		}
-		log.Infof("email does not")
+		a.Logger.Log("email", "exists")
 		// if the user service fails, delete the user from firebase and report the error
 		if err = a.UsersService.Create(r.Context(), req.User); err != nil {
 			_ = client.DeleteUser(r.Context(), u.UID)
@@ -102,7 +103,7 @@ func (a *App) createUser() http.HandlerFunc {
 			return
 		}
 
-		log.Infof("created user in user service\n")
+		a.Logger.Log("user service", "created")
 
 		respondWithJson(w, http.StatusCreated, map[string]string{"message": "user created"})
 		a.Events.OnUserCreated(r.Context(), req.User)
