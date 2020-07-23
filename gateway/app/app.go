@@ -217,15 +217,15 @@ func (a *App) OnPasswordReset(ctx context.Context, u *pb.User) error {
 
 // decode body of a request containing using information.
 // used in create user method
-func decodeBody(body io.ReadCloser) (*createUserRequest, error) {
-	var u *createUserRequest
+func decodeBody(body io.Reader) (*createUserRequest, error) {
+	var u createUserRequest
 	decoder := json.NewDecoder(body)
 
-	if err := decoder.Decode(u); err != nil {
+	if err := decoder.Decode(&u); err != nil {
 		return nil, errors.Wrap(err, "error decoding request")
 	}
 
-	return u, nil
+	return &u, nil
 }
 
 // get id token from request body
