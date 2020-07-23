@@ -91,7 +91,6 @@ func TestPostgService_Create(t *testing.T) {
 		LastName:  "Meli",
 		Uuid:      uid,
 		Email:     "alexmeli100@gmail.com",
-		Confirmed: false,
 		Country:   "Canada",
 	}
 
@@ -105,8 +104,10 @@ func TestPostgService_Create(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	if !compare(u, tu) {
-		t.Errorf("Expected: %v, Got: %v", u, tu)
+	if err == nil {
+		if !compare(u, tu) {
+			t.Errorf("Expected: %v, Got: %v", u, tu)
+		}
 	}
 }
 
