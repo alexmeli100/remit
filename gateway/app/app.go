@@ -14,6 +14,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"io"
+	log1 "log"
 	"net/http"
 	"time"
 )
@@ -60,14 +61,11 @@ func (a *App) isAuthenticated(next http.Handler) http.Handler {
 func (a *App) createUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		req, err := decodeBody(r.Body)
-		defer r.Body.Close()
 
 		if err != nil {
 			a.badRequest(w, err)
 			return
 		}
-
-		a.Logger.Log("req", req.User.FirstName)
 
 		name := fmt.Sprintf("%s %s", req.User.FirstName, req.User.LastName)
 		client, err := a.FireApp.Auth(r.Context())
@@ -77,8 +75,6 @@ func (a *App) createUser() http.HandlerFunc {
 			return
 		}
 
-		a.Logger.Log("client", "created")
-
 		params := (&auth.UserToCreate{}).
 			Email(req.User.Email).
 			DisplayName(name).
@@ -86,8 +82,6 @@ func (a *App) createUser() http.HandlerFunc {
 			EmailVerified(false)
 
 		u, err := client.CreateUser(r.Context(), params)
-		a.Logger.Log("firebase user", "created")
-		a.Logger.Log("error", err)
 
 		if err != nil {
 			if auth.IsEmailAlreadyExists(err) {
@@ -95,23 +89,16 @@ func (a *App) createUser() http.HandlerFunc {
 			} else {
 				a.serverError(w, err)
 			}
-
-			a.Logger.Log("error", err)
 			return
 		}
-
-		a.Logger.Log("email", "exists")
 		// if the user service fails, delete the user from firebase and report the error
 		if err = a.UsersService.Create(r.Context(), req.User); err != nil {
-			a.Logger.Log("error", err)
 			_ = client.DeleteUser(r.Context(), u.UID)
 			a.serverError(w, err)
 			return
 		}
-
-		a.Logger.Log("user service", "created")
-
 		respondWithJson(w, http.StatusCreated, map[string]string{"message": "user created"})
+		a.Logger.Log("method", "createUser", "firstname", req.User.FirstName)
 		//a.Events.OnUserCreated(r.Context(), req.User)
 	}
 }
@@ -133,7 +120,6 @@ func (a *App) getUser() http.HandlerFunc {
 
 func (a *App) signIn() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
 		idToken, err := getIdToken(r)
 
 		if err != nil {
@@ -282,4 +268,7 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(payload)
+	log1.Println(payload)
+	w.(http.Flusher).Flush()
+
 }
