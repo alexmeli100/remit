@@ -18,14 +18,14 @@ type GRPCClientOpt = func(map[string][]grpcTrans.ClientOption)
 func CreateUserServiceClient(ctx context.Context, instance string, options ...GRPCClientOpt) (usersService.UsersService, error) {
 	conn, err := grpc.Dial(instance, grpc.WithInsecure())
 
+	if err != nil {
+		return nil, errors.Wrap(err, "error openening connection to user service")
+	}
+
 	go func() {
 		defer conn.Close()
 		<-ctx.Done()
 	}()
-
-	if err != nil {
-		return nil, errors.Wrap(err, "error openening connection to user service")
-	}
 
 	opts := make(map[string][]grpcTrans.ClientOption)
 
@@ -40,14 +40,14 @@ func CreateUserServiceClient(ctx context.Context, instance string, options ...GR
 func CreateNotificatorServiceClient(ctx context.Context, instance string, options ...GRPCClientOpt) (notificatorService.NotificatorService, error) {
 	conn, err := grpc.Dial(instance, grpc.WithInsecure())
 
+	if err != nil {
+		return nil, errors.Wrap(err, "error openening connection to notificator service")
+	}
+
 	go func() {
 		defer conn.Close()
 		<-ctx.Done()
 	}()
-
-	if err != nil {
-		return nil, errors.Wrap(err, "error openening connection to notificator service")
-	}
 
 	opts := make(map[string][]grpcTrans.ClientOption)
 
