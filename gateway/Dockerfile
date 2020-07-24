@@ -18,6 +18,6 @@ FROM scratch
 MAINTAINER Alex Meli <alexmeli100@gmail.com>
 COPY --from=builder /gateway/app/gateway /app/gateway
 COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-EXPOSE 5000
+EXPOSE 8083
 
 ENTRYPOINT ["/app/gateway"]
