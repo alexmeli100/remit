@@ -33,7 +33,7 @@ func main() {
 	el := userEndpoint.GetEndpointList()
 
 	serverFunc := appWithServer(
-		serverWithAddress(":5000"),
+		serverWithAddress(":8083"),
 		serverWithHandler(r),
 		serverWithReadTimeout(time.Second*5),
 		serverWithIdleTimeout(time.Minute),
