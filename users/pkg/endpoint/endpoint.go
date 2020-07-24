@@ -85,7 +85,7 @@ func MakeGetUserByUUIDEndpoint(s service.UsersService) endpoint.Endpoint {
 		req := request.(GetUserByUUIDRequest)
 		user, err := s.GetUserByUUID(ctx, req.UUID)
 
-		return GetUserByIDResponse{
+		return GetUserByUUIDResponse{
 			Err:  err,
 			User: user,
 		}, nil

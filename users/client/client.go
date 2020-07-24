@@ -51,9 +51,9 @@ func makeGetUserByUUIDClient(conn *grpc.ClientConn, options []grpcTrans.ClientOp
 }
 
 func decodeGetUserByUUIDResponse(_ context.Context, r interface{}) (interface{}, error) {
-	res := r.(*pb.GetUserByIDReply)
+	res := r.(*pb.GetUserByUUIDReply)
 
-	return endpoint.GetUserByIDResponse{User: res.User, Err: str2err(res.Err)}, nil
+	return endpoint.GetUserByUUIDResponse{User: res.User, Err: str2err(res.Err)}, nil
 }
 
 func encodeGetUserByUUIDRequest(_ context.Context, r interface{}) (interface{}, error) {

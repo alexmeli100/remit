@@ -85,9 +85,9 @@ func decodeGetUserByUUIDRequest(_ context.Context, r interface{}) (interface{}, 
 // encodeGetUserByUUIDResponse is a transport/grpc.EncodeResponseFunc that converts
 // a user-domain response to a gRPC reply.
 func encodeGetUserByUUIDResponse(_ context.Context, r interface{}) (interface{}, error) {
-	res := r.(endpoint.GetUserByIDResponse)
+	res := r.(endpoint.GetUserByUUIDResponse)
 
-	return &pb.GetUserByIDReply{Err: err2str(res.Err), User: res.User}, nil
+	return &pb.GetUserByUUIDReply{Err: err2str(res.Err), User: res.User}, nil
 }
 
 func (g *grpcServer) GetUserByUUID(ctx context.Context, req *pb.GetUserByUUIDRequest) (*pb.GetUserByUUIDReply, error) {
@@ -118,7 +118,7 @@ func decodeGetUserByEmailRequest(_ context.Context, r interface{}) (interface{},
 func encodeGetUserByEmailResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(endpoint.GetUserByEmailResponse)
 
-	return &pb.GetUserByIDReply{User: res.User, Err: err2str(res.Err)}, nil
+	return &pb.GetUserByEmailReply{User: res.User, Err: err2str(res.Err)}, nil
 }
 
 func (g *grpcServer) GetUserByEmail(ctx context.Context, req *pb.GetUserByEmailRequest) (*pb.GetUserByEmailReply, error) {

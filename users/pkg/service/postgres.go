@@ -58,7 +58,7 @@ func (s *PostgService) UpdateEmail(ctx context.Context, u *pb.User) error {
 }
 
 func (s *PostgService) UpdateStatus(ctx context.Context, u *pb.User) error {
-	_, err := s.DB.Exec("UPDATE users SET confirmed=TRUE WHERE id=$2", u.Id)
+	_, err := s.DB.Exec("UPDATE users SET confirmed=TRUE WHERE id=$1", u.Id)
 
 	return err
 }

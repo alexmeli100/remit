@@ -16,6 +16,7 @@ import (
 	"io"
 	log1 "log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -91,6 +92,8 @@ func (a *App) createUser() http.HandlerFunc {
 			}
 			return
 		}
+
+		req.User.Uuid = u.UID
 		// if the user service fails, delete the user from firebase and report the error
 		if err = a.UsersService.Create(r.Context(), req.User); err != nil {
 			_ = client.DeleteUser(r.Context(), u.UID)
@@ -103,10 +106,33 @@ func (a *App) createUser() http.HandlerFunc {
 	}
 }
 
-func (a *App) getUser() http.HandlerFunc {
+func (a *App) getUserByID() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		p := vars["id"]
+		id, err := strconv.Atoi(p)
+
+		if err != nil {
+			a.badRequest(w, err)
+			return
+		}
+
+		u, err := a.UsersService.GetUserByID(r.Context(), int64(id))
+
+		if err != nil {
+			a.serverError(w, err)
+			return
+		}
+
+		respondWithJson(w, http.StatusOK, u)
+	}
+}
+
+func (a *App) getUserByUUID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
+
 		u, err := a.UsersService.GetUserByUUID(r.Context(), id)
 
 		if err != nil {
