@@ -17,7 +17,7 @@ var logger log.Logger
 var grpcAddr string
 
 func Run(u service.UsersService) {
-	port := os.Getenv("PORT")
+	port := os.Getenv("USER_MANAGER_SERVICE_PORT")
 
 	grpcAddr = ":" + port
 
@@ -25,6 +25,7 @@ func Run(u service.UsersService) {
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 	logger = log.With(logger, "caller", log.DefaultCaller)
 	tracer = opentracinggo.GlobalTracer()
+	logger.Log("grpcAddr", grpcAddr)
 
 	el := endpoint.GetEndpointList()
 	svc := getService(u, serviceWithLogger(logger))
