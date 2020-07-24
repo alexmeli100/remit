@@ -59,8 +59,8 @@ func (a *App) isAuthenticated(next http.Handler) http.Handler {
 // an account activation email is sent afterwards.
 func (a *App) createUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
 		req, err := decodeBody(r.Body)
+		defer r.Body.Close()
 
 		if err != nil {
 			a.badRequest(w, err)
@@ -112,7 +112,7 @@ func (a *App) createUser() http.HandlerFunc {
 		a.Logger.Log("user service", "created")
 
 		respondWithJson(w, http.StatusCreated, map[string]string{"message": "user created"})
-		a.Events.OnUserCreated(r.Context(), req.User)
+		//a.Events.OnUserCreated(r.Context(), req.User)
 	}
 }
 
@@ -279,9 +279,7 @@ func respondWithError(w http.ResponseWriter, code int, err error) {
 }
 
 func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
-	response, _ := json.Marshal(payload)
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	w.Write(response)
+	json.NewEncoder(w).Encode(payload)
 }

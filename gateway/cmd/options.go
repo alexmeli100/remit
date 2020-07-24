@@ -70,6 +70,12 @@ func serverWithHandler(r *mux.Router) func(*http.Server) {
 	}
 }
 
+func serverWithIdleTimeout(t time.Duration) func(server *http.Server) {
+	return func(s *http.Server) {
+		s.IdleTimeout = t
+	}
+}
+
 // application options
 func appWithServer(opts ...func(*http.Server)) func(*app.App) error {
 	return func(app *app.App) error {

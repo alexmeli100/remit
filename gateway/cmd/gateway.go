@@ -35,8 +35,9 @@ func main() {
 	serverFunc := appWithServer(
 		serverWithAddress(":5000"),
 		serverWithHandler(r),
-		serverWithReadTimeout(time.Second*15),
-		serverWithWriteTimeout(time.Second*15))
+		serverWithReadTimeout(time.Second*5),
+		serverWithIdleTimeout(time.Minute),
+		serverWithWriteTimeout(time.Second*10))
 
 	err := a.Initialize(
 		serverFunc,
