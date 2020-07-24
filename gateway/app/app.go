@@ -103,6 +103,7 @@ func (a *App) createUser() http.HandlerFunc {
 		a.Logger.Log("email", "exists")
 		// if the user service fails, delete the user from firebase and report the error
 		if err = a.UsersService.Create(r.Context(), req.User); err != nil {
+			a.Logger.Log("error", err)
 			_ = client.DeleteUser(r.Context(), u.UID)
 			a.serverError(w, err)
 			return
@@ -282,5 +283,5 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	_, _ = w.Write(response)
+	w.Write(response)
 }
