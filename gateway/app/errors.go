@@ -7,7 +7,7 @@ func (a *App) serverError(w http.ResponseWriter, err error) {
 }
 
 func (a *App) badRequest(w http.ResponseWriter, err error) {
-	respondWithError(w, http.StatusBadGateway, err)
+	respondWithError(w, http.StatusBadRequest, err)
 }
 
 func (a *App) unauthorized(w http.ResponseWriter, err error) {

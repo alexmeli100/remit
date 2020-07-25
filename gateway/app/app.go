@@ -29,11 +29,6 @@ type App struct {
 	Logger       log.Logger
 }
 
-type createUserRequest struct {
-	User     *pb.User `json:"user"`
-	Password string   `json:"password"`
-}
-
 func (a *App) isAuthenticated(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session")
@@ -61,48 +56,24 @@ func (a *App) isAuthenticated(next http.Handler) http.Handler {
 // an account activation email is sent afterwards.
 func (a *App) createUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		req, err := decodeBody(r.Body)
+		u, err := decodeBody(r.Body)
 
 		if err != nil {
 			a.badRequest(w, err)
 			return
 		}
 
-		name := fmt.Sprintf("%s %s", req.User.FirstName, req.User.LastName)
-		client, err := a.FireApp.Auth(r.Context())
-
-		if err != nil {
+		name := fmt.Sprintf("%s %s", u.FirstName, u.LastName)
+		if err = a.UsersService.Create(r.Context(), u); err != nil {
 			a.serverError(w, err)
 			return
 		}
+		respondWithJson(w, http.StatusCreated, map[string]string{"status": "user created"})
+		a.Logger.Log("method", "createUser", "name", name)
 
-		params := (&auth.UserToCreate{}).
-			Email(req.User.Email).
-			DisplayName(name).
-			Password(req.Password).
-			EmailVerified(false)
-
-		u, err := client.CreateUser(r.Context(), params)
-
-		if err != nil {
-			if auth.IsEmailAlreadyExists(err) {
-				a.badRequest(w, err)
-			} else {
-				a.serverError(w, err)
-			}
-			return
+		if err := a.Events.OnUserCreated(r.Context(), u); err != nil {
+			a.Logger.Log("method", "createUser", "err", err)
 		}
-
-		req.User.Uuid = u.UID
-		// if the user service fails, delete the user from firebase and report the error
-		if err = a.UsersService.Create(r.Context(), req.User); err != nil {
-			_ = client.DeleteUser(r.Context(), u.UID)
-			a.serverError(w, err)
-			return
-		}
-		respondWithJson(w, http.StatusCreated, map[string]string{"message": "user created"})
-		a.Logger.Log("method", "createUser", "firstname", req.User.FirstName)
-		//a.Events.OnUserCreated(r.Context(), req.User)
 	}
 }
 
@@ -241,10 +212,10 @@ func (a *App) OnPasswordReset(ctx context.Context, u *pb.User) error {
 	return nil
 }
 
-// decode body of a request containing using information.
+// decode body of a request containing user data.
 // used in create user method
-func decodeBody(body io.Reader) (*createUserRequest, error) {
-	var u createUserRequest
+func decodeBody(body io.Reader) (*pb.User, error) {
+	var u pb.User
 	decoder := json.NewDecoder(body)
 
 	if err := decoder.Decode(&u); err != nil {
@@ -293,8 +264,7 @@ func respondWithError(w http.ResponseWriter, code int, err error) {
 func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	json.NewEncoder(w).Encode(payload)
-	log1.Println(payload)
-	w.(http.Flusher).Flush()
-
+	if err := json.NewEncoder(w).Encode(payload); err != nil {
+		log1.Println(err)
+	}
 }
