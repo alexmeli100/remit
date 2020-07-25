@@ -5,6 +5,9 @@
     <title>Title</title>
 </head>
 <body>
-
+    <h1>Hi {{ .Name}}</h1>
+    <p>Please click the link below to confirm your email</p>
+    <p>This link will expire in 24 hours</p>
+    <a href="{{ .Link}}">Verify Email</a>
 </body>
 </html>
