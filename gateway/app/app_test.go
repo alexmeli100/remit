@@ -24,7 +24,7 @@ func TestDecodeBody(t *testing.T) {
 	if err != nil {
 		t.Errorf("decode error: %v\n", err)
 	} else {
-		t.Log(r.Password)
+		t.Log(r.FirstName)
 	}
 
 }
