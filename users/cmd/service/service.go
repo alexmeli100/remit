@@ -18,7 +18,6 @@ var grpcAddr string
 
 func Run(u service.UsersService) {
 	port := os.Getenv("USER_MANAGER_SERVICE_PORT")
-
 	grpcAddr = ":" + port
 
 	logger = log.NewLogfmtLogger(os.Stderr)

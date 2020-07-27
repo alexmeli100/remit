@@ -2,8 +2,8 @@ package app
 
 import (
 	"context"
+	notificatorClient "github.com/alexmeli100/remit/notificator/client"
 	notificatorService "github.com/alexmeli100/remit/notificator/pkg/service"
-	notificatorGRPC "github.com/alexmeli100/remit/notificator/pkg/transport/grpc"
 	userClient "github.com/alexmeli100/remit/users/client"
 	usersService "github.com/alexmeli100/remit/users/pkg/service"
 	grpcTrans "github.com/go-kit/kit/transport/grpc"
@@ -55,7 +55,7 @@ func CreateNotificatorServiceClient(ctx context.Context, instance string, option
 		option(opts)
 	}
 
-	return notificatorGRPC.NewGRPCClient(conn, opts), nil
+	return notificatorClient.NewGRPCClient(conn, opts), nil
 }
 
 // inirialize the app from the options

@@ -18,7 +18,7 @@ var logger log.Logger
 var grpcAddr string
 
 func Run(n service.NotificatorService) {
-	port := os.Getenv("NOTIFICATOR_SERVICE_PORT")
+	port := os.Getenv("NOTIFICATOR_MANAGER_SERVICE_PORT")
 	grpcAddr = ":" + port
 
 	// Create a single logger, which we'll use and give to other components.
