@@ -17,6 +17,7 @@ import (
 	log1 "log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -29,7 +30,7 @@ type App struct {
 	Logger       log.Logger
 }
 
-func (a *App) isAuthenticated(next http.Handler) http.Handler {
+func (a *App) isAuthenticatedWeb(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session")
 
@@ -39,7 +40,7 @@ func (a *App) isAuthenticated(next http.Handler) http.Handler {
 			return
 		}
 
-		token, err := getToken(r.Context(), a.FireApp, cookie.Value)
+		token, err := getTokenFromSession(r.Context(), a.FireApp, cookie.Value)
 
 		if err != nil {
 			a.serverError(w, err)
@@ -47,7 +48,31 @@ func (a *App) isAuthenticated(next http.Handler) http.Handler {
 		}
 
 		ctx := context.WithValue(r.Context(), "token", token)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
 
+func (a *App) isAuthenticatedMobile(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		client, err := a.FireApp.Auth(r.Context())
+
+		if err != nil {
+			a.serverError(w, err)
+			return
+		}
+
+		bearer := "Bearer "
+		authHeader := r.Header.Get("Authorization")
+		var idToken string
+
+		if strings.HasPrefix(authHeader, bearer) {
+			idToken = authHeader[len(bearer):]
+		} else {
+			a.badRequest(w, errors.New("Invalid bearer token"))
+		}
+
+		token, err := client.VerifyIDToken(r.Context(), idToken)
+		ctx := context.WithValue(r.Context(), "token", token)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
@@ -241,7 +266,7 @@ func getIdToken(r *http.Request) (string, error) {
 }
 
 // verify session is valid and get token
-func getToken(ctx context.Context, app *firebase.App, idToken string) (*auth.Token, error) {
+func getTokenFromSession(ctx context.Context, app *firebase.App, idToken string) (*auth.Token, error) {
 	client, err := app.Auth(ctx)
 
 	if err != nil {
@@ -253,7 +278,6 @@ func getToken(ctx context.Context, app *firebase.App, idToken string) (*auth.Tok
 	if err != nil {
 		return nil, err
 	}
-
 	return token, nil
 }
 
