@@ -1,8 +1,14 @@
 FROM golang As builder
 
-ADD ./cmd /cmd
+ADD ./cmd /users/cmd
+ADD ./pkg /users/pkg
+ADD go.mod /users
+ADD go.sum /users
 
-WORKDIR /cmd
+
+WORKDIR /users/cmd
+
+go get -u ./...
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/user_service -a -tags netgo -ldflags '-s -w'
 

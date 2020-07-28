@@ -1,10 +1,13 @@
 FROM golang As builder
 
-ADD ./cmd /cmd
+ADD ./cmd /notificator/cmd
+ADD ./pkg /notificator/pkg
+ADD go.mod /notificator
+ADD go.sum /notificator
 
-WORKDIR /cmd
+WORKDIR /notificator/cmd
 
-#RUN go get -d -v
+RUN go get -u ./...
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/notificator_service -a -tags netgo -ldflags '-s -w'
 

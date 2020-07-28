@@ -1,11 +1,13 @@
 FROM golang As builder
 
-ADD ./cmd /cmd
+ADD ./cmd /gateway/cmd
+ADD ./app /gateway/app
+ADD go.mod /gateway
+ADD go.sum /gateway
 
-WORKDIR /cmd
+WORKDIR /gateway/cmd
 
-#RUN go get -u firebase.google.com/go/v4
-#RUN go get -d -v
+RUN go get -u ./...
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/gateway -a -tags netgo -ldflags '-s -w'
 
