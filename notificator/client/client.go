@@ -24,11 +24,11 @@ func makeSendConfirmEmailClient(conn *grpc.ClientConn, options []grpcTrans.Clien
 func decodeSendConfirmEmailResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.SendConfirmEmailReply)
 
-	return &endpoint.SendConfirmEmailResponse{Err: str2err(res.Err)}, nil
+	return endpoint.SendConfirmEmailResponse{Err: str2err(res.Err)}, nil
 }
 
 func encodeSendConfirmEmailRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(*endpoint.SendConfirmEmailRequest)
+	req := r.(endpoint.SendConfirmEmailRequest)
 
 	return &pb.SendConfirmEmailRequest{Name: req.Name, Link: req.Link, Addr: req.Addr}, nil
 }
@@ -47,11 +47,11 @@ func makeSendPasswordResetEmailClient(conn *grpc.ClientConn, options []grpcTrans
 func decodeSendPasswordResetEmailResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.SendPasswordResetEmailReply)
 
-	return &endpoint.SendPasswordResetEmailResponse{Err: str2err(res.Err)}, nil
+	return endpoint.SendPasswordResetEmailResponse{Err: str2err(res.Err)}, nil
 }
 
 func encodeSendPasswordResetEmailRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(*endpoint.SendPasswordResetEmailRequest)
+	req := r.(endpoint.SendPasswordResetEmailRequest)
 
 	return &pb.SendPasswordResetEmailRequest{Link: req.Link, Addr: req.Addr}, nil
 }
@@ -70,11 +70,11 @@ func makeSendWelcomeEmailClient(conn *grpc.ClientConn, options []grpcTrans.Clien
 func decodeSendWelcomeEmailResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.SendWelcomeEmailReply)
 
-	return &endpoint.SendWelcomeEmailResponse{Err: str2err(res.Err)}, nil
+	return endpoint.SendWelcomeEmailResponse{Err: str2err(res.Err)}, nil
 }
 
 func encodeSendWelcomeEmailRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(*endpoint.SendWelcomeEmailRequest)
+	req := r.(endpoint.SendWelcomeEmailRequest)
 
 	return &pb.SendWelcomeEmailRequest{Name: req.Name, Addr: req.Addr}, nil
 }

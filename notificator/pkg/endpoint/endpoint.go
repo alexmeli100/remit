@@ -22,9 +22,9 @@ type SendConfirmEmailResponse struct {
 // MakeSendConfirmEmailEndpoint returns an endpoint that invokes SendConfirmEmail on the service.
 func MakeSendConfirmEmailEndpoint(s service.NotificatorService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(*SendConfirmEmailRequest)
+		req := request.(SendConfirmEmailRequest)
 		err := s.SendConfirmEmail(ctx, req.Name, req.Addr, req.Link)
-		return &SendConfirmEmailResponse{Err: err}, nil
+		return SendConfirmEmailResponse{Err: err}, nil
 	}
 }
 
@@ -42,7 +42,7 @@ type Failure interface {
 
 // SendConfirmEmail implements Service. Primarily useful in a client.
 func (e Endpoints) SendConfirmEmail(ctx context.Context, name, addr string, link string) error {
-	request := &SendConfirmEmailRequest{
+	request := SendConfirmEmailRequest{
 		Addr: addr,
 		Name: name,
 		Link: link,
@@ -53,7 +53,7 @@ func (e Endpoints) SendConfirmEmail(ctx context.Context, name, addr string, link
 	if err != nil {
 		return err
 	}
-	return response.(*SendConfirmEmailResponse).Err
+	return response.(SendConfirmEmailResponse).Err
 }
 
 // SendPasswordResetEmailRequest collects the request parameters for the SendPasswordResetEmail method.
@@ -70,9 +70,9 @@ type SendPasswordResetEmailResponse struct {
 // MakeSendPasswordResetEmailEndpoint returns an endpoint that invokes SendPasswordResetEmail on the service.
 func MakeSendPasswordResetEmailEndpoint(s service.NotificatorService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(*SendPasswordResetEmailRequest)
+		req := request.(SendPasswordResetEmailRequest)
 		err := s.SendPasswordResetEmail(ctx, req.Addr, req.Link)
-		return &SendPasswordResetEmailResponse{Err: err}, nil
+		return SendPasswordResetEmailResponse{Err: err}, nil
 	}
 }
 
@@ -95,10 +95,10 @@ type SendWelcomeEmailResponse struct {
 // MakeSendWelcomeEmailEndpoint returns an endpoint that invokes SendWelcomeEmail on the service.
 func MakeSendWelcomeEmailEndpoint(s service.NotificatorService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(*SendWelcomeEmailRequest)
+		req := request.(SendWelcomeEmailRequest)
 		err := s.SendWelcomeEmail(ctx, req.Name, req.Addr)
 
-		return &SendWelcomeEmailResponse{Err: err}, nil
+		return SendWelcomeEmailResponse{Err: err}, nil
 	}
 }
 
@@ -109,7 +109,7 @@ func (r SendWelcomeEmailResponse) Failed() error {
 
 // SendPasswordResetEmail implements Service. Primarily useful in a client.
 func (e Endpoints) SendPasswordResetEmail(ctx context.Context, addr string, link string) error {
-	request := &SendPasswordResetEmailRequest{
+	request := SendPasswordResetEmailRequest{
 		Addr: addr,
 		Link: link,
 	}
@@ -117,12 +117,12 @@ func (e Endpoints) SendPasswordResetEmail(ctx context.Context, addr string, link
 	if err != nil {
 		return err
 	}
-	return response.(*SendPasswordResetEmailResponse).Err
+	return response.(SendPasswordResetEmailResponse).Err
 }
 
 // SendWelcomeEmail implements Service. Primarily useful in a client.
 func (e Endpoints) SendWelcomeEmail(ctx context.Context, addr string, name string) error {
-	request := &SendWelcomeEmailRequest{
+	request := SendWelcomeEmailRequest{
 		Addr: addr,
 		Name: name,
 	}
@@ -130,5 +130,5 @@ func (e Endpoints) SendWelcomeEmail(ctx context.Context, addr string, name strin
 	if err != nil {
 		return err
 	}
-	return response.(*SendWelcomeEmailResponse).Err
+	return response.(SendWelcomeEmailResponse).Err
 }

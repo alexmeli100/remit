@@ -14,7 +14,6 @@ import (
 
 var tracer opentracinggo.Tracer
 var logger log.Logger
-
 var grpcAddr string
 
 func Run(n service.NotificatorService) {

@@ -17,13 +17,13 @@ func makeSendConfirmEmailHandler(endpoints endpoint.Endpoints, options []grpcTra
 func decodeSendConfirmEmailRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(*pb.SendConfirmEmailRequest)
 
-	return &endpoint.SendConfirmEmailRequest{Link: req.Link, Name: req.Name, Addr: req.Addr}, nil
+	return endpoint.SendConfirmEmailRequest{Link: req.Link, Name: req.Name, Addr: req.Addr}, nil
 }
 
 // encodeSendConfirmEmailResponse is a transport/grpc.EncodeResponseFunc that converts
 // a user-domain response to a gRPC reply.
 func encodeSendConfirmEmailResponse(_ context.Context, r interface{}) (interface{}, error) {
-	res := r.(*endpoint.SendConfirmEmailResponse)
+	res := r.(endpoint.SendConfirmEmailResponse)
 
 	return &pb.SendConfirmEmailReply{Err: err2str(res.Err)}, nil
 }
@@ -46,13 +46,13 @@ func makeSendPasswordResetEmailHandler(endpoints endpoint.Endpoints, options []g
 func decodeSendPasswordResetEmailRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(*pb.SendPasswordResetEmailRequest)
 
-	return &endpoint.SendPasswordResetEmailRequest{Addr: req.Addr, Link: req.Link}, nil
+	return endpoint.SendPasswordResetEmailRequest{Addr: req.Addr, Link: req.Link}, nil
 }
 
 // encodeSendPasswordResetEmailResponse is a transport/grpc.EncodeResponseFunc that converts
 // a user-domain response to a gRPC reply.
 func encodeSendPasswordResetEmailResponse(_ context.Context, r interface{}) (interface{}, error) {
-	res := r.(*endpoint.SendPasswordResetEmailResponse)
+	res := r.(endpoint.SendPasswordResetEmailResponse)
 
 	return &pb.SendPasswordResetEmailReply{Err: err2str(res.Err)}, nil
 }
@@ -74,13 +74,13 @@ func makeSendWelcomeEmailHandler(endpoints endpoint.Endpoints, options []grpcTra
 func decodeSendWelcomeEmailRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(*pb.SendWelcomeEmailRequest)
 
-	return &endpoint.SendWelcomeEmailRequest{Name: req.Name, Addr: req.Addr}, nil
+	return endpoint.SendWelcomeEmailRequest{Name: req.Name, Addr: req.Addr}, nil
 }
 
 // encodeSendWelcomeEmailResponse is a transport/grpc.EncodeResponseFunc that converts
 // a user-domain response to a gRPC reply.
 func encodeSendWelcomeEmailResponse(_ context.Context, r interface{}) (interface{}, error) {
-	res := r.(*endpoint.SendWelcomeEmailResponse)
+	res := r.(endpoint.SendWelcomeEmailResponse)
 
 	return &pb.SendWelcomeEmailReply{Err: err2str(res.Err)}, nil
 }
