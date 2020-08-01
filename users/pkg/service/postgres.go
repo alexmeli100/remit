@@ -5,6 +5,7 @@ import (
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"time"
 )
 
 type PostgService struct {
@@ -65,8 +66,9 @@ func (s *PostgService) UpdateStatus(ctx context.Context, u *pb.User) error {
 
 func (s *PostgService) Create(ctx context.Context, u *pb.User) error {
 	_, err := s.DB.Exec(
-		`INSERT INTO users(first_name, last_name, email, country, uuid, confirmed) 
-		values($1, $2, $3, $4, $5, FALSE) `, u.FirstName, u.LastName, u.Email, u.Country, u.Uuid)
+		`INSERT INTO users(first_name, last_name, email, country, uuid, created_at, confirmed) 
+		values($1, $2, $3, $4, $5, $6, FALSE) `,
+		u.FirstName, u.LastName, u.Email, u.Country, u.Uuid, time.Now())
 
 	return err
 }

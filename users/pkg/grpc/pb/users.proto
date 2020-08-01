@@ -2,6 +2,9 @@ syntax = "proto3";
 
 package pb;
 
+import "google/protobuf/timestamp.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
 //The Users service definition.
 service Users {
  rpc Create         (CreateRequest        ) returns (CreateReply        );
@@ -25,8 +28,10 @@ message User {
  int64  id        = 5;
  // @inject_tag: db:"country"
  string country   = 6;
+ // @inject_tag: db:"created_at"
+ google.protobuf.Timestamp createdAt = 8 [(gogoproto.stdtime) = true];
  // @inject_tag: db:"confirmed"
- bool   confirmed = 7;
+ bool confirmed = 7;
 }
 
 message CreateRequest {
