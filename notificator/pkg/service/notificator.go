@@ -1,80 +1,32 @@
 package service
 
 import (
-	"bytes"
 	"context"
-	"fmt"
-	"github.com/pkg/errors"
-	"html/template"
-	"io"
-	"net/smtp"
+	"github.com/sendgrid/sendgrid-go"
+	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"os"
-	"path/filepath"
-	"sync"
 )
 
-const (
-	MIME = "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-
-	// list of email services
-	Confirm       = "confirm"
-	PasswordReset = "password-reset"
-	Welcome       = "welcome"
-)
-
-type EmailSenser interface {
-	Send(from string, to []string, message string) error
+type Mailer struct {
+	apiKey string
 }
 
-type emailRequest struct {
-	from    string
-	to      []string
-	subject string
+func NewMailer(apiKey string) *Mailer {
+	return &Mailer{apiKey}
 }
 
-type TemplateHandler struct {
-	once     sync.Once
-	Filename string
-	templ    *template.Template
-}
+func (s *Mailer) SendMail(m *mail.SGMailV3) error {
+	req := sendgrid.GetRequest(s.apiKey, "/v3/mail/send", "https://api.sendgrid.com")
+	req.Method = "POST"
+	req.Body = mail.GetRequestBody(m)
 
-func (t *TemplateHandler) serve(r io.Writer, i interface{}) {
-	t.once.Do(func() {
-		t.templ = template.Must(template.ParseFiles(filepath.Join("EmailTemplates", t.Filename)))
-	})
+	_, err := sendgrid.API(req)
 
-	t.templ.Execute(r, i)
-}
-
-type SmtpServer struct {
-	host     string
-	port     int
-	password string
-}
-
-func NewSmtpServer(host, password string, port int) *SmtpServer {
-	return &SmtpServer{host, port, password}
-}
-
-func (s *SmtpServer) Address() string {
-	return fmt.Sprintf("%s:%d", s.host, s.port)
-
-}
-
-func (s *SmtpServer) Send(from string, to []string, message string) error {
-	mess := []byte(message)
-	auth := smtp.PlainAuth("", from, s.password, s.host)
-
-	if err := smtp.SendMail(s.Address(), auth, from, to, mess); err != nil {
-		return errors.Wrap(err, "error sending email")
-	}
-
-	return nil
+	return err
 }
 
 type NotificationService struct {
-	EmailSender    EmailSenser
-	EmailTemplates map[string]*TemplateHandler
+	EmailSender *Mailer
 }
 
 func NewNotificationService(opts ...func(service *NotificationService)) NotificatorService {
@@ -88,53 +40,58 @@ func NewNotificationService(opts ...func(service *NotificationService)) Notifica
 }
 
 func (e *NotificationService) SendConfirmEmail(ctx context.Context, name, addr, link string) error {
-	values := struct {
-		Name string
-		Link string
-	}{name, link}
-
-	r := &emailRequest{
-		from:    os.Getenv("EMAIL_ADDRESS"),
-		to:      []string{addr},
-		subject: "Activate Account",
+	templateId := os.Getenv("CONFIRM_TEMPLATE_ID")
+	tos := []string{addr}
+	data := map[string]interface{}{
+		"name": name,
+		"link": link,
 	}
 
-	return e.send(r, values, Confirm)
+	return e.sendMail(templateId, tos, data)
 
 }
 
 func (e *NotificationService) SendPasswordResetEmail(ctx context.Context, addr, link string) error {
-	values := struct {
-		Link string
-	}{link}
-
-	r := &emailRequest{
-		from:    os.Getenv("EMAIL_ADDRESS"),
-		to:      []string{addr},
-		subject: "Password Reset",
+	templateId := os.Getenv("PASSWORD_RESET_TEMPLATE_ID")
+	tos := []string{addr}
+	data := map[string]interface{}{
+		"link": link,
 	}
 
-	return e.send(r, values, PasswordReset)
+	return e.sendMail(templateId, tos, data)
 }
 
 func (e *NotificationService) SendWelcomeEmail(ctx context.Context, name, addr string) error {
-	values := struct {
-		Name string
-	}{name}
-
-	r := &emailRequest{
-		from:    os.Getenv("EMAIL_ADDRESS"),
-		to:      []string{addr},
-		subject: "Welcome",
+	templateId := os.Getenv("WELCOME_TEMPLATE_ID")
+	tos := []string{addr}
+	data := map[string]interface{}{
+		"name": name,
 	}
 
-	return e.send(r, values, Welcome)
+	return e.sendMail(templateId, tos, data)
 }
 
-func (e *NotificationService) send(r *emailRequest, values interface{}, service string) error {
-	var b *bytes.Buffer
-	e.EmailTemplates[service].serve(b, values)
+func (e *NotificationService) sendMail(templateId string, tos []string, data map[string]interface{}) error {
+	m := mail.NewV3Mail()
+	eaddr := os.Getenv("EMAIL_ADDRESS")
+	ename := os.Getenv("EMAIL_USERNAME")
+	n := mail.NewEmail(ename, eaddr)
+	m.SetFrom(n)
+	m.SetTemplateID(templateId)
+	p := mail.NewPersonalization()
 
-	body := "To: " + r.to[0] + "\r\nSubject: " + r.subject + "\r\n" + MIME + "\r\n" + b.String()
-	return e.EmailSender.Send(r.from, r.to, body)
+	var t []*mail.Email
+
+	for _, to := range tos {
+		t = append(t, mail.NewEmail("", to))
+	}
+
+	p.AddTos(t...)
+
+	for k, v := range data {
+		p.SetDynamicTemplateData(k, v)
+	}
+
+	m.AddPersonalizations(p)
+	return e.EmailSender.SendMail(m)
 }

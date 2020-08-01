@@ -84,7 +84,7 @@ func (r SendPasswordResetEmailResponse) Failed() error {
 // SendWelcomeEmailRequest collects the request parameters for the SendWelcomeEmail method.
 type SendWelcomeEmailRequest struct {
 	Addr string `json:"addr"`
-	Name string `json:"link"`
+	Name string `json:"name"`
 }
 
 // SendWelcomeEmailResponse collects the response parameters for the SendWelcomeEmail method.
@@ -121,7 +121,7 @@ func (e Endpoints) SendPasswordResetEmail(ctx context.Context, addr string, link
 }
 
 // SendWelcomeEmail implements Service. Primarily useful in a client.
-func (e Endpoints) SendWelcomeEmail(ctx context.Context, addr string, name string) error {
+func (e Endpoints) SendWelcomeEmail(ctx context.Context, name, addr string) error {
 	request := SendWelcomeEmailRequest{
 		Addr: addr,
 		Name: name,

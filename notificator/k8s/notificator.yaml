@@ -19,6 +19,7 @@ spec:
     spec:
       containers:
         - name: notificator-manager
+          imagePullPolicy: Always
           image: alexmeli/wealow-notificator:0.0
           ports:
             - containerPort: 8082
@@ -26,10 +27,10 @@ spec:
             - configMapRef:
                 name: notificator-config
           env:
-            - name: EMAIL_PASSWORD
+            - name: SENDGRID_API_KEY
               valueFrom:
                 secretKeyRef:
-                  key: EMAIL_PASSWORD
+                  key: SENDGRID_API_KEY
                   name: notificator-credentials
 ---
 apiVersion: v1
@@ -37,6 +38,7 @@ kind: Service
 metadata:
   name: notificator-manager
 spec:
+  type: NodePort
   ports:
     - port: 8082
   selector:

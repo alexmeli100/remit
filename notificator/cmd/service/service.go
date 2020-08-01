@@ -44,7 +44,6 @@ func Run(n service.NotificatorService) {
 	}()
 
 	logger.Log("exit", runServer(ctx, server))
-
 }
 
 // add logger to notificator service
