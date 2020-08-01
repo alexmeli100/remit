@@ -36,7 +36,7 @@ func main() {
 		serverWithAddress(":8083"),
 		serverWithHandler(r),
 		serverWithReadTimeout(time.Second*5),
-		serverWithIdleTimeout(time.Minute),
+		serverWithIdleTimeout(time.Second*10),
 		serverWithWriteTimeout(time.Second*60))
 
 	err := a.Initialize(

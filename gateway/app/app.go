@@ -69,9 +69,16 @@ func (a *App) isAuthenticatedMobile(next http.Handler) http.Handler {
 			idToken = authHeader[len(bearer):]
 		} else {
 			a.badRequest(w, errors.New("Invalid bearer token"))
+			return
 		}
 
 		token, err := client.VerifyIDToken(r.Context(), idToken)
+
+		if err != nil {
+			a.badRequest(w, errors.New("invalid firebase token"))
+			return
+		}
+
 		ctx := context.WithValue(r.Context(), "token", token)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -140,7 +147,7 @@ func (a *App) getUserByUUID() http.HandlerFunc {
 	}
 }
 
-func (a *App) signIn() http.HandlerFunc {
+func (a *App) signInWeb() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idToken, err := getIdToken(r)
 
