@@ -15,16 +15,17 @@ import (
 var pg PostgService
 
 const TableCreationQuery = `CREATE TABLE IF NOT EXISTS users
-(
-    id         SERIAL,
-    uuid       TEXT    NOT NULL,
-    first_name  TEXT    NOT NULL,
-    last_name   TEXT    NOT NULL,
-    email      TEXT    NOT NULL,
-    confirmed  BOOLEAN NOT NULL,
-    country    Text    Not NuLL,
-    CONSTRAINT user_pkey PRIMARY KEY (id)
-)`
+	(
+	    id          SERIAL,
+	    uuid        TEXT 	  UNIQUE NOT NULL,
+	    first_name  TEXT      NOT NULL,
+	    last_name   TEXT      NOT NULL,
+	    email       TEXT 	  UNIQUE NOT NULL,
+	    confirmed   BOOLEAN   NOT NULL,
+	    created_at  TIMESTAMP NOT NULL,
+	    country     Text      Not NuLL,
+	    CONSTRAINT  user_pkey PRIMARY KEY (id)
+	)`
 
 func openConnection() (*sqlx.DB, error) {
 	pass := os.Getenv("POSTGRES_PASSWORD")
@@ -74,11 +75,7 @@ func TestMain(m *testing.M) {
 }
 
 func compare(u1 *pb.User, u2 *pb.User) bool {
-	return u1.FirstName == u2.FirstName &&
-		u1.LastName == u2.LastName &&
-		u1.Email == u2.Email &&
-		u1.Uuid == u2.Uuid &&
-		u1.Confirmed == u2.Confirmed
+	return u1.Equal(u2)
 }
 
 func TestPostgService_Create(t *testing.T) {
