@@ -8,11 +8,11 @@ import (
 	fmt "fmt"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
+	_ "github.com/gogo/protobuf/types"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	_ "google/protobuf"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -2483,7 +2483,7 @@ func (this *User) String() string {
 		`Id:` + fmt.Sprintf("%v", this.Id) + `,`,
 		`Country:` + fmt.Sprintf("%v", this.Country) + `,`,
 		`Confirmed:` + fmt.Sprintf("%v", this.Confirmed) + `,`,
-		`CreatedAt:` + strings.Replace(fmt.Sprintf("%v", this.CreatedAt), "Timestamp", "protobuf.Timestamp", 1) + `,`,
+		`CreatedAt:` + strings.Replace(fmt.Sprintf("%v", this.CreatedAt), "Timestamp", "types.Timestamp", 1) + `,`,
 		`}`,
 	}, "")
 	return s
