@@ -64,7 +64,7 @@ func ListenUserEvents(ctx context.Context, conn *nats.EncodedConn, sink UserEven
 	}
 
 	go func() {
-		subs.Unsubscribe()
+		defer subs.Unsubscribe()
 		<-ctx.Done()
 	}()
 
