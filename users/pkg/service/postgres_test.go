@@ -75,7 +75,11 @@ func TestMain(m *testing.M) {
 }
 
 func compare(u1 *pb.User, u2 *pb.User) bool {
-	return u1.Equal(u2)
+	return u1.FirstName == u2.FirstName &&
+		u1.LastName == u2.LastName &&
+		u1.Email == u2.Email &&
+		u1.Uuid == u2.Uuid &&
+		u1.Confirmed == u2.Confirmed
 }
 
 func TestPostgService_Create(t *testing.T) {
@@ -172,7 +176,6 @@ func TestPostgService_GetUserByID(t *testing.T) {
 		FirstName: "James",
 		LastName:  "Meli",
 		Uuid:      uid,
-		Id:        1,
 		Email:     "jamesmeli100@gmail.com",
 		Confirmed: false,
 		Country:   "USA",
