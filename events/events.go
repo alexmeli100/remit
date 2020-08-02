@@ -57,6 +57,7 @@ func ListenUserEvents(ctx context.Context, conn *nats.EncodedConn, sink UserEven
 		case UserPasswordReset:
 			sink.OnPasswordReset(ctx, e.User)
 		}
+
 	})
 
 	if err != nil {
