@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	firebase "firebase.google.com/go/v4"
+	"github.com/alexmeli100/remit/events"
 	"github.com/alexmeli100/remit/gateway/app"
-	"github.com/alexmeli100/remit/lib/events"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/tracing/opentracing"
 	grpcTrans "github.com/go-kit/kit/transport/grpc"
