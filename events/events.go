@@ -47,7 +47,6 @@ func Connect(url string) (*nats.EncodedConn, error) {
 	}
 
 	return nats.NewEncodedConn(conn, nats.JSON_ENCODER)
-
 }
 
 func ListenUserEvents(ctx context.Context, conn *nats.EncodedConn, queue string, handlers map[string]UserEventHandler) (chan error, error) {
