@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.61.0 // indirect
 	cloud.google.com/go/firestore v1.2.0 // indirect
 	firebase.google.com/go/v4 v4.0.0
-	github.com/alexmeli100/remit/events v0.0.0-20200802165259-65b7c511367c
+	github.com/alexmeli100/remit/events v0.0.0-20200802171211-f45c5d25528f
 	github.com/alexmeli100/remit/notificator v0.0.0-20200802163037-9e74b55a7a5c
 	github.com/alexmeli100/remit/users v0.0.0-20200802163037-9e74b55a7a5c
 	github.com/go-kit/kit v0.10.0

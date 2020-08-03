@@ -51,7 +51,7 @@ func Connect(url string) (*nats.EncodedConn, error) {
 }
 
 func ListenUserEvents(ctx context.Context, conn *nats.EncodedConn, queue string, handlers map[string]UserEventHandler) (chan error, error) {
-	errc := make(chan error, 1)
+	errc := make(chan error, 10)
 
 	subs, err := conn.QueueSubscribe(UserEvents, queue, func(e *UserEvent) {
 		var err error

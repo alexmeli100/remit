@@ -117,7 +117,7 @@ func appWithNotificatorService(ctx context.Context, instance string, opts ...app
 }
 
 // add a listener for user events
-func appWithUserEventListener(ctx context.Context, natsInstance string) func(*app.App) error {
+func appWithUserEventListener(ctx context.Context, natsInstance string, logger log.Logger) func(*app.App) error {
 	return func(a *app.App) error {
 		conn, err := events.Connect(natsInstance)
 
