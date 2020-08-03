@@ -7,18 +7,19 @@ import (
 )
 
 type EventType int
+type UserEventHandler func(ctx context.Context, user *pb.User) error
 
 const (
 	UserEvents = "user-events"
 )
 
 const (
-	UserCreated EventType = iota
-	UserPasswordReset
+	UserCreated       = "UserCreated"
+	UserPasswordReset = "UserPasswordReset"
 )
 
 type UserEvent struct {
-	EventKind EventType
+	EventKind string
 	User      *pb.User
 }
 
@@ -49,19 +50,20 @@ func Connect(url string) (*nats.EncodedConn, error) {
 
 }
 
-func ListenUserEvents(ctx context.Context, conn *nats.EncodedConn, sink UserEventManager) error {
-	subs, err := conn.QueueSubscribe(UserEvents, "user-events", func(e *UserEvent) {
-		switch e.EventKind {
-		case UserCreated:
-			sink.OnUserCreated(ctx, e.User)
-		case UserPasswordReset:
-			sink.OnPasswordReset(ctx, e.User)
-		}
+func ListenUserEvents(ctx context.Context, conn *nats.EncodedConn, queue string, handlers map[string]UserEventHandler) (chan error, error) {
+	errc := make(chan error, 1)
 
+	subs, err := conn.QueueSubscribe(UserEvents, queue, func(e *UserEvent) {
+		var err error
+		err = handlers[e.EventKind](ctx, e.User)
+
+		if err != nil {
+			errc <- err
+		}
 	})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	go func() {
@@ -69,5 +71,20 @@ func ListenUserEvents(ctx context.Context, conn *nats.EncodedConn, sink UserEven
 		<-ctx.Done()
 	}()
 
-	return nil
+	return errc, nil
+}
+
+func ListenAllUserEvents(ctx context.Context, conn *nats.EncodedConn, queue string, sink UserEventManager) (chan error, error) {
+	handlers := map[string]UserEventHandler{
+		UserCreated:       sink.OnUserCreated,
+		UserPasswordReset: sink.OnPasswordReset,
+	}
+
+	errc, err := ListenUserEvents(ctx, conn, queue, handlers)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return errc, nil
 }
