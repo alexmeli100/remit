@@ -125,12 +125,25 @@ func appWithUserEventListener(ctx context.Context, natsInstance string, logger l
 			return err
 		}
 
+		errc, err := events.ListenAllUserEvents(ctx, conn, "user-events-gateway", a)
+
+		if err != nil {
+			return err
+		}
+
 		go func() {
-			defer conn.Close()
-			<-ctx.Done()
+			for {
+				select {
+				case <-ctx.Done():
+					conn.Close()
+					return
+				case err := <-errc:
+					logger.Log("method", "listen-user-events", "err", err)
+				}
+			}
 		}()
 
-		return events.ListenUserEvents(ctx, conn, a)
+		return nil
 	}
 }
 
