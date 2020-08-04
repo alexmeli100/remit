@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.61.0 // indirect
 	cloud.google.com/go/firestore v1.2.0 // indirect
 	firebase.google.com/go/v4 v4.0.0
-	github.com/alexmeli100/remit/events v0.0.0-20200804031707-a8becea5572f
+	github.com/alexmeli100/remit/events v0.0.0-20200804164318-5e54e3962cd7
 	github.com/alexmeli100/remit/notificator v0.0.0-20200802163037-9e74b55a7a5c
 	github.com/alexmeli100/remit/users v0.0.0-20200804011556-5848f317360d
 	github.com/go-kit/kit v0.10.0
@@ -14,6 +14,7 @@ require (
 	github.com/gorilla/mux v1.7.4
 	github.com/nats-io/jwt v1.0.1 // indirect
 	github.com/nats-io/nkeys v0.2.0 // indirect
+	github.com/nats-io/stan.go v0.7.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
