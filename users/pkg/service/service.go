@@ -2,8 +2,11 @@ package service
 
 import (
 	"context"
+	"errors"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 )
+
+var ErrUserNotFound = errors.New("user not found")
 
 // UsersService describes the service.
 type UsersService interface {
