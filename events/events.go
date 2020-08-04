@@ -107,8 +107,9 @@ func ListenUserEvents(ctx context.Context, conn stan.Conn, queue string, handler
 	}
 
 	go func() {
-		defer subs.Unsubscribe()
 		<-ctx.Done()
+		subs.Unsubscribe()
+		close(errc)
 	}()
 
 	return errc, nil
