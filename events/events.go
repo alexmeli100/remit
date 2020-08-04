@@ -3,6 +3,7 @@ package events
 import (
 	"context"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
+	userService "github.com/alexmeli100/remit/users/pkg/service"
 	"github.com/golang/protobuf/proto"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/stan.go"
@@ -92,12 +93,15 @@ func ListenUserEvents(ctx context.Context, conn stan.Conn, queue string, handler
 
 		if err != nil {
 			errc <- err
+
+			if errors.Is(err, userService.ErrUserNotFound) {
+				sendAck(msg, errc)
+			}
+
 			return
 		}
 
-		if err = msg.Ack(); err != nil {
-			errc <- err
-		}
+		sendAck(msg, errc)
 	}
 
 	subs, err := conn.QueueSubscribe(UserEvents, queue, handler, opts...)
@@ -113,6 +117,12 @@ func ListenUserEvents(ctx context.Context, conn stan.Conn, queue string, handler
 	}()
 
 	return errc, nil
+}
+
+func sendAck(msg *stan.Msg, errc chan error) {
+	if err := msg.Ack(); err != nil {
+		errc <- err
+	}
 }
 
 func ListenAllUserEvents(ctx context.Context, conn stan.Conn, queue string, sink UserEventManager, opts ...stan.SubscriptionOption) (chan error, error) {
