@@ -201,6 +201,8 @@ func (a *App) signInWeb() http.HandlerFunc {
 }
 
 func (a *App) OnUserCreated(ctx context.Context, u *pb.User) error {
+	a.Logger.Log("method", "OnuserCreated", "email", u.Email)
+
 	client, err := a.FireApp.Auth(ctx)
 
 	if err != nil {

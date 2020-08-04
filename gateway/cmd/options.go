@@ -9,6 +9,7 @@ import (
 	"github.com/go-kit/kit/tracing/opentracing"
 	grpcTrans "github.com/go-kit/kit/transport/grpc"
 	"github.com/gorilla/mux"
+	"github.com/nats-io/stan.go"
 	stdopentracing "github.com/opentracing/opentracing-go"
 	"google.golang.org/api/option"
 	"net/http"
@@ -117,29 +118,25 @@ func appWithNotificatorService(ctx context.Context, instance string, opts ...app
 }
 
 // add a listener for user events
-func appWithUserEventListener(ctx context.Context, natsInstance string, logger log.Logger) func(*app.App) error {
+func appWithUserEventListener(ctx context.Context, conn stan.Conn, logger log.Logger) func(*app.App) error {
 	return func(a *app.App) error {
-		conn, err := events.Connect(natsInstance)
-
-		if err != nil {
-			return err
-		}
-
-		errc, err := events.ListenAllUserEvents(ctx, conn, "user-events-gateway", a)
+		errc, err := events.ListenAllUserEvents(
+			ctx,
+			conn,
+			"user-events-gateway",
+			a,
+			stan.SetManualAckMode(),
+			stan.AckWait(time.Minute),
+			stan.DurableName(DurableName),
+			stan.MaxInflight(25))
 
 		if err != nil {
 			return err
 		}
 
 		go func() {
-			for {
-				select {
-				case <-ctx.Done():
-					conn.Close()
-					return
-				case err := <-errc:
-					logger.Log("method", "listen-user-events", "err", err)
-				}
+			for err := range errc {
+				logger.Log("method", "listen-user-events", "err", err)
 			}
 		}()
 
@@ -147,19 +144,8 @@ func appWithUserEventListener(ctx context.Context, natsInstance string, logger l
 	}
 }
 
-func appWithEventSender(ctx context.Context, natsInstance string) func(*app.App) error {
+func appWithEventSender(ctx context.Context, conn stan.Conn) func(*app.App) error {
 	return func(a *app.App) error {
-		conn, err := events.Connect(natsInstance)
-
-		if err != nil {
-			return err
-		}
-
-		go func() {
-			defer conn.Close()
-			<-ctx.Done()
-		}()
-
 		sender := events.NewEventSender(conn)
 
 		a.Events = sender

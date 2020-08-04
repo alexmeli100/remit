@@ -30,7 +30,6 @@ func main() {
 }
 
 func openDB(host, port, userName, password, dbName string) (*sqlx.DB, error) {
-
 	connString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, userName, password, dbName)
 
 	db, err := sqlx.Open("postgres", connString)

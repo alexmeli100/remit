@@ -33,18 +33,9 @@ const (
 var (
 	UnSpecifiedError = errors.New("error not specied")
 	ErrorNoBody      = errors.New("no body in response")
+	// this error is return when getting the transfer status takes longer than max time
+	ErrorPending = errors.New("transfer still pending")
 )
-
-// this error is return when getting the transfer status takes longer than max time
-type ErrorPending struct {
-	interval int64
-	max      int64
-}
-
-func (e ErrorPending) Error() string {
-	return fmt.Sprintf("request still pending after intervals of %d milliseconds for %d milliseconds",
-		e.interval, e.max)
-}
 
 type ApprovalRejectedError struct {
 	message string

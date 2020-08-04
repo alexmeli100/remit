@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/alexmeli100/remit/events"
 	"github.com/alexmeli100/remit/gateway/app"
 	userEndpoint "github.com/alexmeli100/remit/users/pkg/endpoint"
 	"github.com/go-kit/kit/log"
@@ -10,6 +11,12 @@ import (
 	"os"
 	"os/signal"
 	"time"
+)
+
+const (
+	NatsClusterId = "nats-streaming-cluster"
+	NatsClientId  = "nats-streaming-client"
+	DurableName   = "gateway-durable"
 )
 
 var tracer opentracinggo.Tracer
@@ -32,6 +39,18 @@ func main() {
 	a.InitializeRoutes(r)
 	el := userEndpoint.GetEndpointList()
 
+	conn, err := events.Connect(natsInstance, NatsClusterId, NatsClientId)
+
+	if err != nil {
+		logger.Log("error", err)
+		os.Exit(1)
+	}
+
+	go func() {
+		<-ctx.Done()
+		logger.Log("error", conn.Close())
+	}()
+
 	serverFunc := appWithServer(
 		serverWithAddress(":8083"),
 		serverWithHandler(r),
@@ -39,12 +58,12 @@ func main() {
 		serverWithIdleTimeout(time.Second*10),
 		serverWithWriteTimeout(time.Second*60))
 
-	err := a.Initialize(
+	err = a.Initialize(
 		serverFunc,
 		appWithFirebase(ctx, "/opt/firebase/firebase-service-account.json"),
-		appWithEventSender(ctx, natsInstance),
+		appWithEventSender(ctx, conn),
 		appWithLogger(logger),
-		appWithUserEventListener(ctx, natsInstance, logger),
+		appWithUserEventListener(ctx, conn, logger),
 		appWithUserService(ctx, usersInstance, userWithTracer(tracer, logger, el...)),
 		appWithNotificatorService(ctx, notificatorInstance, notificatorWithTracer(tracer, logger, el...)))
 
