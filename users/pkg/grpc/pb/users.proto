@@ -15,6 +15,16 @@ service Users {
  rpc UpdateStatus   (UpdateStatusRequest  ) returns (UpdateStatusReply  );
 }
 
+message UserEvent {
+ UserEventKind kind = 1;
+ User user = 2;
+}
+
+enum UserEventKind {
+ UserCreated = 0;
+ UserPasswordReset = 1;
+}
+
 message User {
  // @inject_tag: db:"first_name"
  string firstName = 1;
