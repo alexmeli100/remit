@@ -12,8 +12,6 @@ import (
 
 type TransferStatus string
 
-const millisConversion = int64(time.Millisecond) / int64(time.Nanosecond)
-
 const (
 	TransferSuccessFul = "SUCCESSFUL"
 	TransferPending    = "PENDING"
@@ -142,26 +140,24 @@ func (m *Remittance) GetTransactionStatus(refId string) (*TransferResponse, erro
 // get the final status of the transaction
 // this function keeps polling the api until it responds with a failed or successful status
 // The interval time for polling is specified in milliseconds
-func (m *Remittance) GetFinalStatus(refId string, interval int64, maxTime int64) (*TransferResponse, error) {
-	end := time.Now().UnixNano()/millisConversion + maxTime
+func (m *Remittance) GetFinalStatus(refId string, interval time.Duration, timeout time.Duration) (*TransferResponse, error) {
+	ticker := time.NewTicker(interval)
 
 	for {
-		res, err := m.GetTransactionStatus(refId)
+		select {
+		case _ = <-ticker.C:
+			res, err := m.GetTransactionStatus(refId)
 
-		if err != nil {
-			return nil, err
+			if err != nil {
+				return nil, err
+			}
+
+			if res.Status == TransferSuccessFul || res.Status == TransferFailed {
+				return res, nil
+			}
+		case <-time.After(timeout):
+			ticker.Stop()
+			return nil, ErrorPending
 		}
-
-		if res.Status == TransferSuccessFul || res.Status == TransferFailed {
-			return res, nil
-		}
-
-		if end-time.Now().UnixNano()/millisConversion < 0 {
-			break
-		}
-
-		time.Sleep(time.Duration(interval) * time.Millisecond)
 	}
-
-	return nil, ErrorPending{interval, maxTime}
 }
