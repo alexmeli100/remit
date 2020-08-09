@@ -3,7 +3,6 @@ package events
 import (
 	"context"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
-	userService "github.com/alexmeli100/remit/users/pkg/service"
 	"github.com/golang/protobuf/proto"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/stan.go"
@@ -15,6 +14,14 @@ type UserEventHandler func(ctx context.Context, user *pb.User) error
 const (
 	UserEvents = "user-events"
 )
+
+type ErrorShouldAck struct {
+	Err string
+}
+
+func (e *ErrorShouldAck) Error() string {
+	return e.Err
+}
 
 type UserEvent struct {
 	EventKind string
@@ -94,7 +101,8 @@ func ListenUserEvents(ctx context.Context, conn stan.Conn, queue string, handler
 		if err != nil {
 			errc <- err
 
-			if errors.Is(err, userService.ErrUserNotFound) {
+			var e *ErrorShouldAck
+			if errors.As(err, e) {
 				sendAck(msg, errc)
 			}
 
