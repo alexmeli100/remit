@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -138,7 +139,7 @@ func (m *Remittance) GetTransactionStatus(refId string) (*TransferResponse, erro
 }
 
 // get the final status of the transaction
-// this function keeps polling the api until it responds with a failed or successful status
+// this function keeps polling the api for a max duration of timeout until it responds with a failed or successful status
 // The interval time for polling is specified in milliseconds
 func (m *Remittance) GetFinalStatus(refId string, interval time.Duration, timeout time.Duration) (*TransferResponse, error) {
 	ticker := time.NewTicker(interval)
@@ -160,4 +161,34 @@ func (m *Remittance) GetFinalStatus(refId string, interval time.Duration, timeou
 			return nil, ErrorPending
 		}
 	}
+}
+
+func (m *Remittance) SendTo(amount float64, recipient, currency string) error {
+	payee := &Payee{PartyId: recipient, PartyIdType: "MSDIN"}
+
+	tr := &TransferRequest{
+		Amount:   strconv.FormatFloat(amount, 'f', 2, 64),
+		Currency: currency,
+		Payee:    payee,
+	}
+
+	refId, err := m.Transfer(tr)
+
+	if err != nil {
+		return err
+	}
+
+	res, err := m.GetFinalStatus(refId, time.Millisecond*100, time.Second)
+
+	if err != nil {
+		return err
+	}
+
+	if res.Status == TransferFailed {
+		return ErrTransferFailed{
+			message: res.Reason,
+		}
+	}
+
+	return nil
 }

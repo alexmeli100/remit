@@ -1,4 +1,4 @@
-module github.com/alexmeli100/remit/lib
+module github.com/alexmeli100/remit/mtn
 
 go 1.14
 

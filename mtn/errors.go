@@ -37,6 +37,14 @@ var (
 	ErrorPending = errors.New("transfer still pending")
 )
 
+type ErrTransferFailed struct {
+	message string
+}
+
+func (e ErrTransferFailed) Error() string {
+	return e.message
+}
+
 type ApprovalRejectedError struct {
 	message string
 }
