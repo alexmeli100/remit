@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package pb;
+
+//The Transfer service definition.
+service Transfer {
+ rpc Transfer (TransferRequest) returns (TransferReply);
+}
+
+message TransferRequest {
+ double amount = 1;
+ int64 recipientId = 2;
+ string recipientNumber = 3;
+ string currency = 4;
+ string service = 5;
+ string receiveCurrency = 6;
+ string exchangeRate = 7;
+ double sendFee = 8;
+ string senderId = 9;
+ string paymentIntent = 10;
+}
+
+message TransferReply {
+ string err = 1;
+}
+
