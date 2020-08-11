@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package pb;
+
+import "google/protobuf/timestamp.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+//The Payment service definition.
+service Payment {
+ rpc SaveCard               (SaveCardRequest              ) returns (SaveCardReply              );
+ rpc GetPaymentIntentSecret (GetPaymentIntentSecretRequest) returns (GetPaymentIntentSecretReply);
+ rpc CapturePayment         (CapturePaymentRequest)         returns (CapturePaymentReply);
+}
+
+message Transaction {
+ string id = 1;
+ int64 recipientId = 2;
+ string userId = 3;
+ google.protobuf.Timestamp createdAt = 4 [(gogoproto.stdtime) = true];
+ double amountReceived = 5;
+ double amountSent = 6;
+ double transactionFee = 7;
+ double transactionType = 8;
+ string sendCurrency = 9;
+ string receiveCurrency = 10;
+ double exchangeRate = 11;
+ string paymentMethodType = 12;
+ string paymentMethodId = 13;
+ string chargeId = 14;
+}
+
+message PaymentRequest {
+ string uid = 1;
+ double amount = 2;
+ string currency = 3;
+ string cardID = 4;
+ bool   capture = 5;
+}
+
+message SaveCardRequest {
+ string uid = 1;
+}
+
+message SaveCardReply {
+ string secret = 1;
+ string err = 2;
+}
+
+message GetPaymentIntentSecretRequest {
+ PaymentRequest req = 1;
+}
+
+message GetPaymentIntentSecretReply {
+ string secret = 1;
+ string err = 2;
+}
+
+message CapturePaymentRequest {
+ string pi = 1;
+ double amount = 2;
+}
+
+message CapturePaymentReply {
+ string secret = 1;
+ string err = 2;
+}
+
