@@ -2,6 +2,8 @@ package events
 
 import (
 	"context"
+	paymentpb "github.com/alexmeli100/remit/payment/pkg/grpc/pb"
+	transferpb "github.com/alexmeli100/remit/transfer/pkg/grpc/pb"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	"github.com/golang/protobuf/proto"
 	"github.com/nats-io/nats.go"
@@ -10,9 +12,13 @@ import (
 )
 
 type UserEventHandler func(ctx context.Context, user *pb.User) error
+type TransferEventHandler func(ctx context.Context, t *transferpb.TransferRequest) error
+type PaymentEventHandler func(ctx context.Context, intent string) error
 
 const (
-	UserEvents = "user-events"
+	UserEvents     = "user-events"
+	PaymentEvents  = "payment-events"
+	TransferEvents = "transfer-events"
 )
 
 type ErrorShouldAck struct {
@@ -23,52 +29,64 @@ func (e *ErrorShouldAck) Error() string {
 	return e.Err
 }
 
-type UserEvent struct {
-	EventKind string
-	User      *pb.User
-}
-
 type EventSender struct {
 	nats stan.Conn
 }
 
 func (e *EventSender) OnUserCreated(ctx context.Context, u *pb.User) error {
-	b, err := encodeUserEvent(pb.UserCreated, u)
+	event := &pb.UserEvent{User: u, Kind: pb.UserCreated}
+	b, err := encodePbEvent(event)
 
 	if err != nil {
 		return errors.Wrap(err, "proto marshal error")
 	}
 
-	return e.nats.Publish("user-events", b)
+	return e.nats.Publish(UserEvents, b)
 }
 
 func (e *EventSender) OnPasswordReset(ctx context.Context, u *pb.User) error {
-	b, err := encodeUserEvent(pb.UserPasswordReset, u)
+	event := &pb.UserEvent{User: u, Kind: pb.UserPasswordReset}
+	b, err := encodePbEvent(event)
 
 	if err != nil {
 		return errors.Wrap(err, "proto marshal error")
 	}
 
-	return e.nats.Publish("user-events", b)
+	return e.nats.Publish(UserEvents, b)
 }
 
-func encodeUserEvent(kind pb.UserEventKind, u *pb.User) ([]byte, error) {
-	event := &pb.UserEvent{
-		Kind: kind,
-		User: u,
+func (e *EventSender) OnTransferSucceded(ctx context.Context, t *transferpb.TransferRequest) error {
+	event := &transferpb.TransferEvent{Request: t, Kind: transferpb.TransferSucceded}
+	b, err := encodePbEvent(event)
+
+	if err != nil {
+		return errors.Wrap(err, "proto marshal error")
 	}
 
-	return proto.Marshal(event)
+	return e.nats.Publish(TransferEvents, b)
 }
 
-func decodeUserEvent(data []byte) (*pb.UserEvent, error) {
-	event := pb.UserEvent{}
+func (e *EventSender) OnPaymentSucceded(ctx context.Context, paymentIntent string) error {
+	event := &paymentpb.PaymentEvent{Kind: paymentpb.PaymentSucceded, Intent: paymentIntent}
+	b, err := encodePbEvent(event)
 
-	if err := proto.Unmarshal(data, &event); err != nil {
-		return nil, errors.Wrap(err, "proto unmarshall error")
+	if err != nil {
+		return errors.Wrap(err, "proto marshal error")
 	}
 
-	return &event, nil
+	return e.nats.Publish(TransferEvents, b)
+}
+
+func encodePbEvent(src proto.Message) ([]byte, error) {
+	return proto.Marshal(src)
+}
+
+func decodePbEvent(data []byte, dst proto.Message) error {
+	if err := proto.Unmarshal(data, dst); err != nil {
+		return errors.Wrap(err, "proto unmarshall error")
+	}
+
+	return nil
 }
 
 func NewEventSender(conn stan.Conn) EventManager {
@@ -89,7 +107,8 @@ func ListenUserEvents(ctx context.Context, conn stan.Conn, queue string, handler
 	errc := make(chan error, 10)
 
 	handler := func(msg *stan.Msg) {
-		e, err := decodeUserEvent(msg.Data)
+		var e pb.UserEvent
+		err := decodePbEvent(msg.Data, &e)
 
 		if err != nil {
 			errc <- err
