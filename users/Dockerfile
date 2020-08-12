@@ -9,7 +9,6 @@ ADD go.sum /users
 WORKDIR /users/cmd
 
 RUN go get -u ./...
-
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/user_service -a -tags netgo -ldflags '-s -w'
 
 FROM scratch
