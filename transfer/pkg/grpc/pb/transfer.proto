@@ -7,6 +7,16 @@ service Transfer {
  rpc Transfer (TransferRequest) returns (TransferReply);
 }
 
+message TransferEvent {
+ TransferEventKind kind = 1;
+ TransferRequest request = 2;
+}
+
+enum TransferEventKind {
+ TransferSucceded = 0;
+ TransferFailed = 1;
+}
+
 message TransferRequest {
  double amount = 1;
  int64 recipientId = 2;
