@@ -187,6 +187,58 @@ func (g *grpcServer) UpdateStatus(ctx context.Context, req *pb.UpdateStatusReque
 	return rep.(*pb.UpdateStatusReply), nil
 }
 
+func makeCreateContactHandler(endpoints endpoint.Endpoints, options []grpcTrans.ServerOption) grpcTrans.Handler {
+	return grpcTrans.NewServer(endpoints.CreateContactEndpoint, decodeCreateContactRequest, encodeCreateContactResponse, options...)
+}
+
+func decodeCreateContactRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(*pb.CreateContactRequest)
+
+	return endpoint.CreateContactRequest{Contact: req.Contact}, nil
+}
+
+func encodeCreateContactResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(endpoint.CreateContactResponse)
+
+	return &pb.CreateContactReply{Err: err2str(res.Err)}, nil
+}
+
+func (g *grpcServer) CreateContact(ctx context.Context, req *pb.CreateContactRequest) (*pb.CreateContactReply, error) {
+	_, rep, err := g.createContact.ServeGRPC(ctx, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rep.(*pb.CreateContactReply), nil
+}
+
+func makeGetContactsHandler(endpoints endpoint.Endpoints, options []grpcTrans.ServerOption) grpcTrans.Handler {
+	return grpcTrans.NewServer(endpoints.GetContactsEndpoint, decodeGetContactsRequest, encodeGetContactsResponse, options...)
+}
+
+func decodeGetContactsRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(*pb.GetContactsRequest)
+
+	return endpoint.GetContactsRequest{UserId: req.UserId}, nil
+}
+
+func encodeGetContactsResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(endpoint.GetContactsResponse)
+
+	return &pb.GetContactsReply{Contacts: res.Contacts, Err: err2str(res.Err)}, nil
+}
+
+func (g *grpcServer) GetContacts(ctx context.Context, req *pb.GetContactsRequest) (*pb.GetContactsReply, error) {
+	_, rep, err := g.getContacts.ServeGRPC(ctx, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rep.(*pb.GetContactsReply), nil
+}
+
 func err2str(err error) string {
 	if err == nil {
 		return ""

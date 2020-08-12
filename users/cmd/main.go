@@ -16,6 +16,7 @@ func main() {
 	dbHost := os.Getenv("USER_DB_SERVICE_HOST")
 	dbPort := os.Getenv("USER_DB_SERVICE_PORT")
 	db, err := openDB(dbHost, dbPort, userName, password, dbName)
+	defer db.Close()
 
 	if err != nil {
 		log.Fatal(err)

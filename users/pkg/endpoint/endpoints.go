@@ -13,6 +13,8 @@ const (
 	GetUserByEmail = "GetUserByEmail"
 	UpdateEmail    = "UpdateEmail"
 	UpdateStatus   = "UpdateStatus"
+	CreateContact  = "CreateContact"
+	GetContacts    = "GetContacts"
 )
 
 // Endpoints collects all of the endpoints that compose a user service. It's
@@ -25,6 +27,8 @@ type Endpoints struct {
 	GetUserByEmailEndpoint endpoint.Endpoint
 	UpdateEmailEndpoint    endpoint.Endpoint
 	UpdateStatusEndpoint   endpoint.Endpoint
+	CreateContactEndpoint  endpoint.Endpoint
+	GetContactsEndpoint    endpoint.Endpoint
 }
 
 // New returns a Endpoints struct that wraps the provided service, and wires in all of the
@@ -37,6 +41,8 @@ func New(s service.UsersService, mdw map[string][]endpoint.Middleware) Endpoints
 		GetUserByUUIDEndpoint:  MakeGetUserByUUIDEndpoint(s),
 		UpdateEmailEndpoint:    MakeUpdateEmailEndpoint(s),
 		UpdateStatusEndpoint:   MakeUpdateStatusEndpoint(s),
+		CreateContactEndpoint:  MakeCreateContactEndpoint(s),
+		GetContactsEndpoint:    MakeGetContactsEndpoint(s),
 	}
 
 	for _, m := range mdw[Create] {
@@ -56,6 +62,14 @@ func New(s service.UsersService, mdw map[string][]endpoint.Middleware) Endpoints
 	}
 	for _, m := range mdw[UpdateStatus] {
 		eps.UpdateStatusEndpoint = m(eps.UpdateStatusEndpoint)
+	}
+
+	for _, m := range mdw[CreateContact] {
+		eps.CreateContactEndpoint = m(eps.CreateContactEndpoint)
+	}
+
+	for _, m := range mdw[GetContacts] {
+		eps.GetContactsEndpoint = m(eps.GetContactsEndpoint)
 	}
 
 	return eps

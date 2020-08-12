@@ -85,10 +85,7 @@ func MakeGetUserByUUIDEndpoint(s service.UsersService) endpoint.Endpoint {
 		req := request.(GetUserByUUIDRequest)
 		user, err := s.GetUserByUUID(ctx, req.UUID)
 
-		return GetUserByUUIDResponse{
-			Err:  err,
-			User: user,
-		}, nil
+		return GetUserByUUIDResponse{Err: err, User: user}, nil
 	}
 }
 
@@ -174,6 +171,45 @@ func (r UpdateStatusResponse) Failed() error {
 	return r.Err
 }
 
+type CreateContactRequest struct {
+	Contact *pb.Contact `json:"contact"`
+}
+
+type CreateContactResponse struct {
+	Err error `json:"err"`
+}
+
+func MakeCreateContactEndpoint(s service.UsersService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(CreateContactRequest)
+		err := s.CreateContact(ctx, req.Contact)
+
+		return CreateContactResponse{Err: err}, nil
+	}
+}
+
+func (r CreateContactResponse) Failed() error {
+	return r.Err
+}
+
+type GetContactsRequest struct {
+	UserId string `json:"userId"`
+}
+
+type GetContactsResponse struct {
+	Contacts []*pb.Contact `json:"contacts"`
+	Err      error         `json:"err"`
+}
+
+func MakeGetContactsEndpoint(s service.UsersService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(GetContactsRequest)
+		c, err := s.GetContacts(ctx, req.UserId)
+
+		return GetContactsResponse{Err: err, Contacts: c}, nil
+	}
+}
+
 // Create implements Service. Primarily useful in a client.
 func (e Endpoints) Create(ctx context.Context, user *pb.User) error {
 	request := CreateRequest{User: user}
@@ -225,23 +261,47 @@ func (e Endpoints) GetUserByEmail(ctx context.Context, email string) (*pb.User, 
 }
 
 // UpdateEmail implements Service. Primarily useful in a client.
-func (e Endpoints) UpdateEmail(ctx context.Context, user *pb.User) (e0 error) {
+func (e Endpoints) UpdateEmail(ctx context.Context, user *pb.User) error {
 	request := UpdateEmailRequest{User: user}
 	response, err := e.UpdateEmailEndpoint(ctx, request)
 	if err != nil {
-		return
+		return err
 	}
 
 	return response.(UpdateEmailResponse).Err
 }
 
 // UpdateStatus implements Service. Primarily useful in a client.
-func (e Endpoints) UpdateStatus(ctx context.Context, user *pb.User) (e0 error) {
+func (e Endpoints) UpdateStatus(ctx context.Context, user *pb.User) error {
 	request := UpdateStatusRequest{User: user}
 	response, err := e.UpdateStatusEndpoint(ctx, request)
+
 	if err != nil {
-		return
+		return err
 	}
 
 	return response.(UpdateStatusResponse).Err
+}
+
+func (e Endpoints) CreateContact(ctx context.Context, contact *pb.Contact) error {
+	request := CreateContactRequest{Contact: contact}
+	response, err := e.CreateContactEndpoint(ctx, request)
+
+	if err != nil {
+		return err
+	}
+
+	return response.(CreateContactResponse).Err
+}
+
+func (e Endpoints) GetContacts(ctx context.Context, userId string) ([]*pb.Contact, error) {
+	request := GetContactsRequest{UserId: userId}
+	response, err := e.GetContactsEndpoint(ctx, request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res := response.(GetContactsResponse)
+	return res.Contacts, res.Err
 }

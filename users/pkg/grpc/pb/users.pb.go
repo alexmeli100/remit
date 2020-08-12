@@ -213,6 +213,113 @@ func (m *User) GetConfirmed() bool {
 	return false
 }
 
+type Contact struct {
+	FirstName     string     `protobuf:"bytes,1,opt,name=firstName,proto3" json:"firstName,omitempty"`
+	MiddleName    string     `protobuf:"bytes,2,opt,name=middleName,proto3" json:"middleName,omitempty"`
+	LastName      string     `protobuf:"bytes,3,opt,name=lastName,proto3" json:"lastName,omitempty"`
+	Email         string     `protobuf:"bytes,4,opt,name=email,proto3" json:"email,omitempty"`
+	Mobile        string     `protobuf:"bytes,5,opt,name=mobile,proto3" json:"mobile,omitempty"`
+	MobileAccount string     `protobuf:"bytes,6,opt,name=mobileAccount,proto3" json:"mobileAccount,omitempty"`
+	Id            int64      `protobuf:"varint,7,opt,name=id,proto3" json:"id,omitempty"`
+	UserId        string     `protobuf:"bytes,8,opt,name=userId,proto3" json:"userId,omitempty"`
+	CreatedAt     *time.Time `protobuf:"bytes,9,opt,name=createdAt,proto3,stdtime" json:"createdAt,omitempty"`
+}
+
+func (m *Contact) Reset()      { *m = Contact{} }
+func (*Contact) ProtoMessage() {}
+func (*Contact) Descriptor() ([]byte, []int) {
+	return fileDescriptor_030765f334c86cea, []int{2}
+}
+func (m *Contact) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Contact) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Contact.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Contact) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Contact.Merge(m, src)
+}
+func (m *Contact) XXX_Size() int {
+	return m.Size()
+}
+func (m *Contact) XXX_DiscardUnknown() {
+	xxx_messageInfo_Contact.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Contact proto.InternalMessageInfo
+
+func (m *Contact) GetFirstName() string {
+	if m != nil {
+		return m.FirstName
+	}
+	return ""
+}
+
+func (m *Contact) GetMiddleName() string {
+	if m != nil {
+		return m.MiddleName
+	}
+	return ""
+}
+
+func (m *Contact) GetLastName() string {
+	if m != nil {
+		return m.LastName
+	}
+	return ""
+}
+
+func (m *Contact) GetEmail() string {
+	if m != nil {
+		return m.Email
+	}
+	return ""
+}
+
+func (m *Contact) GetMobile() string {
+	if m != nil {
+		return m.Mobile
+	}
+	return ""
+}
+
+func (m *Contact) GetMobileAccount() string {
+	if m != nil {
+		return m.MobileAccount
+	}
+	return ""
+}
+
+func (m *Contact) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *Contact) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *Contact) GetCreatedAt() *time.Time {
+	if m != nil {
+		return m.CreatedAt
+	}
+	return nil
+}
+
 type CreateRequest struct {
 	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 }
@@ -220,7 +327,7 @@ type CreateRequest struct {
 func (m *CreateRequest) Reset()      { *m = CreateRequest{} }
 func (*CreateRequest) ProtoMessage() {}
 func (*CreateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{2}
+	return fileDescriptor_030765f334c86cea, []int{3}
 }
 func (m *CreateRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -263,7 +370,7 @@ type CreateReply struct {
 func (m *CreateReply) Reset()      { *m = CreateReply{} }
 func (*CreateReply) ProtoMessage() {}
 func (*CreateReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{3}
+	return fileDescriptor_030765f334c86cea, []int{4}
 }
 func (m *CreateReply) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -306,7 +413,7 @@ type GetUserByIDRequest struct {
 func (m *GetUserByIDRequest) Reset()      { *m = GetUserByIDRequest{} }
 func (*GetUserByIDRequest) ProtoMessage() {}
 func (*GetUserByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{4}
+	return fileDescriptor_030765f334c86cea, []int{5}
 }
 func (m *GetUserByIDRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -350,7 +457,7 @@ type GetUserByIDReply struct {
 func (m *GetUserByIDReply) Reset()      { *m = GetUserByIDReply{} }
 func (*GetUserByIDReply) ProtoMessage() {}
 func (*GetUserByIDReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{5}
+	return fileDescriptor_030765f334c86cea, []int{6}
 }
 func (m *GetUserByIDReply) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -400,7 +507,7 @@ type GetUserByUUIDRequest struct {
 func (m *GetUserByUUIDRequest) Reset()      { *m = GetUserByUUIDRequest{} }
 func (*GetUserByUUIDRequest) ProtoMessage() {}
 func (*GetUserByUUIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{6}
+	return fileDescriptor_030765f334c86cea, []int{7}
 }
 func (m *GetUserByUUIDRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -444,7 +551,7 @@ type GetUserByUUIDReply struct {
 func (m *GetUserByUUIDReply) Reset()      { *m = GetUserByUUIDReply{} }
 func (*GetUserByUUIDReply) ProtoMessage() {}
 func (*GetUserByUUIDReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{7}
+	return fileDescriptor_030765f334c86cea, []int{8}
 }
 func (m *GetUserByUUIDReply) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -494,7 +601,7 @@ type GetUserByEmailRequest struct {
 func (m *GetUserByEmailRequest) Reset()      { *m = GetUserByEmailRequest{} }
 func (*GetUserByEmailRequest) ProtoMessage() {}
 func (*GetUserByEmailRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{8}
+	return fileDescriptor_030765f334c86cea, []int{9}
 }
 func (m *GetUserByEmailRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -538,7 +645,7 @@ type GetUserByEmailReply struct {
 func (m *GetUserByEmailReply) Reset()      { *m = GetUserByEmailReply{} }
 func (*GetUserByEmailReply) ProtoMessage() {}
 func (*GetUserByEmailReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{9}
+	return fileDescriptor_030765f334c86cea, []int{10}
 }
 func (m *GetUserByEmailReply) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -588,7 +695,7 @@ type UpdateEmailRequest struct {
 func (m *UpdateEmailRequest) Reset()      { *m = UpdateEmailRequest{} }
 func (*UpdateEmailRequest) ProtoMessage() {}
 func (*UpdateEmailRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{10}
+	return fileDescriptor_030765f334c86cea, []int{11}
 }
 func (m *UpdateEmailRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -631,7 +738,7 @@ type UpdateEmailReply struct {
 func (m *UpdateEmailReply) Reset()      { *m = UpdateEmailReply{} }
 func (*UpdateEmailReply) ProtoMessage() {}
 func (*UpdateEmailReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{11}
+	return fileDescriptor_030765f334c86cea, []int{12}
 }
 func (m *UpdateEmailReply) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -674,7 +781,7 @@ type UpdatePasswordRequest struct {
 func (m *UpdatePasswordRequest) Reset()      { *m = UpdatePasswordRequest{} }
 func (*UpdatePasswordRequest) ProtoMessage() {}
 func (*UpdatePasswordRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{12}
+	return fileDescriptor_030765f334c86cea, []int{13}
 }
 func (m *UpdatePasswordRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -717,7 +824,7 @@ type UpdatePasswordReply struct {
 func (m *UpdatePasswordReply) Reset()      { *m = UpdatePasswordReply{} }
 func (*UpdatePasswordReply) ProtoMessage() {}
 func (*UpdatePasswordReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{13}
+	return fileDescriptor_030765f334c86cea, []int{14}
 }
 func (m *UpdatePasswordReply) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -760,7 +867,7 @@ type UpdateStatusRequest struct {
 func (m *UpdateStatusRequest) Reset()      { *m = UpdateStatusRequest{} }
 func (*UpdateStatusRequest) ProtoMessage() {}
 func (*UpdateStatusRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{14}
+	return fileDescriptor_030765f334c86cea, []int{15}
 }
 func (m *UpdateStatusRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -803,7 +910,7 @@ type UpdateStatusReply struct {
 func (m *UpdateStatusReply) Reset()      { *m = UpdateStatusReply{} }
 func (*UpdateStatusReply) ProtoMessage() {}
 func (*UpdateStatusReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_030765f334c86cea, []int{15}
+	return fileDescriptor_030765f334c86cea, []int{16}
 }
 func (m *UpdateStatusReply) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -839,10 +946,191 @@ func (m *UpdateStatusReply) GetErr() string {
 	return ""
 }
 
+type CreateContactRequest struct {
+	Contact *Contact `protobuf:"bytes,1,opt,name=contact,proto3" json:"contact,omitempty"`
+}
+
+func (m *CreateContactRequest) Reset()      { *m = CreateContactRequest{} }
+func (*CreateContactRequest) ProtoMessage() {}
+func (*CreateContactRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_030765f334c86cea, []int{17}
+}
+func (m *CreateContactRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CreateContactRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CreateContactRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CreateContactRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateContactRequest.Merge(m, src)
+}
+func (m *CreateContactRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *CreateContactRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateContactRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateContactRequest proto.InternalMessageInfo
+
+func (m *CreateContactRequest) GetContact() *Contact {
+	if m != nil {
+		return m.Contact
+	}
+	return nil
+}
+
+type CreateContactReply struct {
+	Err string `protobuf:"bytes,1,opt,name=err,proto3" json:"err,omitempty"`
+}
+
+func (m *CreateContactReply) Reset()      { *m = CreateContactReply{} }
+func (*CreateContactReply) ProtoMessage() {}
+func (*CreateContactReply) Descriptor() ([]byte, []int) {
+	return fileDescriptor_030765f334c86cea, []int{18}
+}
+func (m *CreateContactReply) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CreateContactReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CreateContactReply.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CreateContactReply) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateContactReply.Merge(m, src)
+}
+func (m *CreateContactReply) XXX_Size() int {
+	return m.Size()
+}
+func (m *CreateContactReply) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateContactReply.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateContactReply proto.InternalMessageInfo
+
+func (m *CreateContactReply) GetErr() string {
+	if m != nil {
+		return m.Err
+	}
+	return ""
+}
+
+type GetContactsRequest struct {
+	UserId string `protobuf:"bytes,1,opt,name=userId,proto3" json:"userId,omitempty"`
+}
+
+func (m *GetContactsRequest) Reset()      { *m = GetContactsRequest{} }
+func (*GetContactsRequest) ProtoMessage() {}
+func (*GetContactsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_030765f334c86cea, []int{19}
+}
+func (m *GetContactsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GetContactsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GetContactsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GetContactsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetContactsRequest.Merge(m, src)
+}
+func (m *GetContactsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *GetContactsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetContactsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetContactsRequest proto.InternalMessageInfo
+
+func (m *GetContactsRequest) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+type GetContactsReply struct {
+	Err      string     `protobuf:"bytes,1,opt,name=err,proto3" json:"err,omitempty"`
+	Contacts []*Contact `protobuf:"bytes,2,rep,name=contacts,proto3" json:"contacts,omitempty"`
+}
+
+func (m *GetContactsReply) Reset()      { *m = GetContactsReply{} }
+func (*GetContactsReply) ProtoMessage() {}
+func (*GetContactsReply) Descriptor() ([]byte, []int) {
+	return fileDescriptor_030765f334c86cea, []int{20}
+}
+func (m *GetContactsReply) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GetContactsReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GetContactsReply.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GetContactsReply) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetContactsReply.Merge(m, src)
+}
+func (m *GetContactsReply) XXX_Size() int {
+	return m.Size()
+}
+func (m *GetContactsReply) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetContactsReply.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetContactsReply proto.InternalMessageInfo
+
+func (m *GetContactsReply) GetErr() string {
+	if m != nil {
+		return m.Err
+	}
+	return ""
+}
+
+func (m *GetContactsReply) GetContacts() []*Contact {
+	if m != nil {
+		return m.Contacts
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterEnum("pb.UserEventKind", UserEventKind_name, UserEventKind_value)
 	proto.RegisterType((*UserEvent)(nil), "pb.UserEvent")
 	proto.RegisterType((*User)(nil), "pb.User")
+	proto.RegisterType((*Contact)(nil), "pb.Contact")
 	proto.RegisterType((*CreateRequest)(nil), "pb.CreateRequest")
 	proto.RegisterType((*CreateReply)(nil), "pb.CreateReply")
 	proto.RegisterType((*GetUserByIDRequest)(nil), "pb.GetUserByIDRequest")
@@ -857,54 +1145,69 @@ func init() {
 	proto.RegisterType((*UpdatePasswordReply)(nil), "pb.UpdatePasswordReply")
 	proto.RegisterType((*UpdateStatusRequest)(nil), "pb.UpdateStatusRequest")
 	proto.RegisterType((*UpdateStatusReply)(nil), "pb.UpdateStatusReply")
+	proto.RegisterType((*CreateContactRequest)(nil), "pb.CreateContactRequest")
+	proto.RegisterType((*CreateContactReply)(nil), "pb.CreateContactReply")
+	proto.RegisterType((*GetContactsRequest)(nil), "pb.GetContactsRequest")
+	proto.RegisterType((*GetContactsReply)(nil), "pb.GetContactsReply")
 }
 
 func init() { proto.RegisterFile("users.proto", fileDescriptor_030765f334c86cea) }
 
 var fileDescriptor_030765f334c86cea = []byte{
-	// 665 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x54, 0xcd, 0x4e, 0xdb, 0x4c,
-	0x14, 0xf5, 0x18, 0x03, 0xc9, 0xcd, 0x07, 0x84, 0x81, 0x80, 0x3f, 0x0b, 0x0d, 0x91, 0x05, 0x6a,
-	0x84, 0x8a, 0x91, 0x42, 0xab, 0x2e, 0x2a, 0x21, 0x91, 0x82, 0xaa, 0xaa, 0x52, 0x85, 0xdc, 0xe6,
-	0x01, 0x9c, 0x78, 0x48, 0xad, 0x26, 0xb1, 0x6b, 0x8f, 0x5b, 0x65, 0xd7, 0x47, 0xe0, 0x31, 0xfa,
-	0x28, 0x5d, 0xb2, 0x64, 0xd7, 0x62, 0x36, 0x5d, 0xa2, 0xae, 0xba, 0xac, 0x66, 0x1c, 0xff, 0x11,
-	0x0b, 0x21, 0x76, 0x73, 0xcf, 0x3d, 0xf7, 0xdc, 0x5f, 0x1b, 0x6a, 0x61, 0x40, 0xfd, 0xc0, 0xf0,
-	0x7c, 0x97, 0xb9, 0x58, 0xf6, 0x7a, 0xda, 0xf6, 0xc0, 0x75, 0x07, 0x43, 0x7a, 0x20, 0x90, 0x5e,
-	0x78, 0x7e, 0xc0, 0x9c, 0x11, 0x0d, 0x98, 0x35, 0xf2, 0x62, 0x92, 0xb6, 0x3f, 0x70, 0xd8, 0xc7,
-	0xb0, 0x67, 0xf4, 0xdd, 0xd1, 0xc1, 0xc0, 0x1d, 0xb8, 0x19, 0x93, 0x5b, 0xc2, 0x10, 0xaf, 0x98,
-	0xae, 0x9f, 0x41, 0xb5, 0x1b, 0x50, 0xff, 0xf4, 0x0b, 0x1d, 0x33, 0xbc, 0x0b, 0xca, 0x27, 0x67,
-	0x6c, 0xab, 0xa8, 0x89, 0x5a, 0xcb, 0xed, 0x55, 0xc3, 0xeb, 0x19, 0xa9, 0xf3, 0xad, 0x33, 0xb6,
-	0x4d, 0xe1, 0xc6, 0x5b, 0xa0, 0xf0, 0xb2, 0x54, 0xb9, 0x89, 0x5a, 0xb5, 0x76, 0x25, 0xa1, 0x99,
-	0x02, 0xd5, 0xff, 0x20, 0x50, 0xb8, 0x89, 0xb7, 0xa0, 0x7a, 0xee, 0xf8, 0x01, 0x7b, 0x67, 0x8d,
-	0xa8, 0x90, 0xac, 0x9a, 0x19, 0x80, 0x35, 0xa8, 0x0c, 0xad, 0xa9, 0x53, 0x16, 0xce, 0xd4, 0xc6,
-	0xeb, 0x30, 0x4f, 0x47, 0x96, 0x33, 0x54, 0xe7, 0x84, 0x23, 0x36, 0x30, 0x06, 0x25, 0x0c, 0x1d,
-	0x5b, 0x55, 0x04, 0x28, 0xde, 0x78, 0x19, 0x64, 0xc7, 0x56, 0xe7, 0x9b, 0xa8, 0x35, 0x67, 0xca,
-	0x8e, 0x8d, 0x55, 0x58, 0xec, 0xbb, 0xe1, 0x98, 0xf9, 0x13, 0x75, 0x41, 0xd0, 0x12, 0x13, 0x1f,
-	0x41, 0xb5, 0xef, 0x53, 0x8b, 0x51, 0xfb, 0x98, 0xa9, 0x15, 0x51, 0xb9, 0x66, 0xc4, 0xc3, 0x34,
-	0x92, 0x11, 0x19, 0x1f, 0x92, 0x61, 0x76, 0x94, 0x8b, 0x9f, 0xdb, 0xc8, 0xcc, 0x42, 0x78, 0x37,
-	0x7d, 0x77, 0x7c, 0xee, 0xf8, 0x23, 0x6a, 0xab, 0x8b, 0x4d, 0xd4, 0xaa, 0x98, 0x19, 0xa0, 0xef,
-	0xc3, 0xd2, 0x2b, 0x41, 0x35, 0xe9, 0xe7, 0x90, 0x06, 0x2c, 0x9d, 0x11, 0x2a, 0x9d, 0xd1, 0x36,
-	0xd4, 0x12, 0xba, 0x37, 0x9c, 0xe0, 0x3a, 0xcc, 0x51, 0xdf, 0x9f, 0xce, 0x88, 0x3f, 0xf5, 0x1d,
-	0xc0, 0xaf, 0x29, 0xe3, 0x11, 0x9d, 0xc9, 0x9b, 0x93, 0x44, 0x34, 0xee, 0x16, 0x25, 0xdd, 0xea,
-	0x1d, 0xa8, 0x17, 0x58, 0x5c, 0xeb, 0xde, 0xc4, 0x49, 0x26, 0x39, 0xcb, 0xb4, 0x07, 0xeb, 0xa9,
-	0x46, 0xb7, 0x9b, 0xe5, 0xc2, 0xa0, 0x70, 0x73, 0x5a, 0x94, 0x78, 0xeb, 0x27, 0xb9, 0xaa, 0x62,
-	0xee, 0x63, 0x32, 0xee, 0x43, 0x23, 0x55, 0x39, 0xe5, 0x9b, 0x4d, 0x52, 0xa6, 0x6b, 0x47, 0xb9,
-	0xb5, 0xeb, 0xa7, 0xb0, 0x76, 0x97, 0xfe, 0x98, 0xac, 0x6d, 0xc0, 0x5d, 0xcf, 0xb6, 0x18, 0x2d,
-	0xa4, 0xbc, 0x7f, 0x4d, 0x3b, 0x50, 0x2f, 0xc4, 0x94, 0xef, 0xea, 0x39, 0x34, 0x62, 0xd6, 0x99,
-	0x15, 0x04, 0x5f, 0x5d, 0xdf, 0x7e, 0x98, 0xf8, 0x13, 0x58, 0xbb, 0x1b, 0x56, 0xae, 0x7f, 0x98,
-	0x10, 0xdf, 0x33, 0x8b, 0x85, 0xc1, 0xc3, 0xd4, 0x77, 0x61, 0xb5, 0x18, 0x54, 0xaa, 0xbd, 0xf7,
-	0x02, 0x96, 0x0a, 0x5f, 0x38, 0x5e, 0x81, 0x1a, 0x07, 0xe2, 0xeb, 0xb4, 0xeb, 0x12, 0x6e, 0xc0,
-	0x2a, 0x07, 0xb2, 0x22, 0x03, 0xca, 0xea, 0xa8, 0xfd, 0x57, 0x86, 0x79, 0x8e, 0x07, 0xf8, 0x29,
-	0x2c, 0xc4, 0x6c, 0x2c, 0x7e, 0x18, 0x85, 0xcf, 0x40, 0x5b, 0xc9, 0x43, 0xbc, 0x84, 0x97, 0x50,
-	0xcb, 0x9d, 0x2c, 0xde, 0xe0, 0xfe, 0xd9, 0x4b, 0xd7, 0xd6, 0x67, 0x70, 0x1e, 0x7c, 0x02, 0xcb,
-	0xc5, 0x53, 0xc0, 0xff, 0x17, 0x78, 0xf9, 0xd5, 0x6a, 0x9b, 0x65, 0x2e, 0xae, 0x72, 0x0c, 0x4b,
-	0x85, 0x2b, 0xc6, 0x6a, 0x81, 0x99, 0xfb, 0x08, 0xb4, 0x8d, 0x12, 0xcf, 0xb4, 0x8b, 0xdc, 0x61,
-	0xc4, 0x5d, 0xcc, 0x5e, 0x57, 0xdc, 0xc5, 0xcc, 0x05, 0x1d, 0xc1, 0x7f, 0xf9, 0xd5, 0xe0, 0xcd,
-	0x8c, 0x55, 0xd8, 0xb0, 0xd6, 0x98, 0x75, 0x78, 0xc3, 0x49, 0xe7, 0xd9, 0xe5, 0x35, 0x91, 0xae,
-	0xae, 0x89, 0x74, 0x7b, 0x4d, 0xd0, 0xb7, 0x88, 0xa0, 0xef, 0x11, 0x41, 0x3f, 0x22, 0x82, 0x2e,
-	0x23, 0x82, 0x7e, 0x45, 0x04, 0xfd, 0x8e, 0x88, 0x74, 0x1b, 0x11, 0x74, 0x71, 0x43, 0xa4, 0xcb,
-	0x1b, 0x22, 0x5d, 0xdd, 0x10, 0xa9, 0xb7, 0x20, 0x7e, 0x72, 0x87, 0xff, 0x02, 0x00, 0x00, 0xff,
-	0xff, 0x68, 0x49, 0xf6, 0x6f, 0x52, 0x06, 0x00, 0x00,
+	// 837 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x55, 0xcd, 0x6e, 0xeb, 0x44,
+	0x14, 0xce, 0x38, 0x6e, 0x7e, 0x4e, 0x48, 0x6f, 0x3a, 0x37, 0xc9, 0x35, 0xd6, 0x95, 0x1b, 0x59,
+	0x2d, 0x37, 0xba, 0xba, 0x4d, 0xa5, 0x5c, 0x10, 0x0b, 0x44, 0xa5, 0xa6, 0xad, 0x50, 0x85, 0x40,
+	0x95, 0x21, 0x0f, 0xe0, 0xc4, 0xd3, 0x60, 0x11, 0xc7, 0xc1, 0x1e, 0x83, 0xba, 0xe3, 0x11, 0xfa,
+	0x06, 0x6c, 0x79, 0x14, 0x96, 0x5d, 0x76, 0x07, 0x4d, 0x37, 0x2c, 0x2b, 0x56, 0x2c, 0xd1, 0xcc,
+	0xf8, 0x6f, 0x12, 0x53, 0x4a, 0x77, 0x73, 0xce, 0xf9, 0xe6, 0xfc, 0x7c, 0xf3, 0x1d, 0x1b, 0x1a,
+	0x51, 0x48, 0x82, 0x70, 0xb0, 0x0c, 0x7c, 0xea, 0x63, 0x65, 0x39, 0xd1, 0x77, 0x67, 0xbe, 0x3f,
+	0x9b, 0x93, 0x43, 0xee, 0x99, 0x44, 0x97, 0x87, 0xd4, 0xf5, 0x48, 0x48, 0x6d, 0x6f, 0x29, 0x40,
+	0xfa, 0xc1, 0xcc, 0xa5, 0xdf, 0x45, 0x93, 0xc1, 0xd4, 0xf7, 0x0e, 0x67, 0xfe, 0xcc, 0xcf, 0x90,
+	0xcc, 0xe2, 0x06, 0x3f, 0x09, 0xb8, 0x79, 0x01, 0xf5, 0x71, 0x48, 0x82, 0xb3, 0x1f, 0xc9, 0x82,
+	0xe2, 0x7d, 0x50, 0xbf, 0x77, 0x17, 0x8e, 0x86, 0x7a, 0xa8, 0xbf, 0x3d, 0xdc, 0x19, 0x2c, 0x27,
+	0x83, 0x34, 0xf8, 0xa5, 0xbb, 0x70, 0x2c, 0x1e, 0xc6, 0xaf, 0x41, 0x65, 0x6d, 0x69, 0x4a, 0x0f,
+	0xf5, 0x1b, 0xc3, 0x5a, 0x02, 0xb3, 0xb8, 0xd7, 0xfc, 0x0b, 0x81, 0xca, 0x4c, 0xfc, 0x1a, 0xea,
+	0x97, 0x6e, 0x10, 0xd2, 0xaf, 0x6d, 0x8f, 0xf0, 0x94, 0x75, 0x2b, 0x73, 0x60, 0x1d, 0x6a, 0x73,
+	0x3b, 0x0e, 0x2a, 0x3c, 0x98, 0xda, 0xb8, 0x0d, 0x5b, 0xc4, 0xb3, 0xdd, 0xb9, 0x56, 0xe6, 0x01,
+	0x61, 0x60, 0x0c, 0x6a, 0x14, 0xb9, 0x8e, 0xa6, 0x72, 0x27, 0x3f, 0xe3, 0x6d, 0x50, 0x5c, 0x47,
+	0xdb, 0xea, 0xa1, 0x7e, 0xd9, 0x52, 0x5c, 0x07, 0x6b, 0x50, 0x9d, 0xfa, 0xd1, 0x82, 0x06, 0x57,
+	0x5a, 0x85, 0xc3, 0x12, 0x13, 0x1f, 0x41, 0x7d, 0x1a, 0x10, 0x9b, 0x12, 0xe7, 0x98, 0x6a, 0x35,
+	0xde, 0xb9, 0x3e, 0x10, 0x64, 0x0e, 0x12, 0x8a, 0x06, 0xdf, 0x26, 0x64, 0x8e, 0xd4, 0xeb, 0xdf,
+	0x77, 0x91, 0x95, 0x5d, 0x61, 0xd3, 0x4c, 0xfd, 0xc5, 0xa5, 0x1b, 0x78, 0xc4, 0xd1, 0xaa, 0x3d,
+	0xd4, 0xaf, 0x59, 0x99, 0xc3, 0xfc, 0x45, 0x81, 0xea, 0x89, 0xbf, 0xa0, 0xf6, 0x94, 0xfe, 0xc7,
+	0xdc, 0x06, 0x80, 0xe7, 0x3a, 0xce, 0x9c, 0xe4, 0x26, 0xcf, 0x79, 0x24, 0x5e, 0xca, 0xff, 0xc6,
+	0x8b, 0x9a, 0xe7, 0xa5, 0x0b, 0x15, 0xcf, 0x9f, 0xb8, 0x73, 0xc2, 0x79, 0xa8, 0x5b, 0xb1, 0x85,
+	0xf7, 0xa0, 0x29, 0x4e, 0xc7, 0x53, 0x4e, 0x42, 0xcc, 0x88, 0xec, 0x8c, 0x19, 0xac, 0xa6, 0x0c,
+	0x76, 0xa1, 0xc2, 0x9e, 0xf1, 0xdc, 0xe1, 0x24, 0xd5, 0xad, 0xd8, 0x92, 0xf9, 0xab, 0xff, 0x6f,
+	0xfe, 0xcc, 0x03, 0x68, 0x9e, 0x70, 0xc3, 0x22, 0x3f, 0x44, 0x24, 0xa4, 0xa9, 0x8a, 0x50, 0xa1,
+	0x8a, 0x76, 0xa1, 0x91, 0xc0, 0x97, 0xf3, 0x2b, 0xdc, 0x82, 0x32, 0x09, 0x82, 0x98, 0x4d, 0x76,
+	0x34, 0xf7, 0x00, 0x7f, 0x41, 0x28, 0xbb, 0x31, 0xba, 0x3a, 0x3f, 0x4d, 0x92, 0x8a, 0x69, 0x50,
+	0x32, 0x8d, 0x39, 0x82, 0x96, 0x84, 0x62, 0xb9, 0x1e, 0x2d, 0x9c, 0x54, 0x52, 0xb2, 0x4a, 0x6f,
+	0xa1, 0x9d, 0xe6, 0x18, 0x8f, 0xb3, 0x5a, 0x18, 0x54, 0x66, 0xc6, 0x4d, 0xf1, 0xb3, 0x79, 0x9a,
+	0xeb, 0x4a, 0x60, 0x9f, 0x53, 0xf1, 0x00, 0x3a, 0x69, 0x96, 0x33, 0xf6, 0xc6, 0x49, 0xc9, 0x54,
+	0x00, 0x28, 0x27, 0x00, 0xf3, 0x0c, 0x5e, 0xae, 0xc3, 0x9f, 0x53, 0x75, 0x08, 0x78, 0xbc, 0x74,
+	0x6c, 0x4a, 0xa4, 0x92, 0x8f, 0x3f, 0xd3, 0x1e, 0xb4, 0xa4, 0x3b, 0xc5, 0x6f, 0xf5, 0x09, 0x74,
+	0x04, 0xea, 0xc2, 0x0e, 0xc3, 0x9f, 0xfc, 0xc0, 0x79, 0x5a, 0xf2, 0x37, 0xf0, 0x72, 0xfd, 0x5a,
+	0x71, 0xfe, 0xf7, 0x09, 0xf0, 0x1b, 0x6a, 0xd3, 0x28, 0x7c, 0x5a, 0xf6, 0x7d, 0xd8, 0x91, 0x2f,
+	0x15, 0xe7, 0xfe, 0x1c, 0xda, 0x42, 0x88, 0xf1, 0x7a, 0x27, 0xc9, 0xf7, 0xd9, 0x97, 0x86, 0x7b,
+	0xe2, 0xfc, 0x0d, 0x96, 0x3f, 0x01, 0x25, 0x31, 0xf3, 0x23, 0xc0, 0x6b, 0xd7, 0x8b, 0xcb, 0xbc,
+	0xe3, 0xc2, 0x89, 0x41, 0xe9, 0x04, 0xd9, 0x32, 0xa2, 0xfc, 0x32, 0x9a, 0x5f, 0x71, 0x59, 0x67,
+	0xe8, 0xc2, 0x9c, 0xf8, 0x0d, 0xd4, 0xe2, 0x36, 0x42, 0x4d, 0xe9, 0x95, 0xd7, 0x7b, 0x4c, 0x83,
+	0x6f, 0x3f, 0x85, 0xa6, 0xf4, 0x9d, 0xc7, 0x2f, 0xa0, 0xc1, 0x1c, 0xa2, 0x73, 0xa7, 0x55, 0xc2,
+	0x1d, 0xd8, 0x61, 0x8e, 0xec, 0x21, 0x42, 0x42, 0x5b, 0x68, 0xf8, 0x77, 0x19, 0xb6, 0x98, 0x3f,
+	0xc4, 0xef, 0xa0, 0x22, 0xd0, 0x98, 0xff, 0x36, 0xa4, 0x55, 0xd7, 0x5f, 0xe4, 0x5d, 0xac, 0xd7,
+	0xcf, 0xa0, 0x91, 0x5b, 0x4b, 0xdc, 0x65, 0xf1, 0xcd, 0x6d, 0xd6, 0xdb, 0x1b, 0x7e, 0x76, 0xf9,
+	0x14, 0xb6, 0x65, 0xb9, 0xe3, 0x0f, 0x25, 0x5c, 0x5e, 0xbe, 0xfa, 0xab, 0xa2, 0x10, 0xcb, 0x72,
+	0x0c, 0x4d, 0x69, 0x53, 0xb1, 0x26, 0x21, 0x73, 0x8b, 0xae, 0x77, 0x0b, 0x22, 0xf1, 0x14, 0x39,
+	0xf1, 0x8b, 0x29, 0x36, 0x37, 0x48, 0x4c, 0xb1, 0xb1, 0x25, 0x47, 0xf0, 0x41, 0x5e, 0x7e, 0xf8,
+	0x55, 0x86, 0x92, 0x54, 0xac, 0x77, 0x36, 0x03, 0x71, 0xff, 0x92, 0xb0, 0x44, 0xff, 0x45, 0x52,
+	0x15, 0xfd, 0x17, 0xa8, 0x50, 0xbc, 0x42, 0xa2, 0xa2, 0xf4, 0x15, 0xd6, 0x44, 0x98, 0xbe, 0x82,
+	0x24, 0xb7, 0xd1, 0xc7, 0x37, 0x77, 0x46, 0xe9, 0xf6, 0xce, 0x28, 0x3d, 0xdc, 0x19, 0xe8, 0xe7,
+	0x95, 0x81, 0x7e, 0x5d, 0x19, 0xe8, 0xb7, 0x95, 0x81, 0x6e, 0x56, 0x06, 0xfa, 0x63, 0x65, 0xa0,
+	0x3f, 0x57, 0x46, 0xe9, 0x61, 0x65, 0xa0, 0xeb, 0x7b, 0xa3, 0x74, 0x73, 0x6f, 0x94, 0x6e, 0xef,
+	0x8d, 0xd2, 0xa4, 0xc2, 0x7f, 0x15, 0xef, 0xff, 0x09, 0x00, 0x00, 0xff, 0xff, 0xda, 0x22, 0xe5,
+	0xc3, 0xd8, 0x08, 0x00, 0x00,
 }
 
 func (x UserEventKind) String() string {
@@ -986,6 +1289,58 @@ func (this *User) Equal(that interface{}) bool {
 		return false
 	}
 	if this.Confirmed != that1.Confirmed {
+		return false
+	}
+	return true
+}
+func (this *Contact) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Contact)
+	if !ok {
+		that2, ok := that.(Contact)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.FirstName != that1.FirstName {
+		return false
+	}
+	if this.MiddleName != that1.MiddleName {
+		return false
+	}
+	if this.LastName != that1.LastName {
+		return false
+	}
+	if this.Email != that1.Email {
+		return false
+	}
+	if this.Mobile != that1.Mobile {
+		return false
+	}
+	if this.MobileAccount != that1.MobileAccount {
+		return false
+	}
+	if this.Id != that1.Id {
+		return false
+	}
+	if this.UserId != that1.UserId {
+		return false
+	}
+	if that1.CreatedAt == nil {
+		if this.CreatedAt != nil {
+			return false
+		}
+	} else if !this.CreatedAt.Equal(*that1.CreatedAt) {
 		return false
 	}
 	return true
@@ -1335,6 +1690,110 @@ func (this *UpdateStatusReply) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *CreateContactRequest) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*CreateContactRequest)
+	if !ok {
+		that2, ok := that.(CreateContactRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Contact.Equal(that1.Contact) {
+		return false
+	}
+	return true
+}
+func (this *CreateContactReply) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*CreateContactReply)
+	if !ok {
+		that2, ok := that.(CreateContactReply)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Err != that1.Err {
+		return false
+	}
+	return true
+}
+func (this *GetContactsRequest) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*GetContactsRequest)
+	if !ok {
+		that2, ok := that.(GetContactsRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.UserId != that1.UserId {
+		return false
+	}
+	return true
+}
+func (this *GetContactsReply) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*GetContactsReply)
+	if !ok {
+		that2, ok := that.(GetContactsReply)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Err != that1.Err {
+		return false
+	}
+	if len(this.Contacts) != len(that1.Contacts) {
+		return false
+	}
+	for i := range this.Contacts {
+		if !this.Contacts[i].Equal(that1.Contacts[i]) {
+			return false
+		}
+	}
+	return true
+}
 func (this *UserEvent) GoString() string {
 	if this == nil {
 		return "nil"
@@ -1362,6 +1821,24 @@ func (this *User) GoString() string {
 	s = append(s, "Country: "+fmt.Sprintf("%#v", this.Country)+",\n")
 	s = append(s, "CreatedAt: "+fmt.Sprintf("%#v", this.CreatedAt)+",\n")
 	s = append(s, "Confirmed: "+fmt.Sprintf("%#v", this.Confirmed)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *Contact) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 13)
+	s = append(s, "&pb.Contact{")
+	s = append(s, "FirstName: "+fmt.Sprintf("%#v", this.FirstName)+",\n")
+	s = append(s, "MiddleName: "+fmt.Sprintf("%#v", this.MiddleName)+",\n")
+	s = append(s, "LastName: "+fmt.Sprintf("%#v", this.LastName)+",\n")
+	s = append(s, "Email: "+fmt.Sprintf("%#v", this.Email)+",\n")
+	s = append(s, "Mobile: "+fmt.Sprintf("%#v", this.Mobile)+",\n")
+	s = append(s, "MobileAccount: "+fmt.Sprintf("%#v", this.MobileAccount)+",\n")
+	s = append(s, "Id: "+fmt.Sprintf("%#v", this.Id)+",\n")
+	s = append(s, "UserId: "+fmt.Sprintf("%#v", this.UserId)+",\n")
+	s = append(s, "CreatedAt: "+fmt.Sprintf("%#v", this.CreatedAt)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -1522,6 +1999,51 @@ func (this *UpdateStatusReply) GoString() string {
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
+func (this *CreateContactRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 5)
+	s = append(s, "&pb.CreateContactRequest{")
+	if this.Contact != nil {
+		s = append(s, "Contact: "+fmt.Sprintf("%#v", this.Contact)+",\n")
+	}
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *CreateContactReply) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 5)
+	s = append(s, "&pb.CreateContactReply{")
+	s = append(s, "Err: "+fmt.Sprintf("%#v", this.Err)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *GetContactsRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 5)
+	s = append(s, "&pb.GetContactsRequest{")
+	s = append(s, "UserId: "+fmt.Sprintf("%#v", this.UserId)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *GetContactsReply) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 6)
+	s = append(s, "&pb.GetContactsReply{")
+	s = append(s, "Err: "+fmt.Sprintf("%#v", this.Err)+",\n")
+	if this.Contacts != nil {
+		s = append(s, "Contacts: "+fmt.Sprintf("%#v", this.Contacts)+",\n")
+	}
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
 func valueToGoStringUsers(v interface{}, typ string) string {
 	rv := reflect.ValueOf(v)
 	if rv.IsNil() {
@@ -1549,6 +2071,8 @@ type UsersClient interface {
 	GetUserByUUID(ctx context.Context, in *GetUserByUUIDRequest, opts ...grpc.CallOption) (*GetUserByUUIDReply, error)
 	UpdateEmail(ctx context.Context, in *UpdateEmailRequest, opts ...grpc.CallOption) (*UpdateEmailReply, error)
 	UpdateStatus(ctx context.Context, in *UpdateStatusRequest, opts ...grpc.CallOption) (*UpdateStatusReply, error)
+	CreateContact(ctx context.Context, in *CreateContactRequest, opts ...grpc.CallOption) (*CreateContactReply, error)
+	GetContacts(ctx context.Context, in *GetContactsRequest, opts ...grpc.CallOption) (*GetContactsReply, error)
 }
 
 type usersClient struct {
@@ -1613,6 +2137,24 @@ func (c *usersClient) UpdateStatus(ctx context.Context, in *UpdateStatusRequest,
 	return out, nil
 }
 
+func (c *usersClient) CreateContact(ctx context.Context, in *CreateContactRequest, opts ...grpc.CallOption) (*CreateContactReply, error) {
+	out := new(CreateContactReply)
+	err := c.cc.Invoke(ctx, "/pb.Users/CreateContact", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersClient) GetContacts(ctx context.Context, in *GetContactsRequest, opts ...grpc.CallOption) (*GetContactsReply, error) {
+	out := new(GetContactsReply)
+	err := c.cc.Invoke(ctx, "/pb.Users/GetContacts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UsersServer is the server API for Users service.
 type UsersServer interface {
 	Create(context.Context, *CreateRequest) (*CreateReply, error)
@@ -1621,6 +2163,8 @@ type UsersServer interface {
 	GetUserByUUID(context.Context, *GetUserByUUIDRequest) (*GetUserByUUIDReply, error)
 	UpdateEmail(context.Context, *UpdateEmailRequest) (*UpdateEmailReply, error)
 	UpdateStatus(context.Context, *UpdateStatusRequest) (*UpdateStatusReply, error)
+	CreateContact(context.Context, *CreateContactRequest) (*CreateContactReply, error)
+	GetContacts(context.Context, *GetContactsRequest) (*GetContactsReply, error)
 }
 
 // UnimplementedUsersServer can be embedded to have forward compatible implementations.
@@ -1644,6 +2188,12 @@ func (*UnimplementedUsersServer) UpdateEmail(ctx context.Context, req *UpdateEma
 }
 func (*UnimplementedUsersServer) UpdateStatus(ctx context.Context, req *UpdateStatusRequest) (*UpdateStatusReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateStatus not implemented")
+}
+func (*UnimplementedUsersServer) CreateContact(ctx context.Context, req *CreateContactRequest) (*CreateContactReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateContact not implemented")
+}
+func (*UnimplementedUsersServer) GetContacts(ctx context.Context, req *GetContactsRequest) (*GetContactsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetContacts not implemented")
 }
 
 func RegisterUsersServer(s *grpc.Server, srv UsersServer) {
@@ -1758,6 +2308,42 @@ func _Users_UpdateStatus_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Users_CreateContact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateContactRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).CreateContact(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.Users/CreateContact",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).CreateContact(ctx, req.(*CreateContactRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Users_GetContacts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetContactsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).GetContacts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.Users/GetContacts",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).GetContacts(ctx, req.(*GetContactsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Users_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "pb.Users",
 	HandlerType: (*UsersServer)(nil),
@@ -1785,6 +2371,14 @@ var _Users_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateStatus",
 			Handler:    _Users_UpdateStatus_Handler,
+		},
+		{
+			MethodName: "CreateContact",
+			Handler:    _Users_CreateContact_Handler,
+		},
+		{
+			MethodName: "GetContacts",
+			Handler:    _Users_GetContacts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1901,6 +2495,93 @@ func (m *User) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i -= len(m.LastName)
 		copy(dAtA[i:], m.LastName)
 		i = encodeVarintUsers(dAtA, i, uint64(len(m.LastName)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.FirstName) > 0 {
+		i -= len(m.FirstName)
+		copy(dAtA[i:], m.FirstName)
+		i = encodeVarintUsers(dAtA, i, uint64(len(m.FirstName)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Contact) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Contact) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Contact) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.CreatedAt != nil {
+		n3, err3 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.CreatedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.CreatedAt):])
+		if err3 != nil {
+			return 0, err3
+		}
+		i -= n3
+		i = encodeVarintUsers(dAtA, i, uint64(n3))
+		i--
+		dAtA[i] = 0x4a
+	}
+	if len(m.UserId) > 0 {
+		i -= len(m.UserId)
+		copy(dAtA[i:], m.UserId)
+		i = encodeVarintUsers(dAtA, i, uint64(len(m.UserId)))
+		i--
+		dAtA[i] = 0x42
+	}
+	if m.Id != 0 {
+		i = encodeVarintUsers(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x38
+	}
+	if len(m.MobileAccount) > 0 {
+		i -= len(m.MobileAccount)
+		copy(dAtA[i:], m.MobileAccount)
+		i = encodeVarintUsers(dAtA, i, uint64(len(m.MobileAccount)))
+		i--
+		dAtA[i] = 0x32
+	}
+	if len(m.Mobile) > 0 {
+		i -= len(m.Mobile)
+		copy(dAtA[i:], m.Mobile)
+		i = encodeVarintUsers(dAtA, i, uint64(len(m.Mobile)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Email) > 0 {
+		i -= len(m.Email)
+		copy(dAtA[i:], m.Email)
+		i = encodeVarintUsers(dAtA, i, uint64(len(m.Email)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.LastName) > 0 {
+		i -= len(m.LastName)
+		copy(dAtA[i:], m.LastName)
+		i = encodeVarintUsers(dAtA, i, uint64(len(m.LastName)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.MiddleName) > 0 {
+		i -= len(m.MiddleName)
+		copy(dAtA[i:], m.MiddleName)
+		i = encodeVarintUsers(dAtA, i, uint64(len(m.MiddleName)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -2388,6 +3069,145 @@ func (m *UpdateStatusReply) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *CreateContactRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CreateContactRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CreateContactRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Contact != nil {
+		{
+			size, err := m.Contact.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintUsers(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *CreateContactReply) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CreateContactReply) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CreateContactReply) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Err) > 0 {
+		i -= len(m.Err)
+		copy(dAtA[i:], m.Err)
+		i = encodeVarintUsers(dAtA, i, uint64(len(m.Err)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *GetContactsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GetContactsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GetContactsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.UserId) > 0 {
+		i -= len(m.UserId)
+		copy(dAtA[i:], m.UserId)
+		i = encodeVarintUsers(dAtA, i, uint64(len(m.UserId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *GetContactsReply) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GetContactsReply) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GetContactsReply) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Contacts) > 0 {
+		for iNdEx := len(m.Contacts) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Contacts[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintUsers(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.Err) > 0 {
+		i -= len(m.Err)
+		copy(dAtA[i:], m.Err)
+		i = encodeVarintUsers(dAtA, i, uint64(len(m.Err)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintUsers(dAtA []byte, offset int, v uint64) int {
 	offset -= sovUsers(v)
 	base := offset
@@ -2446,6 +3266,50 @@ func (m *User) Size() (n int) {
 	}
 	if m.Confirmed {
 		n += 2
+	}
+	if m.CreatedAt != nil {
+		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.CreatedAt)
+		n += 1 + l + sovUsers(uint64(l))
+	}
+	return n
+}
+
+func (m *Contact) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.FirstName)
+	if l > 0 {
+		n += 1 + l + sovUsers(uint64(l))
+	}
+	l = len(m.MiddleName)
+	if l > 0 {
+		n += 1 + l + sovUsers(uint64(l))
+	}
+	l = len(m.LastName)
+	if l > 0 {
+		n += 1 + l + sovUsers(uint64(l))
+	}
+	l = len(m.Email)
+	if l > 0 {
+		n += 1 + l + sovUsers(uint64(l))
+	}
+	l = len(m.Mobile)
+	if l > 0 {
+		n += 1 + l + sovUsers(uint64(l))
+	}
+	l = len(m.MobileAccount)
+	if l > 0 {
+		n += 1 + l + sovUsers(uint64(l))
+	}
+	if m.Id != 0 {
+		n += 1 + sovUsers(uint64(m.Id))
+	}
+	l = len(m.UserId)
+	if l > 0 {
+		n += 1 + l + sovUsers(uint64(l))
 	}
 	if m.CreatedAt != nil {
 		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.CreatedAt)
@@ -2647,6 +3511,64 @@ func (m *UpdateStatusReply) Size() (n int) {
 	return n
 }
 
+func (m *CreateContactRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Contact != nil {
+		l = m.Contact.Size()
+		n += 1 + l + sovUsers(uint64(l))
+	}
+	return n
+}
+
+func (m *CreateContactReply) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Err)
+	if l > 0 {
+		n += 1 + l + sovUsers(uint64(l))
+	}
+	return n
+}
+
+func (m *GetContactsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.UserId)
+	if l > 0 {
+		n += 1 + l + sovUsers(uint64(l))
+	}
+	return n
+}
+
+func (m *GetContactsReply) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Err)
+	if l > 0 {
+		n += 1 + l + sovUsers(uint64(l))
+	}
+	if len(m.Contacts) > 0 {
+		for _, e := range m.Contacts {
+			l = e.Size()
+			n += 1 + l + sovUsers(uint64(l))
+		}
+	}
+	return n
+}
+
 func sovUsers(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
@@ -2676,6 +3598,24 @@ func (this *User) String() string {
 		`Id:` + fmt.Sprintf("%v", this.Id) + `,`,
 		`Country:` + fmt.Sprintf("%v", this.Country) + `,`,
 		`Confirmed:` + fmt.Sprintf("%v", this.Confirmed) + `,`,
+		`CreatedAt:` + strings.Replace(fmt.Sprintf("%v", this.CreatedAt), "Timestamp", "types.Timestamp", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Contact) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Contact{`,
+		`FirstName:` + fmt.Sprintf("%v", this.FirstName) + `,`,
+		`MiddleName:` + fmt.Sprintf("%v", this.MiddleName) + `,`,
+		`LastName:` + fmt.Sprintf("%v", this.LastName) + `,`,
+		`Email:` + fmt.Sprintf("%v", this.Email) + `,`,
+		`Mobile:` + fmt.Sprintf("%v", this.Mobile) + `,`,
+		`MobileAccount:` + fmt.Sprintf("%v", this.MobileAccount) + `,`,
+		`Id:` + fmt.Sprintf("%v", this.Id) + `,`,
+		`UserId:` + fmt.Sprintf("%v", this.UserId) + `,`,
 		`CreatedAt:` + strings.Replace(fmt.Sprintf("%v", this.CreatedAt), "Timestamp", "types.Timestamp", 1) + `,`,
 		`}`,
 	}, "")
@@ -2820,6 +3760,52 @@ func (this *UpdateStatusReply) String() string {
 	}
 	s := strings.Join([]string{`&UpdateStatusReply{`,
 		`Err:` + fmt.Sprintf("%v", this.Err) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *CreateContactRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&CreateContactRequest{`,
+		`Contact:` + strings.Replace(this.Contact.String(), "Contact", "Contact", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *CreateContactReply) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&CreateContactReply{`,
+		`Err:` + fmt.Sprintf("%v", this.Err) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *GetContactsRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&GetContactsRequest{`,
+		`UserId:` + fmt.Sprintf("%v", this.UserId) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *GetContactsReply) String() string {
+	if this == nil {
+		return "nil"
+	}
+	repeatedStringForContacts := "[]*Contact{"
+	for _, f := range this.Contacts {
+		repeatedStringForContacts += strings.Replace(f.String(), "Contact", "Contact", 1) + ","
+	}
+	repeatedStringForContacts += "}"
+	s := strings.Join([]string{`&GetContactsReply{`,
+		`Err:` + fmt.Sprintf("%v", this.Err) + `,`,
+		`Contacts:` + repeatedStringForContacts + `,`,
 		`}`,
 	}, "")
 	return s
@@ -3169,6 +4155,338 @@ func (m *User) Unmarshal(dAtA []byte) error {
 			}
 			m.Confirmed = bool(v != 0)
 		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.CreatedAt == nil {
+				m.CreatedAt = new(time.Time)
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.CreatedAt, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipUsers(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Contact) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowUsers
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Contact: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Contact: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field FirstName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.FirstName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MiddleName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.MiddleName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LastName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.LastName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Email", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Email = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Mobile", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Mobile = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MobileAccount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.MobileAccount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UserId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UserId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 9:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
 			}
@@ -4504,6 +5822,384 @@ func (m *UpdateStatusReply) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Err = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipUsers(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CreateContactRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowUsers
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CreateContactRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CreateContactRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Contact", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Contact == nil {
+				m.Contact = &Contact{}
+			}
+			if err := m.Contact.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipUsers(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CreateContactReply) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowUsers
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CreateContactReply: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CreateContactReply: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Err", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Err = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipUsers(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GetContactsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowUsers
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GetContactsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GetContactsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UserId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UserId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipUsers(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GetContactsReply) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowUsers
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GetContactsReply: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GetContactsReply: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Err", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Err = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Contacts", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Contacts = append(m.Contacts, &Contact{})
+			if err := m.Contacts[len(m.Contacts)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

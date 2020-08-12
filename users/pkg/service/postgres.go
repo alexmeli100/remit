@@ -2,10 +2,21 @@ package service
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"time"
+)
+
+const (
+	UpdateEmailQuery   = "UPDATE users SET email=$1 WHERE id=$2"
+	getUserByQuery     = "SELECT * FROM users WHERE $1=$2 Limit 1"
+	UpdateStatusQuery  = "UPDATE users SET confirmed=TRUE WHERE id=$1"
+	createQuery        = `INSERT INTO users(first_name, last_name, email, country, uuid, created_at, confirmed) values($1, $2, $3, $4, $5, $6, FALSE)`
+	createContactQuery = `INSERT INTO contacts(first_name, middle_name, email, mobile, mobile_account, user_id, created_at) values($1, $2, $3, $4, $5, $6, $7)`
+	getContactsQuery   = "SELECT * FROM contacts WHERE user_id=$1"
 )
 
 type PostgService struct {
@@ -19,9 +30,7 @@ func NewPostgService(db *sqlx.DB) UsersService {
 func (s *PostgService) GetUserByID(ctx context.Context, id int64) (*pb.User, error) {
 	u := &pb.User{Id: id}
 
-	err := s.DB.Get(u, "SELECT * FROM users WHERE id=$1 Limit 1", u.Id)
-
-	if err != nil {
+	if err := s.getUserBy(ctx, "id", id, u); err != nil {
 		return nil, err
 	}
 
@@ -31,9 +40,7 @@ func (s *PostgService) GetUserByID(ctx context.Context, id int64) (*pb.User, err
 func (s *PostgService) GetUserByUUID(ctx context.Context, uuid string) (*pb.User, error) {
 	u := &pb.User{Uuid: uuid}
 
-	err := s.DB.Get(u, "SELECT * FROM users WHERE uuid=$1 Limit 1", u.Uuid)
-
-	if err != nil {
+	if err := s.getUserBy(ctx, "uuid", uuid, u); err != nil {
 		return nil, err
 	}
 
@@ -43,32 +50,55 @@ func (s *PostgService) GetUserByUUID(ctx context.Context, uuid string) (*pb.User
 func (s *PostgService) GetUserByEmail(ctx context.Context, email string) (*pb.User, error) {
 	u := &pb.User{Email: email}
 
-	err := s.DB.Get(u, "SELECT * FROM users WHERE email=$1 Limit 1", u.Email)
-
-	if err != nil {
+	if err := s.getUserBy(ctx, "email", email, u); err != nil {
 		return nil, err
 	}
 
 	return u, nil
 }
 
-func (s *PostgService) UpdateEmail(ctx context.Context, u *pb.User) error {
-	_, err := s.DB.Exec("UPDATE users SET email=$1 WHERE id=$2", u.Email, u.Id)
+func (s *PostgService) getUserBy(_ context.Context, kind interface{}, value interface{}, u *pb.User) error {
+	err := s.DB.Get(u, getUserByQuery, kind, value)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrUserNotFound
+		}
+
+		return err
+	}
+
+	return nil
+}
+
+func (s *PostgService) UpdateEmail(_ context.Context, u *pb.User) error {
+	_, err := s.DB.Exec(UpdateEmailQuery, u.Email, u.Id)
 
 	return err
 }
 
-func (s *PostgService) UpdateStatus(ctx context.Context, u *pb.User) error {
-	_, err := s.DB.Exec("UPDATE users SET confirmed=TRUE WHERE id=$1", u.Id)
+func (s *PostgService) UpdateStatus(_ context.Context, u *pb.User) error {
+	_, err := s.DB.Exec(UpdateStatusQuery, u.Id)
 
 	return err
 }
 
-func (s *PostgService) Create(ctx context.Context, u *pb.User) error {
-	_, err := s.DB.Exec(
-		`INSERT INTO users(first_name, last_name, email, country, uuid, created_at, confirmed) 
-		values($1, $2, $3, $4, $5, $6, FALSE) `,
-		u.FirstName, u.LastName, u.Email, u.Country, u.Uuid, time.Now())
+func (s *PostgService) Create(_ context.Context, u *pb.User) error {
+	_, err := s.DB.Exec(createQuery, u.FirstName, u.LastName, u.Email, u.Country, u.Uuid, time.Now())
 
 	return err
+}
+
+func (s *PostgService) CreateContact(_ context.Context, c *pb.Contact) error {
+	_, err := s.DB.Exec(createContactQuery, c.FirstName, c.LastName, c.Email, c.Mobile, c.MobileAccount, c.UserId, c.CreatedAt)
+
+	return err
+}
+
+func (s *PostgService) GetContacts(_ context.Context, uid string) ([]*pb.Contact, error) {
+	var contacts []*pb.Contact
+
+	err := s.DB.Select(contacts, getContactsQuery, uid)
+
+	return contacts, err
 }

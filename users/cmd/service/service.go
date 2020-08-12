@@ -8,7 +8,7 @@ import (
 	"os/signal"
 
 	kitEndpoint "github.com/go-kit/kit/endpoint"
-	log "github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log"
 	opentracinggo "github.com/opentracing/opentracing-go"
 )
 
@@ -45,7 +45,7 @@ func Run(u service.UsersService) {
 	logger.Log("exit", runServer(ctx, server))
 }
 
-// add logger to notificator service
+// add logger to user service
 func serviceWithLogger(logger log.Logger) func([]service.Middleware) []service.Middleware {
 	return func(mw []service.Middleware) []service.Middleware {
 		mw = append(mw, service.LoggingMiddleware(logger))

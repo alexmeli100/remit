@@ -13,6 +13,8 @@ service Users {
  rpc GetUserByUUID  (GetUserByUUIDRequest ) returns (GetUserByUUIDReply );
  rpc UpdateEmail    (UpdateEmailRequest   ) returns (UpdateEmailReply   );
  rpc UpdateStatus   (UpdateStatusRequest  ) returns (UpdateStatusReply  );
+ rpc CreateContact  (CreateContactRequest ) returns (CreateContactReply );
+ rpc GetContacts    (GetContactsRequest   ) returns (GetContactsReply   );
 }
 
 message UserEvent {
@@ -44,10 +46,21 @@ message User {
  bool confirmed = 7;
 }
 
+message Contact {
+ string firstName = 1;
+ string middleName = 2;
+ string lastName = 3;
+ string email = 4;
+ string mobile = 5;
+ string mobileAccount = 6;
+ int64 id = 7;
+ string userId = 8;
+ google.protobuf.Timestamp createdAt = 9 [(gogoproto.stdtime) = true];
+}
+
 message CreateRequest {
  User user = 1;
 }
-
 
 message CreateReply {
  string err = 1;
@@ -102,5 +115,22 @@ message UpdateStatusRequest {
 
 message UpdateStatusReply {
  string err = 1;
+}
+
+message CreateContactRequest {
+ Contact contact = 1;
+}
+
+message CreateContactReply {
+ string err = 1;
+}
+
+message GetContactsRequest {
+ string userId = 1;
+}
+
+message GetContactsReply {
+ string err = 1;
+ repeated Contact contacts = 2;
 }
 

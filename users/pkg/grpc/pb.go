@@ -13,6 +13,8 @@ type grpcServer struct {
 	getUserByEmail grpcTrans.Handler
 	updateEmail    grpcTrans.Handler
 	updateStatus   grpcTrans.Handler
+	getContacts    grpcTrans.Handler
+	createContact  grpcTrans.Handler
 }
 
 // NewGRPCServer makes a set of endpoints available as a gRPC NotificatorServer
@@ -24,5 +26,7 @@ func NewGRPCServer(endpoints endpoint.Endpoints, options map[string][]grpcTrans.
 		getUserByUUID:  makeGetUserByUUIDHandler(endpoints, options[endpoint.GetUserByUUID]),
 		updateEmail:    makeUpdateEmailHandler(endpoints, options[endpoint.UpdateEmail]),
 		updateStatus:   makeUpdateStatusHandler(endpoints, options[endpoint.UpdateStatus]),
+		createContact:  makeCreateContactHandler(endpoints, options[endpoint.CreateContact]),
+		getContacts:    makeGetContactsHandler(endpoints, options[endpoint.GetContacts]),
 	}
 }

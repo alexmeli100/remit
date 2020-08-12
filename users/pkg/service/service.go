@@ -16,6 +16,8 @@ type UsersService interface {
 	GetUserByEmail(ctx context.Context, email string) (*pb.User, error)
 	UpdateEmail(ctx context.Context, user *pb.User) error
 	UpdateStatus(ctx context.Context, user *pb.User) error
+	CreateContact(ctx context.Context, contact *pb.Contact) error
+	GetContacts(ctx context.Context, uid string) ([]*pb.Contact, error)
 }
 
 // New returns a UsersService with all of the expected middleware wired in.
