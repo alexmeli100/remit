@@ -65,3 +65,12 @@ message CapturePaymentReply {
  string err = 2;
 }
 
+message TransferEvent {
+ PaymentEventKind kind = 1;
+ string intent = 2;
+}
+
+enum PaymentEventKind {
+ PaymentSucceded = 0;
+ PaymentFailed = 1;
+}
