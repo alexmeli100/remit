@@ -2,23 +2,23 @@ package events
 
 import (
 	"context"
+	eventpb "github.com/alexmeli100/remit/events/pb"
 	paymentpb "github.com/alexmeli100/remit/payment/pkg/grpc/pb"
 	transferpb "github.com/alexmeli100/remit/transfer/pkg/grpc/pb"
-	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
+	userpb "github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	"github.com/golang/protobuf/proto"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/stan.go"
 	"github.com/pkg/errors"
 )
 
-type UserEventHandler func(ctx context.Context, user *pb.User) error
-type TransferEventHandler func(ctx context.Context, t *transferpb.TransferRequest) error
-type PaymentEventHandler func(ctx context.Context, intent string) error
+type EventHandler func(ctx context.Context, data *eventpb.EventData) error
 
 const (
-	UserEvents     = "user-events"
-	PaymentEvents  = "payment-events"
-	TransferEvents = "transfer-events"
+	UserEvents        = "user-events"
+	PaymentEvents     = "payment-events"
+	TransferEvents    = "transfer-events"
+	TransactionEvents = "transaction-events"
 )
 
 type ErrorShouldAck struct {
@@ -33,48 +33,55 @@ type EventSender struct {
 	nats stan.Conn
 }
 
-func (e *EventSender) OnUserCreated(ctx context.Context, u *pb.User) error {
-	event := &pb.UserEvent{User: u, Kind: pb.UserCreated}
+func (e *EventSender) publishEvent(ctx context.Context, topic string, ev eventpb.EventKind, data *eventpb.EventData) error {
+	event := &eventpb.Event{Event: ev, Payload: data}
 	b, err := encodePbEvent(event)
 
 	if err != nil {
 		return errors.Wrap(err, "proto marshal error")
 	}
 
-	return e.nats.Publish(UserEvents, b)
+	return e.nats.Publish(topic, b)
 }
 
-func (e *EventSender) OnPasswordReset(ctx context.Context, u *pb.User) error {
-	event := &pb.UserEvent{User: u, Kind: pb.UserPasswordReset}
-	b, err := encodePbEvent(event)
-
-	if err != nil {
-		return errors.Wrap(err, "proto marshal error")
+func (e *EventSender) OnUserCreated(ctx context.Context, u *userpb.User) error {
+	data := &eventpb.EventData{
+		Data: &eventpb.EventData_User{User: u},
 	}
 
-	return e.nats.Publish(UserEvents, b)
+	return e.publishEvent(ctx, UserEvents, eventpb.UserCreated, data)
+}
+
+func (e *EventSender) OnPasswordReset(ctx context.Context, u *userpb.User) error {
+	data := &eventpb.EventData{
+		Data: &eventpb.EventData_User{User: u},
+	}
+
+	return e.publishEvent(ctx, UserEvents, eventpb.UserPasswordResert, data)
 }
 
 func (e *EventSender) OnTransferSucceded(ctx context.Context, t *transferpb.TransferRequest) error {
-	event := &transferpb.TransferEvent{Request: t, Kind: transferpb.TransferSucceded}
-	b, err := encodePbEvent(event)
-
-	if err != nil {
-		return errors.Wrap(err, "proto marshal error")
+	data := &eventpb.EventData{
+		Data: &eventpb.EventData_Transfer{Transfer: t},
 	}
 
-	return e.nats.Publish(TransferEvents, b)
+	return e.publishEvent(ctx, TransferEvents, eventpb.TransferSucceded, data)
 }
 
 func (e *EventSender) OnPaymentSucceded(ctx context.Context, paymentIntent string) error {
-	event := &paymentpb.PaymentEvent{Kind: paymentpb.PaymentSucceded, Intent: paymentIntent}
-	b, err := encodePbEvent(event)
-
-	if err != nil {
-		return errors.Wrap(err, "proto marshal error")
+	data := &eventpb.EventData{
+		Data: &eventpb.EventData_Intent{Intent: paymentIntent},
 	}
 
-	return e.nats.Publish(TransferEvents, b)
+	return e.publishEvent(ctx, PaymentEvents, eventpb.PaymentSucceded, data)
+}
+
+func (e *EventSender) onTransactionSucceded(ctx context.Context, t *paymentpb.Transaction) error {
+	data := &eventpb.EventData{
+		Data: &eventpb.EventData_Transaction{Transaction: t},
+	}
+
+	return e.publishEvent(ctx, TransactionEvents, eventpb.TransferSucceded, data)
 }
 
 func encodePbEvent(src proto.Message) ([]byte, error) {
@@ -103,19 +110,19 @@ func Connect(url, clusterID, clientID string) (stan.Conn, error) {
 	return stan.Connect(clusterID, clientID, stan.NatsConn(nc))
 }
 
-func ListenUserEvents(ctx context.Context, conn stan.Conn, queue string, handlers map[pb.UserEventKind]UserEventHandler, opts ...stan.SubscriptionOption) (chan error, error) {
+func ListenEvents(ctx context.Context, topic, queue string, conn stan.Conn, handlers map[eventpb.EventKind]EventHandler, opts ...stan.SubscriptionOption) (chan error, error) {
 	errc := make(chan error, 10)
 
 	handler := func(msg *stan.Msg) {
-		var e pb.UserEvent
-		err := decodePbEvent(msg.Data, &e)
+		e := &eventpb.Event{}
+		err := decodePbEvent(msg.Data, e)
 
 		if err != nil {
 			errc <- err
 			return
 		}
 
-		err = handlers[e.Kind](ctx, e.User)
+		err = handlers[e.Event](ctx, e.Payload)
 
 		if err != nil {
 			errc <- err
@@ -131,7 +138,7 @@ func ListenUserEvents(ctx context.Context, conn stan.Conn, queue string, handler
 		sendAck(msg, errc)
 	}
 
-	subs, err := conn.QueueSubscribe(UserEvents, queue, handler, opts...)
+	subs, err := conn.QueueSubscribe(topic, queue, handler, opts...)
 
 	if err != nil {
 		return nil, err
@@ -152,13 +159,13 @@ func sendAck(msg *stan.Msg, errc chan error) {
 	}
 }
 
-func ListenAllUserEvents(ctx context.Context, conn stan.Conn, queue string, sink UserEventManager, opts ...stan.SubscriptionOption) (chan error, error) {
-	handlers := map[pb.UserEventKind]UserEventHandler{
-		pb.UserCreated:       sink.OnUserCreated,
-		pb.UserPasswordReset: sink.OnPasswordReset,
+func ListenAllUserEvents(ctx context.Context, conn stan.Conn, queue string, sink UserEventHandler, opts ...stan.SubscriptionOption) (chan error, error) {
+	handlers := map[eventpb.EventKind]EventHandler{
+		eventpb.UserCreated:        sink.OnUserCreated,
+		eventpb.UserPasswordResert: sink.OnPasswordReset,
 	}
 
-	errc, err := ListenUserEvents(ctx, conn, queue, handlers, opts...)
+	errc, err := ListenEvents(ctx, UserEvents, queue, conn, handlers, opts...)
 
 	if err != nil {
 		return nil, err

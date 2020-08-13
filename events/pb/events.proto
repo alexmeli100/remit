@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package events;
+
+import "github.com/alexmeli100/remit/users/pkg/grpc/pb/users.proto";
+import "github.com/alexmeli100/remit/payment/pkg/grpc/pb/payment.proto";
+import "github.com/alexmeli100/remit/transfer/pkg/grpc/pb/transfer.proto";
+
+enum EventKind {
+  UserCreated = 0;
+  UserPasswordResert = 1;
+  PaymentSucceded = 2;
+  PaymentFailed = 3;
+  TransferSucceded = 4;
+  TransferFailed = 5;
+  TransactionSucced = 6;
+  TransactionFailed = 7;
+}
+
+message EventData {
+  oneof Data {
+    pb.User user = 1;
+    pb.Transaction transaction = 3;
+    string intent = 4;
+    pb.TransferRequest transfer = 5;
+  }
+}
+
+message Event {
+  EventKind event = 1;
+  EventData payload = 2;
+}

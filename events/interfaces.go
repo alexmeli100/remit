@@ -2,25 +2,37 @@ package events
 
 import (
 	"context"
+	eventpb "github.com/alexmeli100/remit/events/pb"
+	paymentpb "github.com/alexmeli100/remit/payment/pkg/grpc/pb"
 	transferpb "github.com/alexmeli100/remit/transfer/pkg/grpc/pb"
-	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
+	userpb "github.com/alexmeli100/remit/users/pkg/grpc/pb"
 )
 
-type UserEventManager interface {
-	OnUserCreated(ctx context.Context, u *pb.User) error
-	OnPasswordReset(ctx context.Context, u *pb.User) error
+type UserEventSender interface {
+	OnUserCreated(ctx context.Context, u *userpb.User) error
+	OnPasswordReset(ctx context.Context, u *userpb.User) error
 }
 
-type TransferEventManager interface {
+type TransferEventSender interface {
 	OnTransferSucceded(ctx context.Context, t *transferpb.TransferRequest) error
 }
 
-type PaymentEventManager interface {
+type TransactionEventsSender interface {
+	OnTransactionSucceded(ctx context.Context, t *paymentpb.Transaction) error
+}
+
+type PaymentEventSender interface {
 	OnPaymentSucceded(ctx context.Context, paymentIntent string) error
 }
 
 type EventManager interface {
-	UserEventManager
-	TransferEventManager
-	PaymentEventManager
+	UserEventSender
+	TransferEventSender
+	PaymentEventSender
+	TransferEventSender
+}
+
+type UserEventHandler interface {
+	OnUserCreated(ctx context.Context, data *eventpb.EventData) error
+	OnPasswordReset(ctx context.Context, data *eventpb.EventData) error
 }
