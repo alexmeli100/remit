@@ -13,6 +13,7 @@ import (
 )
 
 type EventHandler func(ctx context.Context, data *eventpb.EventData) error
+type Handlers map[eventpb.EventKind]EventHandler
 
 const (
 	UserEvents        = "user-events"
@@ -110,7 +111,7 @@ func Connect(url, clusterID, clientID string) (stan.Conn, error) {
 	return stan.Connect(clusterID, clientID, stan.NatsConn(nc))
 }
 
-func ListenEvents(ctx context.Context, topic, queue string, conn stan.Conn, handlers map[eventpb.EventKind]EventHandler, opts ...stan.SubscriptionOption) (chan error, error) {
+func ListenEvents(ctx context.Context, topic, queue string, conn stan.Conn, handlers Handlers, opts ...stan.SubscriptionOption) (chan error, error) {
 	errc := make(chan error, 10)
 
 	handler := func(msg *stan.Msg) {
