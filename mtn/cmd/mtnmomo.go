@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/alexmeli100/remit/lib/mtn"
+	"github.com/alexmeli100/remit/mtn"
 	"log"
 	"os"
 )

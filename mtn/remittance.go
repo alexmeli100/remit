@@ -164,7 +164,7 @@ func (m *Remittance) GetFinalStatus(refId string, interval time.Duration, timeou
 }
 
 func (m *Remittance) SendTo(amount float64, recipient, currency string) error {
-	payee := &Payee{PartyId: recipient, PartyIdType: "MSDIN"}
+	payee := &Payee{PartyId: recipient, PartyIdType: "MSISDN"}
 
 	tr := &TransferRequest{
 		Amount:   strconv.FormatFloat(amount, 'f', 2, 64),

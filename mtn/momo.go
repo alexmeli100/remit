@@ -21,12 +21,15 @@ type MomoApp struct {
 }
 
 func CreateMomoApp(gc *GlobalConfig) *MomoApp {
-	if gc.BaseUrl == "" {
-		gc.BaseUrl = BaseURL
-	}
-
-	if gc.TargetEnv == "" {
-		gc.TargetEnv = TargetEnv
+	if gc != nil {
+		if gc.BaseUrl == "" {
+			gc.BaseUrl = BaseURL
+		}
+		if gc.TargetEnv == "" {
+			gc.TargetEnv = TargetEnv
+		}
+	} else {
+		gc = &GlobalConfig{BaseUrl: BaseURL, TargetEnv: TargetEnv}
 	}
 
 	return &MomoApp{gc}
