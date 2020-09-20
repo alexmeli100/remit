@@ -18,6 +18,8 @@ github.com/alexmeli100/remit/payment v0.0.2 h1:XWSkMbPAnvk9LFIGrEv91i+Tt8MNpVJE9
 github.com/alexmeli100/remit/payment v0.0.2/go.mod h1:DXnqrYxgUIg+5eRkYY506eTtOF7KPlGeAWl6lu5/b7Q=
 github.com/alexmeli100/remit/transfer v0.0.1 h1:1AYxb/QJBIcbigo2g1bRXMxs5Ba+ewIPE4lMxDLldAQ=
 github.com/alexmeli100/remit/transfer v0.0.1/go.mod h1:l1GPiAEdZAeveZrK7HzkPwQmP5QSA1M2lmp9YUQ50U4=
+github.com/alexmeli100/remit/transfer v0.0.2 h1:DoZFs3yR759NxnmO+T2Fp4SjADrH45E2XTgYN2qMleI=
+github.com/alexmeli100/remit/transfer v0.0.2/go.mod h1:l1GPiAEdZAeveZrK7HzkPwQmP5QSA1M2lmp9YUQ50U4=
 github.com/alexmeli100/remit/users v0.0.0 h1:6dwNStXCZV/YhBMc1/igldRmlwh4bKs9n3mA1npTK9A=
 github.com/alexmeli100/remit/users v0.0.0/go.mod h1:nZgUKFQ8JOO9sIgCaUowkPVLVEWw0UN9dJmTDnjXiJQ=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=

@@ -61,7 +61,7 @@ func (e *EventSender) OnPasswordReset(ctx context.Context, u *userpb.User) error
 	return e.publishEvent(ctx, UserEvents, eventpb.UserPasswordResert, data)
 }
 
-func (e *EventSender) OnTransferSucceded(ctx context.Context, t *transferpb.TransferRequest) error {
+func (e *EventSender) OnTransferSucceded(ctx context.Context, t *transferpb.TransferResponse) error {
 	data := &eventpb.EventData{
 		Data: &eventpb.EventData_Transfer{Transfer: t},
 	}
@@ -112,7 +112,7 @@ func Connect(url, clusterID, clientID string) (stan.Conn, error) {
 }
 
 func ListenEvents(ctx context.Context, topic, queue string, conn stan.Conn, handlers Handlers, opts ...stan.SubscriptionOption) (chan error, error) {
-	errc := make(chan error, 10)
+	errc := make(chan error, 1)
 
 	handler := func(msg *stan.Msg) {
 		e := &eventpb.Event{}

@@ -22,7 +22,7 @@ message EventData {
     pb.User user = 1;
     pb.Transaction transaction = 3;
     string intent = 4;
-    pb.TransferRequest transfer = 5;
+    pb.TransferResponse transfer = 5;
   }
 }
 

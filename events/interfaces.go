@@ -14,7 +14,7 @@ type UserEventSender interface {
 }
 
 type TransferEventSender interface {
-	OnTransferSucceded(ctx context.Context, t *transferpb.TransferRequest) error
+	OnTransferSucceded(ctx context.Context, t *transferpb.TransferResponse) error
 }
 
 type TransactionEventsSender interface {
