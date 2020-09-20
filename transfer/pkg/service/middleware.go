@@ -14,14 +14,14 @@ type loggingMiddleware struct {
 	next   TransferService
 }
 
-func (l loggingMiddleware) Transfer(ctx context.Context, request *pb.TransferRequest) error {
-	err := l.next.Transfer(ctx, request)
+func (l loggingMiddleware) Transfer(ctx context.Context, request *pb.TransferRequest) *pb.TransferResponse {
+	res := l.next.Transfer(ctx, request)
 
 	defer func() {
-		l.logger.Log("method", "Transfer", "err", err)
+		l.logger.Log("method", "Transfer", "err", res.FailReason)
 	}()
 
-	return err
+	return res
 }
 
 // LoggingMiddleware takes a logger as a dependency

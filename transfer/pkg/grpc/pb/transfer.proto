@@ -7,27 +7,34 @@ service Transfer {
  rpc Transfer (TransferRequest) returns (TransferReply);
 }
 
-message TransferEvent {
- TransferEventKind kind = 1;
- TransferRequest request = 2;
-}
-
-enum TransferEventKind {
- TransferSucceded = 0;
- TransferFailed = 1;
-}
-
 message TransferRequest {
  double amount = 1;
- int64 recipientId = 2;
+ int64  recipientId = 2;
  string recipientNumber = 3;
  string currency = 4;
  string service = 5;
  string receiveCurrency = 6;
- string exchangeRate = 7;
+ double exchangeRate = 7;
  double sendFee = 8;
- string senderId = 9;
- string paymentIntent = 10;
+ double receiveAmount = 9;
+ string senderId = 10;
+ string paymentIntent = 11;
+}
+
+message TransferResponse {
+ double amount = 1;
+ int64  recipientId = 2;
+ string recipientNumber = 3;
+ string currency = 4;
+ string service = 5;
+ string receiveCurrency = 6;
+ double exchangeRate = 7;
+ double sendFee = 8;
+ double receiveAmount = 9;
+ string senderId = 10;
+ string paymentIntent = 11;
+ string status = 12;
+ string failReason = 13;
 }
 
 message TransferReply {

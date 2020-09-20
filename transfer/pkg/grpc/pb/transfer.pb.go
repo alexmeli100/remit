@@ -15,7 +15,6 @@ import (
 	math "math"
 	math_bits "math/bits"
 	reflect "reflect"
-	strconv "strconv"
 	strings "strings"
 )
 
@@ -30,78 +29,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type TransferEventKind int32
-
-const (
-	TransferSucceded TransferEventKind = 0
-	TransferFailed   TransferEventKind = 1
-)
-
-var TransferEventKind_name = map[int32]string{
-	0: "TransferSucceded",
-	1: "TransferFailed",
-}
-
-var TransferEventKind_value = map[string]int32{
-	"TransferSucceded": 0,
-	"TransferFailed":   1,
-}
-
-func (TransferEventKind) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_96c3e6bcafb460d3, []int{0}
-}
-
-type TransferEvent struct {
-	Kind    TransferEventKind `protobuf:"varint,1,opt,name=kind,proto3,enum=pb.TransferEventKind" json:"kind,omitempty"`
-	Request *TransferRequest  `protobuf:"bytes,2,opt,name=request,proto3" json:"request,omitempty"`
-}
-
-func (m *TransferEvent) Reset()      { *m = TransferEvent{} }
-func (*TransferEvent) ProtoMessage() {}
-func (*TransferEvent) Descriptor() ([]byte, []int) {
-	return fileDescriptor_96c3e6bcafb460d3, []int{0}
-}
-func (m *TransferEvent) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *TransferEvent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_TransferEvent.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *TransferEvent) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TransferEvent.Merge(m, src)
-}
-func (m *TransferEvent) XXX_Size() int {
-	return m.Size()
-}
-func (m *TransferEvent) XXX_DiscardUnknown() {
-	xxx_messageInfo_TransferEvent.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_TransferEvent proto.InternalMessageInfo
-
-func (m *TransferEvent) GetKind() TransferEventKind {
-	if m != nil {
-		return m.Kind
-	}
-	return TransferSucceded
-}
-
-func (m *TransferEvent) GetRequest() *TransferRequest {
-	if m != nil {
-		return m.Request
-	}
-	return nil
-}
-
 type TransferRequest struct {
 	Amount          float64 `protobuf:"fixed64,1,opt,name=amount,proto3" json:"amount,omitempty"`
 	RecipientId     int64   `protobuf:"varint,2,opt,name=recipientId,proto3" json:"recipientId,omitempty"`
@@ -109,16 +36,17 @@ type TransferRequest struct {
 	Currency        string  `protobuf:"bytes,4,opt,name=currency,proto3" json:"currency,omitempty"`
 	Service         string  `protobuf:"bytes,5,opt,name=service,proto3" json:"service,omitempty"`
 	ReceiveCurrency string  `protobuf:"bytes,6,opt,name=receiveCurrency,proto3" json:"receiveCurrency,omitempty"`
-	ExchangeRate    string  `protobuf:"bytes,7,opt,name=exchangeRate,proto3" json:"exchangeRate,omitempty"`
+	ExchangeRate    float64 `protobuf:"fixed64,7,opt,name=exchangeRate,proto3" json:"exchangeRate,omitempty"`
 	SendFee         float64 `protobuf:"fixed64,8,opt,name=sendFee,proto3" json:"sendFee,omitempty"`
-	SenderId        string  `protobuf:"bytes,9,opt,name=senderId,proto3" json:"senderId,omitempty"`
-	PaymentIntent   string  `protobuf:"bytes,10,opt,name=paymentIntent,proto3" json:"paymentIntent,omitempty"`
+	ReceiveAmount   float64 `protobuf:"fixed64,9,opt,name=receiveAmount,proto3" json:"receiveAmount,omitempty"`
+	SenderId        string  `protobuf:"bytes,10,opt,name=senderId,proto3" json:"senderId,omitempty"`
+	PaymentIntent   string  `protobuf:"bytes,11,opt,name=paymentIntent,proto3" json:"paymentIntent,omitempty"`
 }
 
 func (m *TransferRequest) Reset()      { *m = TransferRequest{} }
 func (*TransferRequest) ProtoMessage() {}
 func (*TransferRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_96c3e6bcafb460d3, []int{1}
+	return fileDescriptor_96c3e6bcafb460d3, []int{0}
 }
 func (m *TransferRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -189,16 +117,23 @@ func (m *TransferRequest) GetReceiveCurrency() string {
 	return ""
 }
 
-func (m *TransferRequest) GetExchangeRate() string {
+func (m *TransferRequest) GetExchangeRate() float64 {
 	if m != nil {
 		return m.ExchangeRate
 	}
-	return ""
+	return 0
 }
 
 func (m *TransferRequest) GetSendFee() float64 {
 	if m != nil {
 		return m.SendFee
+	}
+	return 0
+}
+
+func (m *TransferRequest) GetReceiveAmount() float64 {
+	if m != nil {
+		return m.ReceiveAmount
 	}
 	return 0
 }
@@ -213,6 +148,145 @@ func (m *TransferRequest) GetSenderId() string {
 func (m *TransferRequest) GetPaymentIntent() string {
 	if m != nil {
 		return m.PaymentIntent
+	}
+	return ""
+}
+
+type TransferResponse struct {
+	Amount          float64 `protobuf:"fixed64,1,opt,name=amount,proto3" json:"amount,omitempty"`
+	RecipientId     int64   `protobuf:"varint,2,opt,name=recipientId,proto3" json:"recipientId,omitempty"`
+	RecipientNumber string  `protobuf:"bytes,3,opt,name=recipientNumber,proto3" json:"recipientNumber,omitempty"`
+	Currency        string  `protobuf:"bytes,4,opt,name=currency,proto3" json:"currency,omitempty"`
+	Service         string  `protobuf:"bytes,5,opt,name=service,proto3" json:"service,omitempty"`
+	ReceiveCurrency string  `protobuf:"bytes,6,opt,name=receiveCurrency,proto3" json:"receiveCurrency,omitempty"`
+	ExchangeRate    float64 `protobuf:"fixed64,7,opt,name=exchangeRate,proto3" json:"exchangeRate,omitempty"`
+	SendFee         float64 `protobuf:"fixed64,8,opt,name=sendFee,proto3" json:"sendFee,omitempty"`
+	ReceiveAmount   float64 `protobuf:"fixed64,9,opt,name=receiveAmount,proto3" json:"receiveAmount,omitempty"`
+	SenderId        string  `protobuf:"bytes,10,opt,name=senderId,proto3" json:"senderId,omitempty"`
+	PaymentIntent   string  `protobuf:"bytes,11,opt,name=paymentIntent,proto3" json:"paymentIntent,omitempty"`
+	Status          string  `protobuf:"bytes,12,opt,name=status,proto3" json:"status,omitempty"`
+	FailReason      string  `protobuf:"bytes,13,opt,name=failReason,proto3" json:"failReason,omitempty"`
+}
+
+func (m *TransferResponse) Reset()      { *m = TransferResponse{} }
+func (*TransferResponse) ProtoMessage() {}
+func (*TransferResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_96c3e6bcafb460d3, []int{1}
+}
+func (m *TransferResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *TransferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_TransferResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *TransferResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TransferResponse.Merge(m, src)
+}
+func (m *TransferResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *TransferResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_TransferResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TransferResponse proto.InternalMessageInfo
+
+func (m *TransferResponse) GetAmount() float64 {
+	if m != nil {
+		return m.Amount
+	}
+	return 0
+}
+
+func (m *TransferResponse) GetRecipientId() int64 {
+	if m != nil {
+		return m.RecipientId
+	}
+	return 0
+}
+
+func (m *TransferResponse) GetRecipientNumber() string {
+	if m != nil {
+		return m.RecipientNumber
+	}
+	return ""
+}
+
+func (m *TransferResponse) GetCurrency() string {
+	if m != nil {
+		return m.Currency
+	}
+	return ""
+}
+
+func (m *TransferResponse) GetService() string {
+	if m != nil {
+		return m.Service
+	}
+	return ""
+}
+
+func (m *TransferResponse) GetReceiveCurrency() string {
+	if m != nil {
+		return m.ReceiveCurrency
+	}
+	return ""
+}
+
+func (m *TransferResponse) GetExchangeRate() float64 {
+	if m != nil {
+		return m.ExchangeRate
+	}
+	return 0
+}
+
+func (m *TransferResponse) GetSendFee() float64 {
+	if m != nil {
+		return m.SendFee
+	}
+	return 0
+}
+
+func (m *TransferResponse) GetReceiveAmount() float64 {
+	if m != nil {
+		return m.ReceiveAmount
+	}
+	return 0
+}
+
+func (m *TransferResponse) GetSenderId() string {
+	if m != nil {
+		return m.SenderId
+	}
+	return ""
+}
+
+func (m *TransferResponse) GetPaymentIntent() string {
+	if m != nil {
+		return m.PaymentIntent
+	}
+	return ""
+}
+
+func (m *TransferResponse) GetStatus() string {
+	if m != nil {
+		return m.Status
+	}
+	return ""
+}
+
+func (m *TransferResponse) GetFailReason() string {
+	if m != nil {
+		return m.FailReason
 	}
 	return ""
 }
@@ -261,78 +335,42 @@ func (m *TransferReply) GetErr() string {
 }
 
 func init() {
-	proto.RegisterEnum("pb.TransferEventKind", TransferEventKind_name, TransferEventKind_value)
-	proto.RegisterType((*TransferEvent)(nil), "pb.TransferEvent")
 	proto.RegisterType((*TransferRequest)(nil), "pb.TransferRequest")
+	proto.RegisterType((*TransferResponse)(nil), "pb.TransferResponse")
 	proto.RegisterType((*TransferReply)(nil), "pb.TransferReply")
 }
 
 func init() { proto.RegisterFile("transfer.proto", fileDescriptor_96c3e6bcafb460d3) }
 
 var fileDescriptor_96c3e6bcafb460d3 = []byte{
-	// 415 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x92, 0xbd, 0x8e, 0xd3, 0x40,
-	0x10, 0xc7, 0xbd, 0xc9, 0x91, 0x8f, 0x39, 0x2e, 0x97, 0x5b, 0x3e, 0xb4, 0xba, 0x62, 0x15, 0x22,
-	0x0a, 0x83, 0x44, 0x0a, 0x43, 0x0b, 0x05, 0x88, 0x93, 0x4e, 0x48, 0x14, 0x0b, 0x2f, 0x60, 0x7b,
-	0x07, 0x58, 0x91, 0x6c, 0xcc, 0x66, 0x1d, 0xe1, 0x8e, 0x47, 0xe0, 0x31, 0x78, 0x14, 0xca, 0x34,
-	0x48, 0x57, 0x12, 0xa7, 0xa1, 0xbc, 0x47, 0x40, 0xde, 0x64, 0x83, 0x1d, 0xae, 0x9b, 0xff, 0x6f,
-	0xfe, 0x9e, 0x0f, 0xcf, 0xc2, 0xc0, 0x9a, 0x58, 0x2f, 0x3e, 0xa0, 0x99, 0x64, 0x66, 0x6e, 0xe7,
-	0xb4, 0x95, 0x25, 0x63, 0x05, 0x27, 0xef, 0x77, 0xf4, 0xf5, 0x12, 0xb5, 0xa5, 0x8f, 0xe0, 0xe8,
-	0xb3, 0xd2, 0x92, 0x91, 0x11, 0x09, 0x07, 0xd1, 0xbd, 0x49, 0x96, 0x4c, 0x1a, 0x86, 0x37, 0x4a,
-	0x4b, 0xe1, 0x2c, 0xf4, 0x09, 0x74, 0x0d, 0x7e, 0xc9, 0x71, 0x61, 0x59, 0x6b, 0x44, 0xc2, 0xe3,
-	0xe8, 0x4e, 0xdd, 0x2d, 0xb6, 0x29, 0xe1, 0x3d, 0xe3, 0x5f, 0x2d, 0x38, 0x3d, 0x48, 0xd2, 0xfb,
-	0xd0, 0x89, 0x67, 0xf3, 0x5c, 0x5b, 0xd7, 0x8f, 0x88, 0x9d, 0xa2, 0x23, 0x38, 0x36, 0x98, 0xaa,
-	0x4c, 0xa1, 0xb6, 0x97, 0xd2, 0x95, 0x6f, 0x8b, 0x3a, 0xa2, 0x21, 0x9c, 0xee, 0xe5, 0xdb, 0x7c,
-	0x96, 0xa0, 0x61, 0xed, 0x11, 0x09, 0xfb, 0xe2, 0x10, 0xd3, 0x73, 0xe8, 0xa5, 0xb9, 0x31, 0xa8,
-	0xd3, 0x82, 0x1d, 0x39, 0xcb, 0x5e, 0x53, 0x06, 0xdd, 0x05, 0x9a, 0xa5, 0x4a, 0x91, 0xdd, 0x72,
-	0x29, 0x2f, 0x77, 0xf5, 0x51, 0x2d, 0xf1, 0x95, 0xff, 0xb8, 0xb3, 0xaf, 0x5f, 0xc7, 0x74, 0x0c,
-	0xb7, 0xf1, 0x6b, 0xfa, 0x29, 0xd6, 0x1f, 0x51, 0xc4, 0x16, 0x59, 0xd7, 0xd9, 0x1a, 0x6c, 0xdb,
-	0x47, 0xcb, 0x0b, 0x44, 0xd6, 0x73, 0x8b, 0x7a, 0x59, 0x4d, 0x57, 0x85, 0x68, 0x2e, 0x25, 0xeb,
-	0x6f, 0xa7, 0xf3, 0x9a, 0x3e, 0x84, 0x93, 0x2c, 0x2e, 0x66, 0xd5, 0xc2, 0xda, 0xa2, 0xb6, 0x0c,
-	0x9c, 0xa1, 0x09, 0xc7, 0x0f, 0xfe, 0x9d, 0x50, 0x60, 0x36, 0x2d, 0xe8, 0x10, 0xda, 0x68, 0x8c,
-	0xfb, 0xa3, 0x7d, 0x51, 0x85, 0x8f, 0x9f, 0xc3, 0xd9, 0x7f, 0x47, 0xa4, 0x77, 0x61, 0xe8, 0xe1,
-	0xbb, 0x3c, 0x4d, 0x51, 0xa2, 0x1c, 0x06, 0x94, 0xc2, 0xc0, 0xd3, 0x8b, 0x58, 0x4d, 0x51, 0x0e,
-	0x49, 0xf4, 0x02, 0x7a, 0x9e, 0xd1, 0xa8, 0x16, 0xdf, 0x74, 0xef, 0xf3, 0xb3, 0x26, 0xcc, 0xa6,
-	0xc5, 0xcb, 0x67, 0xab, 0x35, 0x0f, 0xae, 0xd6, 0x3c, 0xb8, 0x5e, 0x73, 0xf2, 0xad, 0xe4, 0xe4,
-	0x47, 0xc9, 0xc9, 0xcf, 0x92, 0x93, 0x55, 0xc9, 0xc9, 0xef, 0x92, 0x93, 0x3f, 0x25, 0x0f, 0xae,
-	0x4b, 0x4e, 0xbe, 0x6f, 0x78, 0xb0, 0xda, 0xf0, 0xe0, 0x6a, 0xc3, 0x83, 0xa4, 0xe3, 0x5e, 0xe9,
-	0xd3, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x43, 0x6f, 0x63, 0x8d, 0xb7, 0x02, 0x00, 0x00,
+	// 400 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x93, 0xb1, 0xae, 0xd3, 0x30,
+	0x14, 0x86, 0xe3, 0x06, 0x7a, 0xdb, 0x73, 0x6f, 0xb9, 0x17, 0x23, 0x21, 0xeb, 0x0e, 0x56, 0x88,
+	0x18, 0x32, 0x75, 0xb8, 0x30, 0x23, 0x01, 0x12, 0xd2, 0x5d, 0x18, 0x22, 0x5e, 0xc0, 0x49, 0x4f,
+	0x21, 0x52, 0xeb, 0x18, 0xdb, 0xa9, 0xc8, 0xc6, 0x23, 0xf0, 0x18, 0x3c, 0x00, 0x0f, 0xc1, 0xd8,
+	0xb1, 0x23, 0x4d, 0x17, 0xc6, 0xee, 0x2c, 0x28, 0x6e, 0xd2, 0x26, 0x7d, 0x00, 0x26, 0x36, 0xff,
+	0xdf, 0x7f, 0x7c, 0xac, 0xf3, 0x5b, 0x07, 0x1e, 0x59, 0x2d, 0xa4, 0x99, 0xa3, 0x9e, 0x2a, 0x9d,
+	0xdb, 0x9c, 0x0e, 0x54, 0x12, 0xfe, 0x19, 0xc0, 0xf5, 0x87, 0x06, 0xc7, 0xf8, 0xb9, 0x40, 0x63,
+	0xe9, 0x53, 0x18, 0x8a, 0x65, 0x5e, 0x48, 0xcb, 0x48, 0x40, 0x22, 0x12, 0x37, 0x8a, 0x06, 0x70,
+	0xa9, 0x31, 0xcd, 0x54, 0x86, 0xd2, 0xde, 0xcf, 0xd8, 0x20, 0x20, 0x91, 0x1f, 0x77, 0x11, 0x8d,
+	0xe0, 0xfa, 0x28, 0xdf, 0x17, 0xcb, 0x04, 0x35, 0xf3, 0x03, 0x12, 0x8d, 0xe3, 0x73, 0x4c, 0x6f,
+	0x61, 0x94, 0x16, 0x5a, 0xa3, 0x4c, 0x4b, 0xf6, 0xc0, 0x95, 0x1c, 0x35, 0x65, 0x70, 0x61, 0x50,
+	0xaf, 0xb2, 0x14, 0xd9, 0x43, 0x67, 0xb5, 0xb2, 0xe9, 0x8f, 0xd9, 0x0a, 0xdf, 0xb6, 0x97, 0x87,
+	0xc7, 0xfe, 0x5d, 0x4c, 0x43, 0xb8, 0xc2, 0x2f, 0xe9, 0x27, 0x21, 0x3f, 0x62, 0x2c, 0x2c, 0xb2,
+	0x0b, 0x37, 0x49, 0x8f, 0x1d, 0xde, 0x91, 0xb3, 0x77, 0x88, 0x6c, 0xe4, 0xec, 0x56, 0xd2, 0xe7,
+	0x30, 0x69, 0x1a, 0xbe, 0x3e, 0x04, 0x31, 0x76, 0x7e, 0x1f, 0xd6, 0x33, 0xd4, 0x17, 0x50, 0xdf,
+	0xcf, 0x18, 0x1c, 0x66, 0x68, 0x75, 0xdd, 0x41, 0x89, 0x72, 0x59, 0xc7, 0x22, 0x2d, 0x4a, 0xcb,
+	0x2e, 0x5d, 0x41, 0x1f, 0x86, 0x3f, 0x7c, 0xb8, 0x39, 0xa5, 0x6f, 0x54, 0x2e, 0x0d, 0xfe, 0x8f,
+	0xff, 0x5f, 0xc5, 0x5f, 0x27, 0x6d, 0xac, 0xb0, 0x85, 0x61, 0x57, 0xce, 0x6e, 0x14, 0xe5, 0x00,
+	0x73, 0x91, 0x2d, 0x62, 0x14, 0x26, 0x97, 0x6c, 0xe2, 0xbc, 0x0e, 0x09, 0x9f, 0xc1, 0xe4, 0xf4,
+	0x6b, 0x6a, 0x51, 0xd2, 0x1b, 0xf0, 0x51, 0x6b, 0xf7, 0x5f, 0xe3, 0xb8, 0x3e, 0xde, 0xbd, 0x82,
+	0x51, 0x5b, 0x42, 0xef, 0x3a, 0xe7, 0x27, 0x53, 0x95, 0x4c, 0xcf, 0x16, 0xee, 0xf6, 0x71, 0x1f,
+	0xaa, 0x45, 0xf9, 0xe6, 0xe5, 0x7a, 0xcb, 0xbd, 0xcd, 0x96, 0x7b, 0xfb, 0x2d, 0x27, 0x5f, 0x2b,
+	0x4e, 0xbe, 0x57, 0x9c, 0xfc, 0xac, 0x38, 0x59, 0x57, 0x9c, 0xfc, 0xaa, 0x38, 0xf9, 0x5d, 0x71,
+	0x6f, 0x5f, 0x71, 0xf2, 0x6d, 0xc7, 0xbd, 0xf5, 0x8e, 0x7b, 0x9b, 0x1d, 0xf7, 0x92, 0xa1, 0x5b,
+	0xec, 0x17, 0x7f, 0x03, 0x00, 0x00, 0xff, 0xff, 0xad, 0x61, 0xb5, 0x2a, 0xea, 0x03, 0x00, 0x00,
 }
 
-func (x TransferEventKind) String() string {
-	s, ok := TransferEventKind_name[int32(x)]
-	if ok {
-		return s
-	}
-	return strconv.Itoa(int(x))
-}
-func (this *TransferEvent) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*TransferEvent)
-	if !ok {
-		that2, ok := that.(TransferEvent)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	if this.Kind != that1.Kind {
-		return false
-	}
-	if !this.Request.Equal(that1.Request) {
-		return false
-	}
-	return true
-}
 func (this *TransferRequest) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -376,10 +414,73 @@ func (this *TransferRequest) Equal(that interface{}) bool {
 	if this.SendFee != that1.SendFee {
 		return false
 	}
+	if this.ReceiveAmount != that1.ReceiveAmount {
+		return false
+	}
 	if this.SenderId != that1.SenderId {
 		return false
 	}
 	if this.PaymentIntent != that1.PaymentIntent {
+		return false
+	}
+	return true
+}
+func (this *TransferResponse) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*TransferResponse)
+	if !ok {
+		that2, ok := that.(TransferResponse)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Amount != that1.Amount {
+		return false
+	}
+	if this.RecipientId != that1.RecipientId {
+		return false
+	}
+	if this.RecipientNumber != that1.RecipientNumber {
+		return false
+	}
+	if this.Currency != that1.Currency {
+		return false
+	}
+	if this.Service != that1.Service {
+		return false
+	}
+	if this.ReceiveCurrency != that1.ReceiveCurrency {
+		return false
+	}
+	if this.ExchangeRate != that1.ExchangeRate {
+		return false
+	}
+	if this.SendFee != that1.SendFee {
+		return false
+	}
+	if this.ReceiveAmount != that1.ReceiveAmount {
+		return false
+	}
+	if this.SenderId != that1.SenderId {
+		return false
+	}
+	if this.PaymentIntent != that1.PaymentIntent {
+		return false
+	}
+	if this.Status != that1.Status {
+		return false
+	}
+	if this.FailReason != that1.FailReason {
 		return false
 	}
 	return true
@@ -408,24 +509,11 @@ func (this *TransferReply) Equal(that interface{}) bool {
 	}
 	return true
 }
-func (this *TransferEvent) GoString() string {
-	if this == nil {
-		return "nil"
-	}
-	s := make([]string, 0, 6)
-	s = append(s, "&pb.TransferEvent{")
-	s = append(s, "Kind: "+fmt.Sprintf("%#v", this.Kind)+",\n")
-	if this.Request != nil {
-		s = append(s, "Request: "+fmt.Sprintf("%#v", this.Request)+",\n")
-	}
-	s = append(s, "}")
-	return strings.Join(s, "")
-}
 func (this *TransferRequest) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 14)
+	s := make([]string, 0, 15)
 	s = append(s, "&pb.TransferRequest{")
 	s = append(s, "Amount: "+fmt.Sprintf("%#v", this.Amount)+",\n")
 	s = append(s, "RecipientId: "+fmt.Sprintf("%#v", this.RecipientId)+",\n")
@@ -435,8 +523,31 @@ func (this *TransferRequest) GoString() string {
 	s = append(s, "ReceiveCurrency: "+fmt.Sprintf("%#v", this.ReceiveCurrency)+",\n")
 	s = append(s, "ExchangeRate: "+fmt.Sprintf("%#v", this.ExchangeRate)+",\n")
 	s = append(s, "SendFee: "+fmt.Sprintf("%#v", this.SendFee)+",\n")
+	s = append(s, "ReceiveAmount: "+fmt.Sprintf("%#v", this.ReceiveAmount)+",\n")
 	s = append(s, "SenderId: "+fmt.Sprintf("%#v", this.SenderId)+",\n")
 	s = append(s, "PaymentIntent: "+fmt.Sprintf("%#v", this.PaymentIntent)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *TransferResponse) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 17)
+	s = append(s, "&pb.TransferResponse{")
+	s = append(s, "Amount: "+fmt.Sprintf("%#v", this.Amount)+",\n")
+	s = append(s, "RecipientId: "+fmt.Sprintf("%#v", this.RecipientId)+",\n")
+	s = append(s, "RecipientNumber: "+fmt.Sprintf("%#v", this.RecipientNumber)+",\n")
+	s = append(s, "Currency: "+fmt.Sprintf("%#v", this.Currency)+",\n")
+	s = append(s, "Service: "+fmt.Sprintf("%#v", this.Service)+",\n")
+	s = append(s, "ReceiveCurrency: "+fmt.Sprintf("%#v", this.ReceiveCurrency)+",\n")
+	s = append(s, "ExchangeRate: "+fmt.Sprintf("%#v", this.ExchangeRate)+",\n")
+	s = append(s, "SendFee: "+fmt.Sprintf("%#v", this.SendFee)+",\n")
+	s = append(s, "ReceiveAmount: "+fmt.Sprintf("%#v", this.ReceiveAmount)+",\n")
+	s = append(s, "SenderId: "+fmt.Sprintf("%#v", this.SenderId)+",\n")
+	s = append(s, "PaymentIntent: "+fmt.Sprintf("%#v", this.PaymentIntent)+",\n")
+	s = append(s, "Status: "+fmt.Sprintf("%#v", this.Status)+",\n")
+	s = append(s, "FailReason: "+fmt.Sprintf("%#v", this.FailReason)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -539,46 +650,6 @@ var _Transfer_serviceDesc = grpc.ServiceDesc{
 	Metadata: "transfer.proto",
 }
 
-func (m *TransferEvent) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *TransferEvent) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *TransferEvent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Request != nil {
-		{
-			size, err := m.Request.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintTransfer(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x12
-	}
-	if m.Kind != 0 {
-		i = encodeVarintTransfer(dAtA, i, uint64(m.Kind))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
 func (m *TransferRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -604,14 +675,20 @@ func (m *TransferRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.PaymentIntent)
 		i = encodeVarintTransfer(dAtA, i, uint64(len(m.PaymentIntent)))
 		i--
-		dAtA[i] = 0x52
+		dAtA[i] = 0x5a
 	}
 	if len(m.SenderId) > 0 {
 		i -= len(m.SenderId)
 		copy(dAtA[i:], m.SenderId)
 		i = encodeVarintTransfer(dAtA, i, uint64(len(m.SenderId)))
 		i--
-		dAtA[i] = 0x4a
+		dAtA[i] = 0x52
+	}
+	if m.ReceiveAmount != 0 {
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.ReceiveAmount))))
+		i--
+		dAtA[i] = 0x49
 	}
 	if m.SendFee != 0 {
 		i -= 8
@@ -619,12 +696,119 @@ func (m *TransferRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x41
 	}
-	if len(m.ExchangeRate) > 0 {
-		i -= len(m.ExchangeRate)
-		copy(dAtA[i:], m.ExchangeRate)
-		i = encodeVarintTransfer(dAtA, i, uint64(len(m.ExchangeRate)))
+	if m.ExchangeRate != 0 {
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.ExchangeRate))))
 		i--
-		dAtA[i] = 0x3a
+		dAtA[i] = 0x39
+	}
+	if len(m.ReceiveCurrency) > 0 {
+		i -= len(m.ReceiveCurrency)
+		copy(dAtA[i:], m.ReceiveCurrency)
+		i = encodeVarintTransfer(dAtA, i, uint64(len(m.ReceiveCurrency)))
+		i--
+		dAtA[i] = 0x32
+	}
+	if len(m.Service) > 0 {
+		i -= len(m.Service)
+		copy(dAtA[i:], m.Service)
+		i = encodeVarintTransfer(dAtA, i, uint64(len(m.Service)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Currency) > 0 {
+		i -= len(m.Currency)
+		copy(dAtA[i:], m.Currency)
+		i = encodeVarintTransfer(dAtA, i, uint64(len(m.Currency)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.RecipientNumber) > 0 {
+		i -= len(m.RecipientNumber)
+		copy(dAtA[i:], m.RecipientNumber)
+		i = encodeVarintTransfer(dAtA, i, uint64(len(m.RecipientNumber)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.RecipientId != 0 {
+		i = encodeVarintTransfer(dAtA, i, uint64(m.RecipientId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.Amount != 0 {
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.Amount))))
+		i--
+		dAtA[i] = 0x9
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *TransferResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *TransferResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *TransferResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.FailReason) > 0 {
+		i -= len(m.FailReason)
+		copy(dAtA[i:], m.FailReason)
+		i = encodeVarintTransfer(dAtA, i, uint64(len(m.FailReason)))
+		i--
+		dAtA[i] = 0x6a
+	}
+	if len(m.Status) > 0 {
+		i -= len(m.Status)
+		copy(dAtA[i:], m.Status)
+		i = encodeVarintTransfer(dAtA, i, uint64(len(m.Status)))
+		i--
+		dAtA[i] = 0x62
+	}
+	if len(m.PaymentIntent) > 0 {
+		i -= len(m.PaymentIntent)
+		copy(dAtA[i:], m.PaymentIntent)
+		i = encodeVarintTransfer(dAtA, i, uint64(len(m.PaymentIntent)))
+		i--
+		dAtA[i] = 0x5a
+	}
+	if len(m.SenderId) > 0 {
+		i -= len(m.SenderId)
+		copy(dAtA[i:], m.SenderId)
+		i = encodeVarintTransfer(dAtA, i, uint64(len(m.SenderId)))
+		i--
+		dAtA[i] = 0x52
+	}
+	if m.ReceiveAmount != 0 {
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.ReceiveAmount))))
+		i--
+		dAtA[i] = 0x49
+	}
+	if m.SendFee != 0 {
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.SendFee))))
+		i--
+		dAtA[i] = 0x41
+	}
+	if m.ExchangeRate != 0 {
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.ExchangeRate))))
+		i--
+		dAtA[i] = 0x39
 	}
 	if len(m.ReceiveCurrency) > 0 {
 		i -= len(m.ReceiveCurrency)
@@ -709,22 +893,6 @@ func encodeVarintTransfer(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *TransferEvent) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Kind != 0 {
-		n += 1 + sovTransfer(uint64(m.Kind))
-	}
-	if m.Request != nil {
-		l = m.Request.Size()
-		n += 1 + l + sovTransfer(uint64(l))
-	}
-	return n
-}
-
 func (m *TransferRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -753,11 +921,13 @@ func (m *TransferRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTransfer(uint64(l))
 	}
-	l = len(m.ExchangeRate)
-	if l > 0 {
-		n += 1 + l + sovTransfer(uint64(l))
+	if m.ExchangeRate != 0 {
+		n += 9
 	}
 	if m.SendFee != 0 {
+		n += 9
+	}
+	if m.ReceiveAmount != 0 {
 		n += 9
 	}
 	l = len(m.SenderId)
@@ -765,6 +935,62 @@ func (m *TransferRequest) Size() (n int) {
 		n += 1 + l + sovTransfer(uint64(l))
 	}
 	l = len(m.PaymentIntent)
+	if l > 0 {
+		n += 1 + l + sovTransfer(uint64(l))
+	}
+	return n
+}
+
+func (m *TransferResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Amount != 0 {
+		n += 9
+	}
+	if m.RecipientId != 0 {
+		n += 1 + sovTransfer(uint64(m.RecipientId))
+	}
+	l = len(m.RecipientNumber)
+	if l > 0 {
+		n += 1 + l + sovTransfer(uint64(l))
+	}
+	l = len(m.Currency)
+	if l > 0 {
+		n += 1 + l + sovTransfer(uint64(l))
+	}
+	l = len(m.Service)
+	if l > 0 {
+		n += 1 + l + sovTransfer(uint64(l))
+	}
+	l = len(m.ReceiveCurrency)
+	if l > 0 {
+		n += 1 + l + sovTransfer(uint64(l))
+	}
+	if m.ExchangeRate != 0 {
+		n += 9
+	}
+	if m.SendFee != 0 {
+		n += 9
+	}
+	if m.ReceiveAmount != 0 {
+		n += 9
+	}
+	l = len(m.SenderId)
+	if l > 0 {
+		n += 1 + l + sovTransfer(uint64(l))
+	}
+	l = len(m.PaymentIntent)
+	if l > 0 {
+		n += 1 + l + sovTransfer(uint64(l))
+	}
+	l = len(m.Status)
+	if l > 0 {
+		n += 1 + l + sovTransfer(uint64(l))
+	}
+	l = len(m.FailReason)
 	if l > 0 {
 		n += 1 + l + sovTransfer(uint64(l))
 	}
@@ -790,17 +1016,6 @@ func sovTransfer(x uint64) (n int) {
 func sozTransfer(x uint64) (n int) {
 	return sovTransfer(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (this *TransferEvent) String() string {
-	if this == nil {
-		return "nil"
-	}
-	s := strings.Join([]string{`&TransferEvent{`,
-		`Kind:` + fmt.Sprintf("%v", this.Kind) + `,`,
-		`Request:` + strings.Replace(this.Request.String(), "TransferRequest", "TransferRequest", 1) + `,`,
-		`}`,
-	}, "")
-	return s
-}
 func (this *TransferRequest) String() string {
 	if this == nil {
 		return "nil"
@@ -814,8 +1029,31 @@ func (this *TransferRequest) String() string {
 		`ReceiveCurrency:` + fmt.Sprintf("%v", this.ReceiveCurrency) + `,`,
 		`ExchangeRate:` + fmt.Sprintf("%v", this.ExchangeRate) + `,`,
 		`SendFee:` + fmt.Sprintf("%v", this.SendFee) + `,`,
+		`ReceiveAmount:` + fmt.Sprintf("%v", this.ReceiveAmount) + `,`,
 		`SenderId:` + fmt.Sprintf("%v", this.SenderId) + `,`,
 		`PaymentIntent:` + fmt.Sprintf("%v", this.PaymentIntent) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *TransferResponse) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&TransferResponse{`,
+		`Amount:` + fmt.Sprintf("%v", this.Amount) + `,`,
+		`RecipientId:` + fmt.Sprintf("%v", this.RecipientId) + `,`,
+		`RecipientNumber:` + fmt.Sprintf("%v", this.RecipientNumber) + `,`,
+		`Currency:` + fmt.Sprintf("%v", this.Currency) + `,`,
+		`Service:` + fmt.Sprintf("%v", this.Service) + `,`,
+		`ReceiveCurrency:` + fmt.Sprintf("%v", this.ReceiveCurrency) + `,`,
+		`ExchangeRate:` + fmt.Sprintf("%v", this.ExchangeRate) + `,`,
+		`SendFee:` + fmt.Sprintf("%v", this.SendFee) + `,`,
+		`ReceiveAmount:` + fmt.Sprintf("%v", this.ReceiveAmount) + `,`,
+		`SenderId:` + fmt.Sprintf("%v", this.SenderId) + `,`,
+		`PaymentIntent:` + fmt.Sprintf("%v", this.PaymentIntent) + `,`,
+		`Status:` + fmt.Sprintf("%v", this.Status) + `,`,
+		`FailReason:` + fmt.Sprintf("%v", this.FailReason) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -837,114 +1075,6 @@ func valueToStringTransfer(v interface{}) string {
 	}
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("*%v", pv)
-}
-func (m *TransferEvent) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTransfer
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: TransferEvent: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: TransferEvent: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Kind", wireType)
-			}
-			m.Kind = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTransfer
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Kind |= TransferEventKind(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Request", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTransfer
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthTransfer
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthTransfer
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Request == nil {
-				m.Request = &TransferRequest{}
-			}
-			if err := m.Request.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTransfer(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthTransfer
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthTransfer
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
 }
 func (m *TransferRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -1134,37 +1264,16 @@ func (m *TransferRequest) Unmarshal(dAtA []byte) error {
 			m.ReceiveCurrency = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 7:
-			if wireType != 2 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ExchangeRate", wireType)
 			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTransfer
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTransfer
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTransfer
-			}
-			if postIndex > l {
+			var v uint64
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ExchangeRate = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.ExchangeRate = float64(math.Float64frombits(v))
 		case 8:
 			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SendFee", wireType)
@@ -1177,6 +1286,17 @@ func (m *TransferRequest) Unmarshal(dAtA []byte) error {
 			iNdEx += 8
 			m.SendFee = float64(math.Float64frombits(v))
 		case 9:
+			if wireType != 1 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReceiveAmount", wireType)
+			}
+			var v uint64
+			if (iNdEx + 8) > l {
+				return io.ErrUnexpectedEOF
+			}
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.ReceiveAmount = float64(math.Float64frombits(v))
+		case 10:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SenderId", wireType)
 			}
@@ -1208,7 +1328,7 @@ func (m *TransferRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.SenderId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 10:
+		case 11:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PaymentIntent", wireType)
 			}
@@ -1239,6 +1359,378 @@ func (m *TransferRequest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.PaymentIntent = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTransfer(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *TransferResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTransfer
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: TransferResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: TransferResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 1 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			var v uint64
+			if (iNdEx + 8) > l {
+				return io.ErrUnexpectedEOF
+			}
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.Amount = float64(math.Float64frombits(v))
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RecipientId", wireType)
+			}
+			m.RecipientId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTransfer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.RecipientId |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RecipientNumber", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTransfer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RecipientNumber = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Currency", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTransfer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Currency = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Service", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTransfer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Service = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReceiveCurrency", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTransfer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ReceiveCurrency = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 7:
+			if wireType != 1 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExchangeRate", wireType)
+			}
+			var v uint64
+			if (iNdEx + 8) > l {
+				return io.ErrUnexpectedEOF
+			}
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.ExchangeRate = float64(math.Float64frombits(v))
+		case 8:
+			if wireType != 1 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SendFee", wireType)
+			}
+			var v uint64
+			if (iNdEx + 8) > l {
+				return io.ErrUnexpectedEOF
+			}
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.SendFee = float64(math.Float64frombits(v))
+		case 9:
+			if wireType != 1 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReceiveAmount", wireType)
+			}
+			var v uint64
+			if (iNdEx + 8) > l {
+				return io.ErrUnexpectedEOF
+			}
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.ReceiveAmount = float64(math.Float64frombits(v))
+		case 10:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SenderId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTransfer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SenderId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 11:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PaymentIntent", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTransfer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PaymentIntent = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 12:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTransfer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Status = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 13:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field FailReason", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTransfer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTransfer
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.FailReason = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

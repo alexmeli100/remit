@@ -2,6 +2,7 @@ package endpoint
 
 import (
 	"context"
+	"errors"
 	"github.com/alexmeli100/remit/transfer/pkg/grpc/pb"
 	"github.com/alexmeli100/remit/transfer/pkg/service"
 	endpoint "github.com/go-kit/kit/endpoint"
@@ -14,22 +15,26 @@ type TransferRequest struct {
 
 // TransferResponse collects the response parameters for the Transfer method.
 type TransferResponse struct {
-	Err error `json:"err"`
+	Res *pb.TransferResponse `json:"response"`
 }
 
 // MakeTransferEndpoint returns an endpoint that invokes Transfer on the service.
 func MakeTransferEndpoint(s service.TransferService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		tr := request.(TransferRequest)
-		err := s.Transfer(ctx, tr.Request)
+		res := s.Transfer(ctx, tr.Request)
 
-		return TransferResponse{Err: err}, nil
+		return TransferResponse{Res: res}, nil
 	}
 }
 
 // Failed implements Failer.
 func (r TransferResponse) Failed() error {
-	return r.Err
+	if r.Res.Status == "Failed" {
+		return errors.New(r.Res.FailReason)
+	}
+
+	return nil
 }
 
 // Failure is an interface that should be implemented by response types.
@@ -40,12 +45,12 @@ type Failure interface {
 }
 
 // Transfer implements Service. Primarily useful in a client.
-func (e Endpoints) Transfer(ctx context.Context, req *pb.TransferRequest) error {
+func (e Endpoints) Transfer(ctx context.Context, req *pb.TransferRequest) *pb.TransferResponse {
 	request := TransferRequest{Request: req}
 	response, err := e.TransferEndpoint(ctx, request)
 
 	if err != nil {
-		return err
+		return service.GetTransferResponse(req, err)
 	}
-	return response.(TransferResponse).Err
+	return response.(TransferResponse).Res
 }
