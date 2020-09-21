@@ -11,7 +11,7 @@ type SendMoney interface {
 
 // TransferService describes the service.
 type TransferService interface {
-	Transfer(ctx context.Context, request *pb.TransferRequest) error
+	Transfer(ctx context.Context, request *pb.TransferRequest) *pb.TransferResponse
 }
 
 //New returns a TransferService with all of the expected middleware wired in.

@@ -3,7 +3,7 @@ module github.com/alexmeli100/remit/transfer
 go 1.14
 
 require (
-	github.com/alexmeli100/remit/mtn v0.0.0
+	github.com/alexmeli100/remit/mtn v0.0.1
 	github.com/go-kit/kit v0.10.0
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.2 // indirect
