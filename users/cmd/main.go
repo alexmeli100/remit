@@ -15,6 +15,7 @@ func main() {
 	dbName := os.Getenv("POSTGRES_DB")
 	dbHost := os.Getenv("USER_DB_SERVICE_HOST")
 	dbPort := os.Getenv("USER_DB_SERVICE_PORT")
+
 	db, err := openDB(dbHost, dbPort, userName, password, dbName)
 	defer db.Close()
 
@@ -22,7 +23,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err = initDB(db); err != nil {
+	if err = db.Ping(); err != nil {
 		log.Fatal(err)
 	}
 
@@ -31,7 +32,7 @@ func main() {
 }
 
 func openDB(host, port, userName, password, dbName string) (*sqlx.DB, error) {
-	connString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, userName, password, dbName)
+	connString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require", host, port, userName, password, dbName)
 
 	db, err := sqlx.Open("postgres", connString)
 

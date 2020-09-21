@@ -5,7 +5,7 @@ go 1.14
 require (
 	github.com/go-kit/kit v0.10.0
 	github.com/gogo/protobuf v1.3.1
-	github.com/golang/protobuf v1.4.2
+	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/google/uuid v1.0.0
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.8.0
@@ -16,5 +16,5 @@ require (
 	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/genproto v0.0.0-20200728010541-3dc8dca74b7b // indirect
 	google.golang.org/grpc v1.30.0
-	google.golang.org/protobuf v1.25.0
+	google.golang.org/protobuf v1.25.0 // indirect
 )

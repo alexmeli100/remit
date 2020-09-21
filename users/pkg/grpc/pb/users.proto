@@ -30,20 +30,22 @@ enum UserEventKind {
 message User {
  // @inject_tag: db:"first_name"
  string firstName = 1;
+ // @inject_tag: db:"middle_name"
+ string middleName = 2;
  // @inject_tag: db:"last_name"
- string lastName  = 2;
+ string lastName  = 3;
  // @inject_tag: db:"email"
- string email     = 3;
+ string email     = 4;
  // @inject_tag: db:"uuid"
- string uuid      = 4;
+ string uuid      = 5;
  // @inject_tag: db:"id"
- int64  id        = 5;
+ int64  id        = 6;
  // @inject_tag: db:"country"
- string country   = 6;
+ string country   = 7;
  // @inject_tag: db:"created_at"
  google.protobuf.Timestamp createdAt = 8 [(gogoproto.stdtime) = true];
  // @inject_tag: db:"confirmed"
- bool confirmed = 7;
+ bool confirmed = 9;
 }
 
 message Contact {

@@ -14,7 +14,7 @@ const (
 	UpdateEmailQuery   = "UPDATE users SET email=$1 WHERE id=$2"
 	getUserByQuery     = "SELECT * FROM users WHERE $1=$2 Limit 1"
 	UpdateStatusQuery  = "UPDATE users SET confirmed=TRUE WHERE id=$1"
-	createQuery        = `INSERT INTO users(first_name, last_name, email, country, uuid, created_at, confirmed) values($1, $2, $3, $4, $5, $6, FALSE)`
+	createQuery        = `INSERT INTO users(first_name, middle_name, last_name, email, country, uuid, created_at) values($1, $2, $3, $4, $5, $6, $7)`
 	createContactQuery = `INSERT INTO contacts(first_name, middle_name, email, mobile, mobile_account, user_id, created_at) values($1, $2, $3, $4, $5, $6, $7)`
 	getContactsQuery   = "SELECT * FROM contacts WHERE user_id=$1"
 )
