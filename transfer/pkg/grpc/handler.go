@@ -26,7 +26,7 @@ func decodeTransferRequest(_ context.Context, r interface{}) (interface{}, error
 func encodeTransferResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(endpoint.TransferResponse)
 
-	return &pb.TransferReply{Err: err2str(res.Err)}, nil
+	return res.Res, nil
 }
 
 func (g *grpcServer) Transfer(ctx context1.Context, req *pb.TransferRequest) (*pb.TransferReply, error) {
