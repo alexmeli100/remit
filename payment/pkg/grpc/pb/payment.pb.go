@@ -18,7 +18,6 @@ import (
 	math "math"
 	math_bits "math/bits"
 	reflect "reflect"
-	strconv "strconv"
 	strings "strings"
 	time "time"
 )
@@ -35,42 +34,19 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type PaymentEventKind int32
-
-const (
-	PaymentSucceded PaymentEventKind = 0
-	PaymentFailed   PaymentEventKind = 1
-)
-
-var PaymentEventKind_name = map[int32]string{
-	0: "PaymentSucceded",
-	1: "PaymentFailed",
-}
-
-var PaymentEventKind_value = map[string]int32{
-	"PaymentSucceded": 0,
-	"PaymentFailed":   1,
-}
-
-func (PaymentEventKind) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_6362648dfa63d410, []int{0}
-}
-
 type Transaction struct {
-	Id                string     `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	RecipientId       int64      `protobuf:"varint,2,opt,name=recipientId,proto3" json:"recipientId,omitempty"`
-	UserId            string     `protobuf:"bytes,3,opt,name=userId,proto3" json:"userId,omitempty"`
-	CreatedAt         *time.Time `protobuf:"bytes,4,opt,name=createdAt,proto3,stdtime" json:"createdAt,omitempty"`
-	AmountReceived    float64    `protobuf:"fixed64,5,opt,name=amountReceived,proto3" json:"amountReceived,omitempty"`
-	AmountSent        float64    `protobuf:"fixed64,6,opt,name=amountSent,proto3" json:"amountSent,omitempty"`
-	TransactionFee    float64    `protobuf:"fixed64,7,opt,name=transactionFee,proto3" json:"transactionFee,omitempty"`
-	TransactionType   float64    `protobuf:"fixed64,8,opt,name=transactionType,proto3" json:"transactionType,omitempty"`
-	SendCurrency      string     `protobuf:"bytes,9,opt,name=sendCurrency,proto3" json:"sendCurrency,omitempty"`
-	ReceiveCurrency   string     `protobuf:"bytes,10,opt,name=receiveCurrency,proto3" json:"receiveCurrency,omitempty"`
-	ExchangeRate      float64    `protobuf:"fixed64,11,opt,name=exchangeRate,proto3" json:"exchangeRate,omitempty"`
-	PaymentMethodType string     `protobuf:"bytes,12,opt,name=paymentMethodType,proto3" json:"paymentMethodType,omitempty"`
-	PaymentMethodId   string     `protobuf:"bytes,13,opt,name=paymentMethodId,proto3" json:"paymentMethodId,omitempty"`
-	ChargeId          string     `protobuf:"bytes,14,opt,name=chargeId,proto3" json:"chargeId,omitempty"`
+	Id              int64      `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	RecipientId     int64      `protobuf:"varint,2,opt,name=recipientId,proto3" json:"recipientId,omitempty"`
+	UserId          string     `protobuf:"bytes,3,opt,name=userId,proto3" json:"userId,omitempty"`
+	CreatedAt       *time.Time `protobuf:"bytes,4,opt,name=createdAt,proto3,stdtime" json:"createdAt,omitempty"`
+	AmountReceived  float64    `protobuf:"fixed64,5,opt,name=amountReceived,proto3" json:"amountReceived,omitempty"`
+	AmountSent      float64    `protobuf:"fixed64,6,opt,name=amountSent,proto3" json:"amountSent,omitempty"`
+	TransactionFee  float64    `protobuf:"fixed64,7,opt,name=transactionFee,proto3" json:"transactionFee,omitempty"`
+	TransactionType string     `protobuf:"bytes,8,opt,name=transactionType,proto3" json:"transactionType,omitempty"`
+	SendCurrency    string     `protobuf:"bytes,9,opt,name=sendCurrency,proto3" json:"sendCurrency,omitempty"`
+	ReceiveCurrency string     `protobuf:"bytes,10,opt,name=receiveCurrency,proto3" json:"receiveCurrency,omitempty"`
+	ExchangeRate    float64    `protobuf:"fixed64,11,opt,name=exchangeRate,proto3" json:"exchangeRate,omitempty"`
+	PaymentIntent   string     `protobuf:"bytes,12,opt,name=paymentIntent,proto3" json:"paymentIntent,omitempty"`
 }
 
 func (m *Transaction) Reset()      { *m = Transaction{} }
@@ -105,11 +81,11 @@ func (m *Transaction) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Transaction proto.InternalMessageInfo
 
-func (m *Transaction) GetId() string {
+func (m *Transaction) GetId() int64 {
 	if m != nil {
 		return m.Id
 	}
-	return ""
+	return 0
 }
 
 func (m *Transaction) GetRecipientId() int64 {
@@ -154,11 +130,11 @@ func (m *Transaction) GetTransactionFee() float64 {
 	return 0
 }
 
-func (m *Transaction) GetTransactionType() float64 {
+func (m *Transaction) GetTransactionType() string {
 	if m != nil {
 		return m.TransactionType
 	}
-	return 0
+	return ""
 }
 
 func (m *Transaction) GetSendCurrency() string {
@@ -182,23 +158,9 @@ func (m *Transaction) GetExchangeRate() float64 {
 	return 0
 }
 
-func (m *Transaction) GetPaymentMethodType() string {
+func (m *Transaction) GetPaymentIntent() string {
 	if m != nil {
-		return m.PaymentMethodType
-	}
-	return ""
-}
-
-func (m *Transaction) GetPaymentMethodId() string {
-	if m != nil {
-		return m.PaymentMethodId
-	}
-	return ""
-}
-
-func (m *Transaction) GetChargeId() string {
-	if m != nil {
-		return m.ChargeId
+		return m.PaymentIntent
 	}
 	return ""
 }
@@ -568,59 +530,7 @@ func (m *CapturePaymentReply) GetErr() string {
 	return ""
 }
 
-type PaymentEvent struct {
-	Kind   PaymentEventKind `protobuf:"varint,1,opt,name=kind,proto3,enum=pb.PaymentEventKind" json:"kind,omitempty"`
-	Intent string           `protobuf:"bytes,2,opt,name=intent,proto3" json:"intent,omitempty"`
-}
-
-func (m *PaymentEvent) Reset()      { *m = PaymentEvent{} }
-func (*PaymentEvent) ProtoMessage() {}
-func (*PaymentEvent) Descriptor() ([]byte, []int) {
-	return fileDescriptor_6362648dfa63d410, []int{8}
-}
-func (m *PaymentEvent) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *PaymentEvent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_PaymentEvent.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *PaymentEvent) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PaymentEvent.Merge(m, src)
-}
-func (m *PaymentEvent) XXX_Size() int {
-	return m.Size()
-}
-func (m *PaymentEvent) XXX_DiscardUnknown() {
-	xxx_messageInfo_PaymentEvent.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_PaymentEvent proto.InternalMessageInfo
-
-func (m *PaymentEvent) GetKind() PaymentEventKind {
-	if m != nil {
-		return m.Kind
-	}
-	return PaymentSucceded
-}
-
-func (m *PaymentEvent) GetIntent() string {
-	if m != nil {
-		return m.Intent
-	}
-	return ""
-}
-
 func init() {
-	proto.RegisterEnum("pb.PaymentEventKind", PaymentEventKind_name, PaymentEventKind_value)
 	proto.RegisterType((*Transaction)(nil), "pb.Transaction")
 	proto.RegisterType((*PaymentRequest)(nil), "pb.PaymentRequest")
 	proto.RegisterType((*SaveCardRequest)(nil), "pb.SaveCardRequest")
@@ -629,68 +539,53 @@ func init() {
 	proto.RegisterType((*GetPaymentIntentSecretReply)(nil), "pb.GetPaymentIntentSecretReply")
 	proto.RegisterType((*CapturePaymentRequest)(nil), "pb.CapturePaymentRequest")
 	proto.RegisterType((*CapturePaymentReply)(nil), "pb.CapturePaymentReply")
-	proto.RegisterType((*PaymentEvent)(nil), "pb.PaymentEvent")
 }
 
 func init() { proto.RegisterFile("payment.proto", fileDescriptor_6362648dfa63d410) }
 
 var fileDescriptor_6362648dfa63d410 = []byte{
-	// 721 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x54, 0x3d, 0x6f, 0xd3, 0x50,
-	0x14, 0xcd, 0x4b, 0x42, 0x9a, 0xdc, 0x34, 0x69, 0xfa, 0x0a, 0xc5, 0x04, 0xe1, 0x06, 0x83, 0x50,
-	0x84, 0x20, 0x95, 0x02, 0x0b, 0x0c, 0x54, 0xf4, 0x53, 0x11, 0x42, 0xaa, 0xdc, 0x8e, 0x2c, 0x8e,
-	0xdf, 0x25, 0xb1, 0x48, 0x6c, 0xf7, 0xe5, 0xb9, 0x22, 0x1b, 0x23, 0x63, 0x37, 0xfe, 0x02, 0x3f,
-	0x85, 0xb1, 0x63, 0x37, 0x48, 0xba, 0x30, 0xf6, 0x27, 0xa0, 0xf7, 0x6c, 0x37, 0xb1, 0x69, 0x2b,
-	0x75, 0xf3, 0x3d, 0xef, 0xdc, 0x73, 0xcf, 0xfd, 0x48, 0xa0, 0xe2, 0x5b, 0xe3, 0x21, 0xba, 0xa2,
-	0xe5, 0x73, 0x4f, 0x78, 0x34, 0xeb, 0x77, 0xeb, 0x6b, 0x3d, 0xcf, 0xeb, 0x0d, 0x70, 0x5d, 0x21,
-	0xdd, 0xe0, 0xf3, 0xba, 0x70, 0x86, 0x38, 0x12, 0xd6, 0xd0, 0x0f, 0x49, 0xf5, 0x97, 0x3d, 0x47,
-	0xf4, 0x83, 0x6e, 0xcb, 0xf6, 0x86, 0xeb, 0x3d, 0xaf, 0xe7, 0xcd, 0x98, 0x32, 0x52, 0x81, 0xfa,
-	0x0a, 0xe9, 0xc6, 0x8f, 0x3c, 0x94, 0x0f, 0xb9, 0xe5, 0x8e, 0x2c, 0x5b, 0x38, 0x9e, 0x4b, 0xab,
-	0x90, 0x75, 0x98, 0x46, 0x1a, 0xa4, 0x59, 0x32, 0xb3, 0x0e, 0xa3, 0x0d, 0x28, 0x73, 0xb4, 0x1d,
-	0xdf, 0x41, 0x57, 0x74, 0x98, 0x96, 0x6d, 0x90, 0x66, 0xce, 0x9c, 0x87, 0xe8, 0x2a, 0x14, 0x82,
-	0x11, 0xf2, 0x0e, 0xd3, 0x72, 0x2a, 0x2b, 0x8a, 0xe8, 0x3b, 0x28, 0xd9, 0x1c, 0x2d, 0x81, 0xec,
-	0xbd, 0xd0, 0xf2, 0x0d, 0xd2, 0x2c, 0xb7, 0xeb, 0xad, 0xd0, 0x7d, 0x2b, 0xf6, 0xd4, 0x3a, 0x8c,
-	0xdd, 0x6f, 0xe6, 0x4f, 0x7e, 0xaf, 0x11, 0x73, 0x96, 0x42, 0x9f, 0x41, 0xd5, 0x1a, 0x7a, 0x81,
-	0x2b, 0x4c, 0xb4, 0xd1, 0x39, 0x46, 0xa6, 0xdd, 0x69, 0x90, 0x26, 0x31, 0x53, 0x28, 0xd5, 0x01,
-	0x42, 0xe4, 0x00, 0x5d, 0xa1, 0x15, 0x14, 0x67, 0x0e, 0x91, 0x3a, 0x62, 0xd6, 0xe0, 0x2e, 0xa2,
-	0xb6, 0x10, 0xea, 0x24, 0x51, 0xda, 0x84, 0xa5, 0x39, 0xe4, 0x70, 0xec, 0xa3, 0x56, 0x54, 0xc4,
-	0x34, 0x4c, 0x0d, 0x58, 0x1c, 0xa1, 0xcb, 0xb6, 0x02, 0xce, 0xd1, 0xb5, 0xc7, 0x5a, 0x49, 0xf5,
-	0x9d, 0xc0, 0xa4, 0x1a, 0x0f, 0x1d, 0x5e, 0xd2, 0x40, 0xd1, 0xd2, 0xb0, 0x54, 0xc3, 0xaf, 0x76,
-	0xdf, 0x72, 0x7b, 0x68, 0x5a, 0x02, 0xb5, 0xb2, 0x2a, 0x9a, 0xc0, 0xe8, 0x0b, 0x58, 0x8e, 0x4e,
-	0xe1, 0x23, 0x8a, 0xbe, 0xc7, 0x94, 0xbb, 0x45, 0xa5, 0xf7, 0xff, 0x83, 0xac, 0x9d, 0x00, 0x3b,
-	0x4c, 0xab, 0x84, 0xb5, 0x53, 0x30, 0xad, 0x43, 0xd1, 0xee, 0x5b, 0xbc, 0x87, 0x1d, 0xa6, 0x55,
-	0x15, 0xe5, 0x32, 0x36, 0xbe, 0x13, 0xa8, 0xee, 0x87, 0x7c, 0x13, 0x8f, 0x02, 0x1c, 0x09, 0x5a,
-	0x83, 0x5c, 0x70, 0x79, 0x1d, 0xf2, 0x53, 0x2e, 0x3f, 0x1c, 0xb5, 0xba, 0x0c, 0x62, 0x46, 0x91,
-	0x12, 0x8e, 0xfb, 0xce, 0x45, 0xc2, 0x71, 0xc3, 0xab, 0x50, 0xb0, 0x2d, 0xce, 0x3a, 0xdb, 0xea,
-	0x2a, 0x4a, 0x66, 0x14, 0x51, 0x0d, 0x16, 0x6c, 0xcb, 0x17, 0x01, 0x47, 0xb5, 0xe9, 0xa2, 0x19,
-	0x87, 0xc6, 0x13, 0x58, 0x3a, 0xb0, 0x8e, 0x71, 0xcb, 0xe2, 0xec, 0x5a, 0x2b, 0xc6, 0x1b, 0xa8,
-	0xcc, 0x48, 0xfe, 0x40, 0xd5, 0x19, 0xa1, 0xcd, 0x51, 0x44, 0xac, 0x28, 0x92, 0xa9, 0xc8, 0xb9,
-	0x32, 0x5c, 0x32, 0xe5, 0xa7, 0xb1, 0x03, 0x8f, 0xf6, 0x50, 0x44, 0xcd, 0x76, 0x5c, 0x81, 0xf2,
-	0x74, 0x24, 0x37, 0xae, 0xf6, 0x14, 0x72, 0x1c, 0x8f, 0x94, 0x4e, 0xb9, 0x4d, 0x5b, 0x7e, 0xb7,
-	0x95, 0x9c, 0x8c, 0x29, 0x9f, 0x8d, 0x3d, 0x78, 0x78, 0x9d, 0xcc, 0xed, 0xfc, 0x6c, 0xc0, 0xbd,
-	0xad, 0xb0, 0xf5, 0xd4, 0x02, 0xaa, 0x90, 0xf5, 0x9d, 0xf8, 0xd7, 0xe9, 0x3b, 0xd7, 0x8d, 0xdf,
-	0xd8, 0x80, 0x95, 0xb4, 0xc0, 0xed, 0x1c, 0xec, 0xc3, 0x62, 0x94, 0xb9, 0x73, 0x2c, 0x7f, 0x44,
-	0x4d, 0xc8, 0x7f, 0x71, 0xdc, 0x70, 0xde, 0xd5, 0xf6, 0xdd, 0xb9, 0x09, 0xa8, 0xf7, 0x0f, 0x8e,
-	0xcb, 0x4c, 0xc5, 0x90, 0x35, 0x1c, 0xd5, 0x7a, 0x24, 0x17, 0x45, 0xcf, 0xdf, 0x42, 0x2d, 0x9d,
-	0x41, 0x57, 0x60, 0x29, 0xc2, 0x0e, 0x02, 0xdb, 0x46, 0x86, 0xac, 0x96, 0xa1, 0xcb, 0x50, 0x89,
-	0xc0, 0x5d, 0xcb, 0x19, 0x20, 0xab, 0x91, 0xf6, 0x84, 0xc0, 0x42, 0x84, 0xd1, 0x36, 0x14, 0xe3,
-	0x35, 0xd3, 0x15, 0xe9, 0x23, 0x75, 0x19, 0xf5, 0xe5, 0x24, 0x28, 0xfb, 0xfe, 0x04, 0xab, 0x57,
-	0x2f, 0x86, 0x3e, 0x96, 0xe4, 0x1b, 0x77, 0x5f, 0x5f, 0xbb, 0x89, 0x22, 0xd5, 0xb7, 0xa1, 0x9a,
-	0x1c, 0x36, 0x7d, 0x20, 0x53, 0xae, 0xdc, 0x60, 0xfd, 0xfe, 0x55, 0x4f, 0xfe, 0x60, 0xbc, 0xf9,
-	0xfa, 0x74, 0xa2, 0x67, 0xce, 0x26, 0x7a, 0xe6, 0x62, 0xa2, 0x93, 0x6f, 0x53, 0x9d, 0xfc, 0x9c,
-	0xea, 0xe4, 0xd7, 0x54, 0x27, 0xa7, 0x53, 0x9d, 0xfc, 0x99, 0xea, 0xe4, 0xef, 0x54, 0xcf, 0x5c,
-	0x4c, 0x75, 0x72, 0x72, 0xae, 0x67, 0x4e, 0xcf, 0xf5, 0xcc, 0xd9, 0xb9, 0x9e, 0xe9, 0x16, 0xd4,
-	0x3f, 0xe9, 0xab, 0x7f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x3f, 0xb6, 0xd7, 0x2d, 0x2a, 0x06, 0x00,
-	0x00,
+	// 624 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x54, 0x41, 0x4f, 0xdb, 0x4c,
+	0x10, 0xcd, 0x26, 0x7c, 0x90, 0x4c, 0x20, 0x7c, 0x5d, 0x54, 0xea, 0xba, 0xea, 0x92, 0xba, 0xa8,
+	0xca, 0xa5, 0x46, 0x4a, 0x7b, 0xe9, 0xa5, 0xa8, 0x40, 0x8b, 0x72, 0x43, 0x0b, 0xc7, 0x5e, 0x1c,
+	0x7b, 0x1a, 0x2c, 0x11, 0x7b, 0xd9, 0xac, 0x51, 0x73, 0xeb, 0xb1, 0x47, 0x7e, 0x46, 0x7f, 0x4a,
+	0x7b, 0xe3, 0xc8, 0xad, 0x8d, 0xb9, 0xf4, 0xc8, 0x4f, 0xa8, 0x76, 0xed, 0x90, 0xd8, 0x02, 0x24,
+	0x6e, 0x3b, 0x6f, 0xdf, 0xbc, 0x7d, 0x33, 0xcf, 0x32, 0xac, 0x08, 0x6f, 0x3c, 0xc4, 0x48, 0xb9,
+	0x42, 0xc6, 0x2a, 0xa6, 0x55, 0xd1, 0xb7, 0x37, 0x06, 0x71, 0x3c, 0x38, 0xc1, 0x2d, 0x83, 0xf4,
+	0x93, 0x2f, 0x5b, 0x2a, 0x1c, 0xe2, 0x48, 0x79, 0x43, 0x91, 0x91, 0xec, 0xd7, 0x83, 0x50, 0x1d,
+	0x27, 0x7d, 0xd7, 0x8f, 0x87, 0x5b, 0x83, 0x78, 0x10, 0xcf, 0x98, 0xba, 0x32, 0x85, 0x39, 0x65,
+	0x74, 0xe7, 0x57, 0x0d, 0x9a, 0x47, 0xd2, 0x8b, 0x46, 0x9e, 0xaf, 0xc2, 0x38, 0xa2, 0x2d, 0xa8,
+	0x86, 0x81, 0x45, 0xda, 0xa4, 0x53, 0xe3, 0xd5, 0x30, 0xa0, 0x6d, 0x68, 0x4a, 0xf4, 0x43, 0x11,
+	0x62, 0xa4, 0x7a, 0x81, 0x55, 0x35, 0x17, 0xf3, 0x10, 0x5d, 0x87, 0xc5, 0x64, 0x84, 0xb2, 0x17,
+	0x58, 0xb5, 0x36, 0xe9, 0x34, 0x78, 0x5e, 0xd1, 0xf7, 0xd0, 0xf0, 0x25, 0x7a, 0x0a, 0x83, 0x0f,
+	0xca, 0x5a, 0x68, 0x93, 0x4e, 0xb3, 0x6b, 0xbb, 0x99, 0x7b, 0x77, 0xea, 0xc9, 0x3d, 0x9a, 0xba,
+	0xdf, 0x59, 0x38, 0xff, 0xbd, 0x41, 0xf8, 0xac, 0x85, 0xbe, 0x82, 0x96, 0x37, 0x8c, 0x93, 0x48,
+	0x71, 0xf4, 0x31, 0x3c, 0xc3, 0xc0, 0xfa, 0xaf, 0x4d, 0x3a, 0x84, 0x97, 0x50, 0xca, 0x00, 0x32,
+	0xe4, 0x10, 0x23, 0x65, 0x2d, 0x1a, 0xce, 0x1c, 0xa2, 0x75, 0xd4, 0x6c, 0xc0, 0x4f, 0x88, 0xd6,
+	0x52, 0xa6, 0x53, 0x44, 0x69, 0x07, 0x56, 0xe7, 0x90, 0xa3, 0xb1, 0x40, 0xab, 0x6e, 0x06, 0x2a,
+	0xc3, 0xd4, 0x81, 0xe5, 0x11, 0x46, 0xc1, 0x6e, 0x22, 0x25, 0x46, 0xfe, 0xd8, 0x6a, 0x18, 0x5a,
+	0x01, 0xd3, 0x6a, 0x32, 0x73, 0x78, 0x43, 0x83, 0x4c, 0xad, 0x04, 0x6b, 0x35, 0xfc, 0xea, 0x1f,
+	0x7b, 0xd1, 0x00, 0xb9, 0xa7, 0xd0, 0x6a, 0x1a, 0x77, 0x05, 0x8c, 0x6e, 0xde, 0x7c, 0x0a, 0xbd,
+	0x48, 0xe9, 0x31, 0x97, 0x8d, 0x56, 0x11, 0x74, 0xbe, 0x13, 0x68, 0x1d, 0x64, 0x08, 0xc7, 0xd3,
+	0x04, 0x47, 0x8a, 0xfe, 0x0f, 0xb5, 0x24, 0xcf, 0xb3, 0xc1, 0xf5, 0x51, 0xc7, 0x95, 0x2d, 0xc7,
+	0x64, 0x49, 0x78, 0x5e, 0x51, 0x1b, 0xea, 0xfe, 0xd4, 0x69, 0x16, 0xe4, 0x4d, 0xad, 0x7b, 0x7c,
+	0x4f, 0x06, 0xbd, 0x3d, 0x93, 0x63, 0x83, 0xe7, 0x15, 0xb5, 0x60, 0xc9, 0xf7, 0x84, 0x4a, 0x24,
+	0x9a, 0x6c, 0xea, 0x7c, 0x5a, 0x3a, 0x2f, 0x61, 0xf5, 0xd0, 0x3b, 0xc3, 0x5d, 0x4f, 0x06, 0x77,
+	0x5a, 0x71, 0xde, 0xc1, 0xca, 0x8c, 0x24, 0x4e, 0xcc, 0x3b, 0x23, 0xf4, 0x25, 0xaa, 0x9c, 0x95,
+	0x57, 0xba, 0x15, 0xa5, 0x34, 0x86, 0x1b, 0x5c, 0x1f, 0x9d, 0x8f, 0xf0, 0x7c, 0x1f, 0xd5, 0xc1,
+	0xfc, 0xf8, 0x87, 0x86, 0x3b, 0x7d, 0x6d, 0x13, 0x6a, 0x12, 0x4f, 0x8d, 0x4e, 0xb3, 0x4b, 0x5d,
+	0xd1, 0x77, 0x8b, 0x9b, 0xe1, 0xfa, 0xda, 0xd9, 0x87, 0x67, 0x77, 0xc9, 0x3c, 0xcc, 0xcf, 0x36,
+	0x3c, 0xde, 0xcd, 0x46, 0x2f, 0x05, 0xd0, 0x82, 0xaa, 0x08, 0xf3, 0xf6, 0xaa, 0x08, 0xef, 0x5a,
+	0xbf, 0xb3, 0x0d, 0x6b, 0x65, 0x81, 0x07, 0x39, 0xe8, 0x4e, 0x08, 0x2c, 0xe5, 0xad, 0xb4, 0x0b,
+	0xf5, 0xe9, 0x62, 0xe9, 0x9a, 0x9e, 0xbd, 0x94, 0x85, 0xfd, 0xa8, 0x08, 0xea, 0x97, 0x3e, 0xc3,
+	0xfa, 0xed, 0xab, 0xa0, 0x2f, 0x34, 0xf9, 0xde, 0x6d, 0xdb, 0x1b, 0xf7, 0x51, 0xb4, 0xfa, 0x1e,
+	0xb4, 0x8a, 0xe3, 0xd1, 0xa7, 0xba, 0xe5, 0xd6, 0x9d, 0xd9, 0x4f, 0x6e, 0xbb, 0x12, 0x27, 0xe3,
+	0x9d, 0xb7, 0x17, 0x13, 0x56, 0xb9, 0x9c, 0xb0, 0xca, 0xf5, 0x84, 0x91, 0x6f, 0x29, 0x23, 0x3f,
+	0x52, 0x46, 0x7e, 0xa6, 0x8c, 0x5c, 0xa4, 0x8c, 0xfc, 0x49, 0x19, 0xf9, 0x9b, 0xb2, 0xca, 0x75,
+	0xca, 0xc8, 0xf9, 0x15, 0xab, 0x5c, 0x5c, 0xb1, 0xca, 0xe5, 0x15, 0xab, 0xf4, 0x17, 0xcd, 0xdf,
+	0xe6, 0xcd, 0xbf, 0x00, 0x00, 0x00, 0xff, 0xff, 0xa7, 0x8e, 0x96, 0x2f, 0x4e, 0x05, 0x00, 0x00,
 }
 
-func (x PaymentEventKind) String() string {
-	s, ok := PaymentEventKind_name[int32(x)]
-	if ok {
-		return s
-	}
-	return strconv.Itoa(int(x))
-}
 func (this *Transaction) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -747,13 +642,7 @@ func (this *Transaction) Equal(that interface{}) bool {
 	if this.ExchangeRate != that1.ExchangeRate {
 		return false
 	}
-	if this.PaymentMethodType != that1.PaymentMethodType {
-		return false
-	}
-	if this.PaymentMethodId != that1.PaymentMethodId {
-		return false
-	}
-	if this.ChargeId != that1.ChargeId {
+	if this.PaymentIntent != that1.PaymentIntent {
 		return false
 	}
 	return true
@@ -950,38 +839,11 @@ func (this *CapturePaymentReply) Equal(that interface{}) bool {
 	}
 	return true
 }
-func (this *PaymentEvent) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*PaymentEvent)
-	if !ok {
-		that2, ok := that.(PaymentEvent)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	if this.Kind != that1.Kind {
-		return false
-	}
-	if this.Intent != that1.Intent {
-		return false
-	}
-	return true
-}
 func (this *Transaction) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 18)
+	s := make([]string, 0, 16)
 	s = append(s, "&pb.Transaction{")
 	s = append(s, "Id: "+fmt.Sprintf("%#v", this.Id)+",\n")
 	s = append(s, "RecipientId: "+fmt.Sprintf("%#v", this.RecipientId)+",\n")
@@ -994,9 +856,7 @@ func (this *Transaction) GoString() string {
 	s = append(s, "SendCurrency: "+fmt.Sprintf("%#v", this.SendCurrency)+",\n")
 	s = append(s, "ReceiveCurrency: "+fmt.Sprintf("%#v", this.ReceiveCurrency)+",\n")
 	s = append(s, "ExchangeRate: "+fmt.Sprintf("%#v", this.ExchangeRate)+",\n")
-	s = append(s, "PaymentMethodType: "+fmt.Sprintf("%#v", this.PaymentMethodType)+",\n")
-	s = append(s, "PaymentMethodId: "+fmt.Sprintf("%#v", this.PaymentMethodId)+",\n")
-	s = append(s, "ChargeId: "+fmt.Sprintf("%#v", this.ChargeId)+",\n")
+	s = append(s, "PaymentIntent: "+fmt.Sprintf("%#v", this.PaymentIntent)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -1077,17 +937,6 @@ func (this *CapturePaymentReply) GoString() string {
 	s = append(s, "&pb.CapturePaymentReply{")
 	s = append(s, "Secret: "+fmt.Sprintf("%#v", this.Secret)+",\n")
 	s = append(s, "Err: "+fmt.Sprintf("%#v", this.Err)+",\n")
-	s = append(s, "}")
-	return strings.Join(s, "")
-}
-func (this *PaymentEvent) GoString() string {
-	if this == nil {
-		return "nil"
-	}
-	s := make([]string, 0, 6)
-	s = append(s, "&pb.PaymentEvent{")
-	s = append(s, "Kind: "+fmt.Sprintf("%#v", this.Kind)+",\n")
-	s = append(s, "Intent: "+fmt.Sprintf("%#v", this.Intent)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -1272,24 +1121,10 @@ func (m *Transaction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.ChargeId) > 0 {
-		i -= len(m.ChargeId)
-		copy(dAtA[i:], m.ChargeId)
-		i = encodeVarintPayment(dAtA, i, uint64(len(m.ChargeId)))
-		i--
-		dAtA[i] = 0x72
-	}
-	if len(m.PaymentMethodId) > 0 {
-		i -= len(m.PaymentMethodId)
-		copy(dAtA[i:], m.PaymentMethodId)
-		i = encodeVarintPayment(dAtA, i, uint64(len(m.PaymentMethodId)))
-		i--
-		dAtA[i] = 0x6a
-	}
-	if len(m.PaymentMethodType) > 0 {
-		i -= len(m.PaymentMethodType)
-		copy(dAtA[i:], m.PaymentMethodType)
-		i = encodeVarintPayment(dAtA, i, uint64(len(m.PaymentMethodType)))
+	if len(m.PaymentIntent) > 0 {
+		i -= len(m.PaymentIntent)
+		copy(dAtA[i:], m.PaymentIntent)
+		i = encodeVarintPayment(dAtA, i, uint64(len(m.PaymentIntent)))
 		i--
 		dAtA[i] = 0x62
 	}
@@ -1313,11 +1148,12 @@ func (m *Transaction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x4a
 	}
-	if m.TransactionType != 0 {
-		i -= 8
-		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.TransactionType))))
+	if len(m.TransactionType) > 0 {
+		i -= len(m.TransactionType)
+		copy(dAtA[i:], m.TransactionType)
+		i = encodeVarintPayment(dAtA, i, uint64(len(m.TransactionType)))
 		i--
-		dAtA[i] = 0x41
+		dAtA[i] = 0x42
 	}
 	if m.TransactionFee != 0 {
 		i -= 8
@@ -1359,12 +1195,10 @@ func (m *Transaction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x10
 	}
-	if len(m.Id) > 0 {
-		i -= len(m.Id)
-		copy(dAtA[i:], m.Id)
-		i = encodeVarintPayment(dAtA, i, uint64(len(m.Id)))
+	if m.Id != 0 {
+		i = encodeVarintPayment(dAtA, i, uint64(m.Id))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -1641,41 +1475,6 @@ func (m *CapturePaymentReply) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *PaymentEvent) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *PaymentEvent) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *PaymentEvent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Intent) > 0 {
-		i -= len(m.Intent)
-		copy(dAtA[i:], m.Intent)
-		i = encodeVarintPayment(dAtA, i, uint64(len(m.Intent)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if m.Kind != 0 {
-		i = encodeVarintPayment(dAtA, i, uint64(m.Kind))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
 func encodeVarintPayment(dAtA []byte, offset int, v uint64) int {
 	offset -= sovPayment(v)
 	base := offset
@@ -1693,9 +1492,8 @@ func (m *Transaction) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Id)
-	if l > 0 {
-		n += 1 + l + sovPayment(uint64(l))
+	if m.Id != 0 {
+		n += 1 + sovPayment(uint64(m.Id))
 	}
 	if m.RecipientId != 0 {
 		n += 1 + sovPayment(uint64(m.RecipientId))
@@ -1717,8 +1515,9 @@ func (m *Transaction) Size() (n int) {
 	if m.TransactionFee != 0 {
 		n += 9
 	}
-	if m.TransactionType != 0 {
-		n += 9
+	l = len(m.TransactionType)
+	if l > 0 {
+		n += 1 + l + sovPayment(uint64(l))
 	}
 	l = len(m.SendCurrency)
 	if l > 0 {
@@ -1731,15 +1530,7 @@ func (m *Transaction) Size() (n int) {
 	if m.ExchangeRate != 0 {
 		n += 9
 	}
-	l = len(m.PaymentMethodType)
-	if l > 0 {
-		n += 1 + l + sovPayment(uint64(l))
-	}
-	l = len(m.PaymentMethodId)
-	if l > 0 {
-		n += 1 + l + sovPayment(uint64(l))
-	}
-	l = len(m.ChargeId)
+	l = len(m.PaymentIntent)
 	if l > 0 {
 		n += 1 + l + sovPayment(uint64(l))
 	}
@@ -1866,22 +1657,6 @@ func (m *CapturePaymentReply) Size() (n int) {
 	return n
 }
 
-func (m *PaymentEvent) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Kind != 0 {
-		n += 1 + sovPayment(uint64(m.Kind))
-	}
-	l = len(m.Intent)
-	if l > 0 {
-		n += 1 + l + sovPayment(uint64(l))
-	}
-	return n
-}
-
 func sovPayment(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
@@ -1904,9 +1679,7 @@ func (this *Transaction) String() string {
 		`SendCurrency:` + fmt.Sprintf("%v", this.SendCurrency) + `,`,
 		`ReceiveCurrency:` + fmt.Sprintf("%v", this.ReceiveCurrency) + `,`,
 		`ExchangeRate:` + fmt.Sprintf("%v", this.ExchangeRate) + `,`,
-		`PaymentMethodType:` + fmt.Sprintf("%v", this.PaymentMethodType) + `,`,
-		`PaymentMethodId:` + fmt.Sprintf("%v", this.PaymentMethodId) + `,`,
-		`ChargeId:` + fmt.Sprintf("%v", this.ChargeId) + `,`,
+		`PaymentIntent:` + fmt.Sprintf("%v", this.PaymentIntent) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1989,17 +1762,6 @@ func (this *CapturePaymentReply) String() string {
 	}, "")
 	return s
 }
-func (this *PaymentEvent) String() string {
-	if this == nil {
-		return "nil"
-	}
-	s := strings.Join([]string{`&PaymentEvent{`,
-		`Kind:` + fmt.Sprintf("%v", this.Kind) + `,`,
-		`Intent:` + fmt.Sprintf("%v", this.Intent) + `,`,
-		`}`,
-	}, "")
-	return s
-}
 func valueToStringPayment(v interface{}) string {
 	rv := reflect.ValueOf(v)
 	if rv.IsNil() {
@@ -2038,10 +1800,10 @@ func (m *Transaction) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
-			var stringLen uint64
+			m.Id = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowPayment
@@ -2051,24 +1813,11 @@ func (m *Transaction) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.Id |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthPayment
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthPayment
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Id = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field RecipientId", wireType)
@@ -2190,16 +1939,37 @@ func (m *Transaction) Unmarshal(dAtA []byte) error {
 			iNdEx += 8
 			m.TransactionFee = float64(math.Float64frombits(v))
 		case 8:
-			if wireType != 1 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TransactionType", wireType)
 			}
-			var v uint64
-			if (iNdEx + 8) > l {
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPayment
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPayment
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
-			iNdEx += 8
-			m.TransactionType = float64(math.Float64frombits(v))
+			m.TransactionType = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 9:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SendCurrency", wireType)
@@ -2277,7 +2047,7 @@ func (m *Transaction) Unmarshal(dAtA []byte) error {
 			m.ExchangeRate = float64(math.Float64frombits(v))
 		case 12:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PaymentMethodType", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field PaymentIntent", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2305,71 +2075,7 @@ func (m *Transaction) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.PaymentMethodType = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 13:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PaymentMethodId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowPayment
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthPayment
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthPayment
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.PaymentMethodId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 14:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ChargeId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowPayment
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthPayment
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthPayment
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ChargeId = string(dAtA[iNdEx:postIndex])
+			m.PaymentIntent = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3171,110 +2877,6 @@ func (m *CapturePaymentReply) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Err = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipPayment(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthPayment
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthPayment
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *PaymentEvent) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowPayment
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: PaymentEvent: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PaymentEvent: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Kind", wireType)
-			}
-			m.Kind = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowPayment
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Kind |= PaymentEventKind(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Intent", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowPayment
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthPayment
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthPayment
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Intent = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

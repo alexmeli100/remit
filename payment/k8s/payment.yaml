@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-manager
+  labels:
+    svc: payment
+    app: manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      svc: payment
+      app: manager
+  template:
+    metadata:
+      labels:
+        svc: payment
+        app: manager
+    spec:
+      containers:
+        - name: payment-manager
+          imagePullPolicy: Always
+          image: alexmeli/wealow-payment:0.0
+          ports:
+            - containerPort: 8086
+          env:
+            - name: STRIPE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: STRIPE_API_KEY
+                  name: payment-credentials
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: payment-credentials
+          envFrom:
+            - configMapRef:
+                name: payment-database-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-manager
+spec:
+  type: NodePort
+  ports:
+    - port: 8086
+  selector:
+    svc: payment
+    app: manager

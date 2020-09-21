@@ -2,17 +2,31 @@ package service
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
+	eventpb "github.com/alexmeli100/remit/events/pb"
 	"github.com/alexmeli100/remit/payment/pkg/grpc/pb"
 	userPb "github.com/alexmeli100/remit/users/pkg/grpc/pb"
-	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go/v71"
 	"github.com/stripe/stripe-go/v71/client"
 	"github.com/stripe/stripe-go/v71/customer"
 	"github.com/stripe/stripe-go/v71/setupintent"
+	"time"
 )
+
+const (
+	// Transaction types
+	MobileMoney = "mobile-money"
+)
+
+type PaymentStore interface {
+	CreateCustomer(ctx context.Context, c *Customer) error
+	GetUserID(ctx context.Context, cid string) (string, error)
+	GetCustomerID(ctx context.Context, uid string) (string, error)
+	StorePayment(ctx context.Context, uid, intent string) error
+	CreateTransaction(ctx context.Context, t *pb.Transaction) error
+	GetTransactions(ctx context.Context, uid string) ([]*pb.Transaction, error)
+}
 
 type Customer struct {
 	UID        string `db:"uid"`
@@ -21,10 +35,10 @@ type Customer struct {
 
 type StripeService struct {
 	client *client.API
-	db     *sqlx.DB
+	db     PaymentStore
 }
 
-func NewStripeService(db *sqlx.DB, client *client.API, opts ...func(service *StripeService) error) (PaymentService, error) {
+func NewStripeService(db PaymentStore, client *client.API, opts ...func(service *StripeService) error) (PaymentService, error) {
 	svc := &StripeService{
 		client: client,
 		db:     db,
@@ -40,7 +54,7 @@ func NewStripeService(db *sqlx.DB, client *client.API, opts ...func(service *Str
 }
 
 func (s *StripeService) SaveCard(ctx context.Context, uid string) (string, error) {
-	id, err := s.getCustomerID(ctx, uid)
+	id, err := s.db.GetCustomerID(ctx, uid)
 
 	if err != nil {
 		return "", errors.Wrap(err, "error getting customer id")
@@ -75,7 +89,7 @@ func (s *StripeService) CapturePayment(_ context.Context, pi string, amount floa
 }
 
 func (s *StripeService) GetPaymentIntentSecret(ctx context.Context, req *pb.PaymentRequest) (string, error) {
-	id, err := s.getCustomerID(ctx, req.Uid)
+	id, err := s.db.GetCustomerID(ctx, req.Uid)
 
 	if err != nil {
 		return "", err
@@ -101,23 +115,7 @@ func (s *StripeService) GetPaymentIntentSecret(ctx context.Context, req *pb.Paym
 	return pi.ClientSecret, nil
 }
 
-func (s *StripeService) getCustomerID(ctx context.Context, uid string) (string, error) {
-	u := &Customer{UID: uid}
-
-	err := s.db.Get(u, "SELECT * FROM customers WHERE uid=$1", u.UID)
-
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return s.createCustomer(ctx, &userPb.User{Uuid: uid})
-		}
-
-		return "", err
-	}
-
-	return u.CustomerID, nil
-}
-
-func (s *StripeService) createCustomer(_ context.Context, u *userPb.User) (string, error) {
+func (s *StripeService) createCustomer(ctx context.Context, u *userPb.User) (string, error) {
 	cus := &Customer{UID: u.Uuid}
 	name := fmt.Sprintf("%s %s", u.FirstName, u.LastName)
 
@@ -133,13 +131,53 @@ func (s *StripeService) createCustomer(_ context.Context, u *userPb.User) (strin
 	}
 
 	cus.UID = c.ID
-	_, err = s.db.NamedExec("INSERT INTO customers(uid, customer_id) values(:customerID, :uID)", cus)
+	err = s.db.CreateCustomer(ctx, cus)
 
 	return c.ID, err
 }
 
-func (s *StripeService) OnUserCreated(ctx context.Context, u *userPb.User) error {
+func (s *StripeService) OnUserCreated(ctx context.Context, data *eventpb.EventData) error {
+	u := data.GetUser()
 	_, err := s.createCustomer(ctx, u)
 
 	return err
+}
+
+func (s *StripeService) OnPaymentSucceded(ctx context.Context, data *eventpb.EventData) error {
+	intent := data.GetIntent()
+	pi, err := s.client.PaymentIntents.Get(intent, nil)
+
+	if err != nil {
+		return err
+	}
+
+	customerId := pi.Customer.ID
+	uid, err := s.db.GetUserID(ctx, customerId)
+
+	if err != nil {
+		return err
+	}
+
+	return s.db.StorePayment(ctx, intent, uid)
+}
+
+func (s *StripeService) OnTransferSucceded(ctx context.Context, data *eventpb.EventData) error {
+	tr := data.GetTransfer()
+	now := time.Now()
+
+	order := &pb.Transaction{
+		RecipientId:     tr.RecipientId,
+		UserId:          tr.SenderId,
+		CreatedAt:       &now,
+		AmountReceived:  tr.ReceiveAmount,
+		AmountSent:      tr.Amount,
+		TransactionFee:  tr.SendFee,
+		TransactionType: MobileMoney,
+		SendCurrency:    tr.Currency,
+		ReceiveCurrency: tr.ReceiveCurrency,
+		ExchangeRate:    tr.ExchangeRate,
+		PaymentIntent:   tr.PaymentIntent,
+	}
+
+	return s.db.CreateTransaction(ctx, order)
 }

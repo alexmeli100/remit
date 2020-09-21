@@ -34,7 +34,7 @@ type EventSender struct {
 	nats stan.Conn
 }
 
-func (e *EventSender) publishEvent(ctx context.Context, topic string, ev eventpb.EventKind, data *eventpb.EventData) error {
+func (e *EventSender) publishEvent(_ context.Context, topic string, ev eventpb.EventKind, data *eventpb.EventData) error {
 	event := &eventpb.Event{Event: ev, Payload: data}
 	b, err := encodePbEvent(event)
 
@@ -69,6 +69,14 @@ func (e *EventSender) OnTransferSucceded(ctx context.Context, t *transferpb.Tran
 	return e.publishEvent(ctx, TransferEvents, eventpb.TransferSucceded, data)
 }
 
+func (e *EventSender) OnTransferFailed(ctx context.Context, t *transferpb.TransferResponse) error {
+	data := &eventpb.EventData{
+		Data: &eventpb.EventData_Transfer{Transfer: t},
+	}
+
+	return e.publishEvent(ctx, TransferEvents, eventpb.TransferFailed, data)
+}
+
 func (e *EventSender) OnPaymentSucceded(ctx context.Context, paymentIntent string) error {
 	data := &eventpb.EventData{
 		Data: &eventpb.EventData_Intent{Intent: paymentIntent},
@@ -77,12 +85,28 @@ func (e *EventSender) OnPaymentSucceded(ctx context.Context, paymentIntent strin
 	return e.publishEvent(ctx, PaymentEvents, eventpb.PaymentSucceded, data)
 }
 
-func (e *EventSender) onTransactionSucceded(ctx context.Context, t *paymentpb.Transaction) error {
+func (e *EventSender) OnPaymentFailed(ctx context.Context, paymentIntent string) error {
+	data := &eventpb.EventData{
+		Data: &eventpb.EventData_Intent{Intent: paymentIntent},
+	}
+
+	return e.publishEvent(ctx, PaymentEvents, eventpb.PaymentFailed, data)
+}
+
+func (e *EventSender) OnTransactionSucceded(ctx context.Context, t *paymentpb.Transaction) error {
 	data := &eventpb.EventData{
 		Data: &eventpb.EventData_Transaction{Transaction: t},
 	}
 
-	return e.publishEvent(ctx, TransactionEvents, eventpb.TransferSucceded, data)
+	return e.publishEvent(ctx, TransactionEvents, eventpb.TransactionSucced, data)
+}
+
+func (e *EventSender) OnTransactionFailed(ctx context.Context, t *paymentpb.Transaction) error {
+	data := &eventpb.EventData{
+		Data: &eventpb.EventData_Transaction{Transaction: t},
+	}
+
+	return e.publishEvent(ctx, TransactionEvents, eventpb.TransactionFailed, data)
 }
 
 func encodePbEvent(src proto.Message) ([]byte, error) {

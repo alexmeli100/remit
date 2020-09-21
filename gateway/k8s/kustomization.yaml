@@ -1,0 +1,7 @@
+namespace: default
+secretGenerator:
+  - name: redis-password-secret
+    literals:
+      - redis-password=winniealex
+generatorOptions:
+  disableNameSuffixHash: true

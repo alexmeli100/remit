@@ -13,20 +13,18 @@ service Payment {
 }
 
 message Transaction {
- string id = 1;
- int64 recipientId = 2;
+ int64  id = 1;
+ int64  recipientId = 2;
  string userId = 3;
  google.protobuf.Timestamp createdAt = 4 [(gogoproto.stdtime) = true];
  double amountReceived = 5;
  double amountSent = 6;
  double transactionFee = 7;
- double transactionType = 8;
+ string transactionType = 8;
  string sendCurrency = 9;
  string receiveCurrency = 10;
  double exchangeRate = 11;
- string paymentMethodType = 12;
- string paymentMethodId = 13;
- string chargeId = 14;
+ string paymentIntent = 12;
 }
 
 message PaymentRequest {
@@ -63,14 +61,4 @@ message CapturePaymentRequest {
 message CapturePaymentReply {
  string secret = 1;
  string err = 2;
-}
-
-message PaymentEvent {
- PaymentEventKind kind = 1;
- string intent = 2;
-}
-
-enum PaymentEventKind {
- PaymentSucceded = 0;
- PaymentFailed = 1;
 }

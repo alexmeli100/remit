@@ -17,6 +17,16 @@ github.com/alecthomas/units v0.0.0-20190717042225-c3de453c63f4/go.mod h1:ybxpYRF
 github.com/alexmeli100/remit v0.0.1 h1:24Gb/pW53WAeOsRAOH0hONAQUN6qpqTjqnURqFuY0lY=
 github.com/alexmeli100/remit/events v0.0.0 h1:QCha8lQwBl335p/YDX92t38Pa+y0sM4qWdj2sYtjIAY=
 github.com/alexmeli100/remit/events v0.0.0/go.mod h1:fAxGRTPVuZg44wkBrRYrHZnGIncx3nIAf8cQhCxV04g=
+github.com/alexmeli100/remit/events v0.0.4 h1:YvDXu92+DaUQfczxfX0IJ1/AzheCpzj2uI3ICCX0nrc=
+github.com/alexmeli100/remit/events v0.0.4/go.mod h1:H0zsarGlwvimXxenIWhTKUr350AT5NbbnW+fRgturUE=
+github.com/alexmeli100/remit/events v0.0.5 h1:IlG0fNBSxKhVjRsT6sXFvVQKMB+FPxePKNQ9Y+F4CNA=
+github.com/alexmeli100/remit/events v0.0.5/go.mod h1:CRJHTUdusecJtAseXzvM4C5TatyY+taTqlFfQd/tZok=
+github.com/alexmeli100/remit/mtn v0.0.0/go.mod h1:DMEAZ9IV0SqScV5WS4zra+CmlUFzJXStZ9hYYUACeXY=
+github.com/alexmeli100/remit/payment v0.0.2/go.mod h1:DXnqrYxgUIg+5eRkYY506eTtOF7KPlGeAWl6lu5/b7Q=
+github.com/alexmeli100/remit/transfer v0.0.1 h1:1AYxb/QJBIcbigo2g1bRXMxs5Ba+ewIPE4lMxDLldAQ=
+github.com/alexmeli100/remit/transfer v0.0.1/go.mod h1:l1GPiAEdZAeveZrK7HzkPwQmP5QSA1M2lmp9YUQ50U4=
+github.com/alexmeli100/remit/transfer v0.0.2 h1:DoZFs3yR759NxnmO+T2Fp4SjADrH45E2XTgYN2qMleI=
+github.com/alexmeli100/remit/transfer v0.0.2/go.mod h1:l1GPiAEdZAeveZrK7HzkPwQmP5QSA1M2lmp9YUQ50U4=
 github.com/alexmeli100/remit/users v0.0.0 h1:6dwNStXCZV/YhBMc1/igldRmlwh4bKs9n3mA1npTK9A=
 github.com/alexmeli100/remit/users v0.0.0/go.mod h1:nZgUKFQ8JOO9sIgCaUowkPVLVEWw0UN9dJmTDnjXiJQ=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
@@ -125,6 +135,7 @@ github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/
 github.com/google/renameio v0.1.0/go.mod h1:KWCgfxg9yswjAJkECMjeO8J8rahYeXnNhOm40UhjYkI=
 github.com/google/uuid v1.0.0 h1:b4Gk+7WdP/d3HZH8EJsZpvV7EtDOgaZLtnaNGIu1adA=
 github.com/google/uuid v1.0.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/google/uuid v1.1.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
 github.com/gorilla/context v1.1.1/go.mod h1:kBGZzfjB9CEq2AlWe17Uuf7NDRt0dE0s8S51q0aT7Yg=
 github.com/gorilla/mux v1.6.2/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=

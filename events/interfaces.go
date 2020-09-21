@@ -15,14 +15,17 @@ type UserEventSender interface {
 
 type TransferEventSender interface {
 	OnTransferSucceded(ctx context.Context, t *transferpb.TransferResponse) error
+	OnTransferFailed(ctx context.Context, t *transferpb.TransferResponse) error
 }
 
 type TransactionEventsSender interface {
 	OnTransactionSucceded(ctx context.Context, t *paymentpb.Transaction) error
+	OnTransactionFailed(ctx context.Context, t *paymentpb.Transaction) error
 }
 
 type PaymentEventSender interface {
 	OnPaymentSucceded(ctx context.Context, paymentIntent string) error
+	OnPaymentFailed(ctx context.Context, paymentIntent string) error
 }
 
 type EventManager interface {

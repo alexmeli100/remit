@@ -3,12 +3,13 @@ module github.com/alexmeli100/remit/payment
 go 1.14
 
 require (
-	github.com/alexmeli100/remit/events v0.0.0
+	github.com/alexmeli100/remit/events v0.0.5
 	github.com/alexmeli100/remit/users v0.0.0
 	github.com/go-kit/kit v0.10.0
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/jmoiron/sqlx v1.2.0
+	github.com/lib/pq v1.8.0
 	github.com/lightstep/lightstep-tracer-go v0.20.0 // indirect
 	github.com/nats-io/stan.go v0.7.0
 	github.com/oklog/oklog v0.3.2 // indirect
