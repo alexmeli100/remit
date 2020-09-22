@@ -2,6 +2,7 @@ package mtn
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
@@ -143,6 +144,7 @@ func (m *Remittance) GetTransactionStatus(refId string) (*TransferResponse, erro
 // The interval time for polling is specified in milliseconds
 func (m *Remittance) GetFinalStatus(refId string, interval time.Duration, timeout time.Duration) (*TransferResponse, error) {
 	ticker := time.NewTicker(interval)
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
 	for {
 		select {
@@ -156,20 +158,22 @@ func (m *Remittance) GetFinalStatus(refId string, interval time.Duration, timeou
 			if res.Status == TransferSuccessFul || res.Status == TransferFailed {
 				return res, nil
 			}
-		case <-time.After(timeout):
+		case <-ctx.Done():
 			ticker.Stop()
 			return nil, ErrorPending
 		}
 	}
 }
 
-func (m *Remittance) SendTo(amount float64, recipient, currency string) error {
+func (m *Remittance) SendTo(amount int, recipient, currency string) error {
 	payee := &Payee{PartyId: recipient, PartyIdType: "MSISDN"}
+	id := uuid.New().String()
 
 	tr := &TransferRequest{
-		Amount:   strconv.FormatFloat(amount, 'f', 2, 64),
-		Currency: currency,
-		Payee:    payee,
+		Amount:     strconv.Itoa(amount),
+		Currency:   currency,
+		ExternalID: id,
+		Payee:      payee,
 	}
 
 	refId, err := m.Transfer(tr)
@@ -178,7 +182,7 @@ func (m *Remittance) SendTo(amount float64, recipient, currency string) error {
 		return err
 	}
 
-	res, err := m.GetFinalStatus(refId, time.Millisecond*100, time.Second)
+	res, err := m.GetFinalStatus(refId, time.Millisecond*100, time.Minute)
 
 	if err != nil {
 		return err

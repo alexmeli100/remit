@@ -202,8 +202,8 @@ func (e *ErrorHandler) handleResponse(res *http.Response, i interface{}) error {
 }
 
 func remittanceErrHandler(res *http.Response) error {
-	var er *ResponseError
-	err := getErrorRes(res, er)
+	var er ResponseError
+	err := getErrorRes(res, &er)
 
 	if err != nil {
 		if errors.Is(err, ErrorNoBody) {
@@ -213,7 +213,7 @@ func remittanceErrHandler(res *http.Response) error {
 		}
 	}
 
-	return getError(er, res.StatusCode)
+	return getError(&er, res.StatusCode)
 }
 
 func tokenErrHandler(res *http.Response) error {
@@ -273,7 +273,7 @@ func getError(err *ResponseError, status int) error {
 		return TransactionCancelledError{message}
 
 	default:
-		return errors.New("unknown error")
+		return fmt.Errorf("unknown error: %s", message)
 	}
 }
 
