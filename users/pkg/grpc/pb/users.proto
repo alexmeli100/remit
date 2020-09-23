@@ -46,6 +46,23 @@ message User {
  google.protobuf.Timestamp createdAt = 8 [(gogoproto.stdtime) = true];
  // @inject_tag: db:"confirmed"
  bool confirmed = 9;
+ Profile profile = 10;
+}
+
+message Profile {
+ string gender = 1;
+ string occupation = 2;
+ google.protobuf.Timestamp birthDate = 3 [(gogoproto.stdtime) = true];
+ Address address = 4;
+}
+
+message Address {
+ string country = 1;
+ string address1 = 2;
+ string address2 = 3;
+ string cityTown = 4;
+ string provinceState = 5;
+ string postalcodeZip = 6;
 }
 
 message Contact {

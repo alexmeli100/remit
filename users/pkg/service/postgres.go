@@ -11,12 +11,40 @@ import (
 )
 
 const (
-	UpdateEmailQuery   = "UPDATE users SET email=$1 WHERE id=$2"
-	getUserByQuery     = "SELECT * FROM users WHERE $1=$2 Limit 1"
-	UpdateStatusQuery  = "UPDATE users SET confirmed=TRUE WHERE id=$1"
-	createQuery        = `INSERT INTO users(first_name, middle_name, last_name, email, country, uuid, created_at) values($1, $2, $3, $4, $5, $6, $7)`
-	createContactQuery = `INSERT INTO contacts(first_name, middle_name, email, mobile, mobile_account, user_id, created_at) values($1, $2, $3, $4, $5, $6, $7)`
-	getContactsQuery   = "SELECT * FROM contacts WHERE user_id=$1"
+	UpdateEmailQuery = "UPDATE users SET email=$1 WHERE id=$2"
+
+	getUserByQuery = `SELECT
+						    users.id,
+							users.uuid,
+						    users.first_name,
+						    users.middle_name,
+						    users.last_name,
+						    users.email,
+						    users.confirmed,
+						    users.created_at,
+						    users.country,
+							profile.birth_date,
+							profile.gender,
+							profile.occupation,
+							user_address.country,
+							user_address.address_1,
+							user_address.address_2,
+							user_address.city_town,
+							user_address.province_state,
+							user_address.postalcode_zip
+						 FROM users 
+							LEFT JOIN profile ON users.id = profile.user_id 
+							LEFT JOIN user_address ON user_address.profile_id = profile.id
+							WHERE $1=$2
+						LIMIT 1`
+
+	UpdateStatusQuery = "UPDATE users SET confirmed=TRUE WHERE id=$1"
+
+	createQuery = `INSERT INTO users(first_name, middle_name, last_name, email, country, uuid, created_at) values($1, $2, $3, $4, $5, $6, $7)`
+
+	createContactQuery = `INSERT INTO contacts(first_name, middle_name, last_name, email, mobile, mobile_account, user_id, created_at) values($1, $2, $3, $4, $5, $6, $7, $8)`
+
+	getContactsQuery = "SELECT * FROM contacts WHERE user_id=$1"
 )
 
 type PostgService struct {
@@ -58,7 +86,14 @@ func (s *PostgService) GetUserByEmail(ctx context.Context, email string) (*pb.Us
 }
 
 func (s *PostgService) getUserBy(_ context.Context, kind interface{}, value interface{}, u *pb.User) error {
-	err := s.DB.Get(u, getUserByQuery, kind, value)
+	//err := s.DB.Get(u, getUserByQuery, kind, value)
+
+	row := s.DB.QueryRow(getUserByQuery, kind, value)
+
+	err := row.Scan(
+		&u.Id, &u.Uuid, &u.FirstName, &u.MiddleName, &u.LastName, &u.Email, &u.Confirmed, &u.CreatedAt, &u.Country, &u.Profile.BirthDate, &u.Profile.Gender, &u.Profile.Occupation,
+		&u.Profile.Address.Country, &u.Profile.Address.Address1, &u.Profile.Address.Address2, &u.Profile.Address.CityTown, &u.Profile.Address.ProvinceState, &u.Profile.Address.PostalcodeZip,
+	)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -84,13 +119,13 @@ func (s *PostgService) UpdateStatus(_ context.Context, u *pb.User) error {
 }
 
 func (s *PostgService) Create(_ context.Context, u *pb.User) error {
-	_, err := s.DB.Exec(createQuery, u.FirstName, u.LastName, u.Email, u.Country, u.Uuid, time.Now())
+	_, err := s.DB.Exec(createQuery, u.FirstName, u.FirstName, u.LastName, u.Email, u.Country, u.Uuid, time.Now())
 
 	return err
 }
 
 func (s *PostgService) CreateContact(_ context.Context, c *pb.Contact) error {
-	_, err := s.DB.Exec(createContactQuery, c.FirstName, c.LastName, c.Email, c.Mobile, c.MobileAccount, c.UserId, c.CreatedAt)
+	_, err := s.DB.Exec(createContactQuery, c.FirstName, c.MiddleName, c.LastName, c.Email, c.Mobile, c.MobileAccount, c.UserId, c.CreatedAt)
 
 	return err
 }
