@@ -27,8 +27,8 @@ func makeSaveCardClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption)
 		conn,
 		"pb.Payment",
 		endpoint.SaveCard,
-		encodeGetPaymentIntentSecretRequest,
-		decodeGetPaymentIntentSecretResponse,
+		encodeSaveCardRequest,
+		decodeSaveCardResponse,
 		pb.SaveCardReply{},
 		options...)
 

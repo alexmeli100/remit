@@ -14,7 +14,7 @@ var tracer opentracinggo.Tracer
 var grpcAddr string
 
 func Run(ctx context.Context, p service.PaymentService, logger log.Logger) {
-	port := os.Getenv("Payment_MANAGER_SERVICE_PORT")
+	port := os.Getenv("PAYMENT_MANAGER_SERVICE_PORT")
 	grpcAddr = ":" + port
 	tracer = opentracinggo.GlobalTracer()
 

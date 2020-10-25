@@ -9,8 +9,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go/v71"
 	"github.com/stripe/stripe-go/v71/client"
-	"github.com/stripe/stripe-go/v71/customer"
-	"github.com/stripe/stripe-go/v71/setupintent"
 	"time"
 )
 
@@ -23,6 +21,7 @@ type PaymentStore interface {
 	CreateCustomer(ctx context.Context, c *Customer) error
 	GetUserID(ctx context.Context, cid string) (string, error)
 	GetCustomerID(ctx context.Context, uid string) (string, error)
+	DeleteCustomer(ctx context.Context, uid string) error
 	StorePayment(ctx context.Context, uid, intent string) error
 	CreateTransaction(ctx context.Context, t *pb.Transaction) error
 	GetTransactions(ctx context.Context, uid string) ([]*pb.Transaction, error)
@@ -65,7 +64,7 @@ func (s *StripeService) SaveCard(ctx context.Context, uid string) (string, error
 		Usage:    stripe.String("on_session"),
 	}
 
-	intent, err := setupintent.New(params)
+	intent, err := s.client.SetupIntents.New(params)
 
 	if err != nil {
 		return "", errors.Wrap(err, "error creating setup intent")
@@ -124,16 +123,32 @@ func (s *StripeService) createCustomer(ctx context.Context, u *userPb.User) (str
 		Email: &u.Email,
 	}
 
-	c, err := customer.New(params)
+	c, err := s.client.Customers.New(params)
 
 	if err != nil {
 		return "", errors.Wrap(err, "error creating stripe customer")
 	}
 
-	cus.UID = c.ID
+	cus.CustomerID = c.ID
 	err = s.db.CreateCustomer(ctx, cus)
 
 	return c.ID, err
+}
+
+func (s *StripeService) deleteCustomer(ctx context.Context, u *userPb.User) error {
+	cid, err := s.db.GetCustomerID(ctx, u.Uuid)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = s.client.Customers.Del(cid, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return s.db.DeleteCustomer(ctx, u.Uuid)
 }
 
 func (s *StripeService) OnUserCreated(ctx context.Context, data *eventpb.EventData) error {

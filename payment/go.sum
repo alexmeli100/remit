@@ -29,6 +29,8 @@ github.com/alexmeli100/remit/transfer v0.0.2 h1:DoZFs3yR759NxnmO+T2Fp4SjADrH45E2
 github.com/alexmeli100/remit/transfer v0.0.2/go.mod h1:l1GPiAEdZAeveZrK7HzkPwQmP5QSA1M2lmp9YUQ50U4=
 github.com/alexmeli100/remit/users v0.0.0 h1:6dwNStXCZV/YhBMc1/igldRmlwh4bKs9n3mA1npTK9A=
 github.com/alexmeli100/remit/users v0.0.0/go.mod h1:nZgUKFQ8JOO9sIgCaUowkPVLVEWw0UN9dJmTDnjXiJQ=
+github.com/alexmeli100/remit/users v0.0.3 h1:Np5TNmmfDtNwVVltHO+o/yKkMjgY+aEP8lnbTr6bSso=
+github.com/alexmeli100/remit/users v0.0.3/go.mod h1:VbWLx3DsDUyumpukE6crFs3iOhxa8Dkc4JNXOHBdNvs=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/apache/thrift v0.13.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
@@ -135,6 +137,7 @@ github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/
 github.com/google/renameio v0.1.0/go.mod h1:KWCgfxg9yswjAJkECMjeO8J8rahYeXnNhOm40UhjYkI=
 github.com/google/uuid v1.0.0 h1:b4Gk+7WdP/d3HZH8EJsZpvV7EtDOgaZLtnaNGIu1adA=
 github.com/google/uuid v1.0.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/google/uuid v1.1.1 h1:Gkbcsh/GbpXz7lPftLA3P6TYMwjCLYm83jiFQZF/3gY=
 github.com/google/uuid v1.1.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
 github.com/gorilla/context v1.1.1/go.mod h1:kBGZzfjB9CEq2AlWe17Uuf7NDRt0dE0s8S51q0aT7Yg=
