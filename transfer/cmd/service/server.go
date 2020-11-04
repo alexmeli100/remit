@@ -11,6 +11,7 @@ import (
 	stdopentracing "github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"net"
 )
 
@@ -27,6 +28,7 @@ func createService(endpoints endpoint.Endpoints, opts ...TransferServerOptFunc) 
 	grpcServer := transferTran.NewGRPCServer(endpoints, serverOptions)
 	baseServer := grpc.NewServer()
 	pb.RegisterTransferServer(baseServer, grpcServer)
+	reflection.Register(baseServer)
 
 	return baseServer
 }

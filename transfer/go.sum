@@ -15,6 +15,8 @@ github.com/alexmeli100/remit/mtn v0.0.0 h1:vMvl7j15txjTI9gCXEyzP+Xj3zZbrQhbxhl7O
 github.com/alexmeli100/remit/mtn v0.0.0/go.mod h1:DMEAZ9IV0SqScV5WS4zra+CmlUFzJXStZ9hYYUACeXY=
 github.com/alexmeli100/remit/mtn v0.0.1 h1:3CPat7wV8iMYE48OSB6sN6VOH2ZJMVkzo1B8kWxaRVE=
 github.com/alexmeli100/remit/mtn v0.0.1/go.mod h1:DMEAZ9IV0SqScV5WS4zra+CmlUFzJXStZ9hYYUACeXY=
+github.com/alexmeli100/remit/mtn v0.0.2 h1:y8ObkrKzG/jeYB9WCsyDh/iWCKHFly5NpwBIUYiFVfM=
+github.com/alexmeli100/remit/mtn v0.0.2/go.mod h1:DMEAZ9IV0SqScV5WS4zra+CmlUFzJXStZ9hYYUACeXY=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/apache/thrift v0.13.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
@@ -390,6 +392,8 @@ google.golang.org/grpc v1.25.1/go.mod h1:c3i+UQWmh7LiEpx4sFZnkU36qjEYZ0imhYfXVyQ
 google.golang.org/grpc v1.26.0/go.mod h1:qbnxyOmOxrQa7FizSgH+ReBfzJrCY1pSN7KXBS8abTk=
 google.golang.org/grpc v1.31.0 h1:T7P4R73V3SSDPhH7WW7ATbfViLtmamH0DKrP3f9AuDI=
 google.golang.org/grpc v1.31.0/go.mod h1:N36X2cJ7JwdamYAgDz+s+rVMFjt3numwzf/HckM8pak=
+google.golang.org/grpc v1.32.0 h1:zWTV+LMdc3kaiJMSTOFz2UgSBgx8RNQoTGiZu3fR9S0=
+google.golang.org/grpc v1.32.0/go.mod h1:N36X2cJ7JwdamYAgDz+s+rVMFjt3numwzf/HckM8pak=
 google.golang.org/protobuf v0.0.0-20200109180630-ec00e32a8dfd/go.mod h1:DFci5gLYBciE7Vtevhsrf46CRTquxDuWsQurQQe4oz8=
 google.golang.org/protobuf v0.0.0-20200221191635-4d8936d0db64/go.mod h1:kwYJMbMJ01Woi6D6+Kah6886xMZcty6N08ah7+eCXa0=
 google.golang.org/protobuf v0.0.0-20200228230310-ab0ca4ff8a60/go.mod h1:cfTl7dwQJ+fmap5saPgwCLgHXTUD7jkjRqWcaiX5VyM=

@@ -4,7 +4,7 @@ package pb;
 
 //The Transfer service definition.
 service Transfer {
- rpc Transfer (TransferRequest) returns (TransferReply);
+ rpc Transfer (TransferRequest) returns (TransferResponse);
 }
 
 message TransferRequest {
@@ -16,7 +16,7 @@ message TransferRequest {
  string receiveCurrency = 6;
  double exchangeRate = 7;
  double sendFee = 8;
- double receiveAmount = 9;
+ int64  receiveAmount = 9;
  string senderId = 10;
  string paymentIntent = 11;
 }
@@ -30,7 +30,7 @@ message TransferResponse {
  string receiveCurrency = 6;
  double exchangeRate = 7;
  double sendFee = 8;
- double receiveAmount = 9;
+ int64  receiveAmount = 9;
  string senderId = 10;
  string paymentIntent = 11;
  string status = 12;

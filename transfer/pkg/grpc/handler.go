@@ -4,8 +4,8 @@ import (
 	"context"
 	endpoint "github.com/alexmeli100/remit/transfer/pkg/endpoint"
 	pb "github.com/alexmeli100/remit/transfer/pkg/grpc/pb"
+	"github.com/alexmeli100/remit/transfer/pkg/service"
 	grpc "github.com/go-kit/kit/transport/grpc"
-	context1 "golang.org/x/net/context"
 )
 
 // makeTransferHandler creates the handler logic
@@ -29,18 +29,10 @@ func encodeTransferResponse(_ context.Context, r interface{}) (interface{}, erro
 	return res.Res, nil
 }
 
-func (g *grpcServer) Transfer(ctx context1.Context, req *pb.TransferRequest) (*pb.TransferReply, error) {
+func (g *grpcServer) Transfer(ctx context.Context, req *pb.TransferRequest) (*pb.TransferResponse, error) {
 	_, rep, err := g.transfer.ServeGRPC(ctx, req)
 	if err != nil {
-		return nil, err
+		return service.GetTransferResponse(req, err), err
 	}
-	return rep.(*pb.TransferReply), nil
-}
-
-func err2str(err error) string {
-	if err == nil {
-		return ""
-	}
-
-	return err.Error()
+	return rep.(*pb.TransferResponse), nil
 }

@@ -15,7 +15,7 @@ type TransferRequest struct {
 
 // TransferResponse collects the response parameters for the Transfer method.
 type TransferResponse struct {
-	Res *pb.TransferResponse `json:"response"`
+	Res *pb.TransferResponse `json:"res"`
 }
 
 // MakeTransferEndpoint returns an endpoint that invokes Transfer on the service.

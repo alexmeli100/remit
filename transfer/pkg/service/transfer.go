@@ -35,7 +35,7 @@ func (m *MobileTransfer) Transfer(ctx context.Context, r *pb.TransferRequest) *p
 		return GetTransferResponse(r, err)
 	}
 
-	err := s.SendTo(r.Amount, r.RecipientNumber, r.Currency)
+	err := s.SendTo(int(r.ReceiveAmount), r.RecipientNumber, r.ReceiveCurrency)
 
 	return GetTransferResponse(r, err)
 }

@@ -7,6 +7,7 @@ import (
 	kitEndpoint "github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
 	opentracinggo "github.com/opentracing/opentracing-go"
+	"os"
 )
 
 var tracer opentracinggo.Tracer
@@ -14,6 +15,9 @@ var tracer opentracinggo.Tracer
 var grpcAddr string
 
 func Run(ctx context.Context, t service.TransferService, logger log.Logger) {
+	port := os.Getenv("TRANSFER_MANAGER_SERVICE_PORT")
+	grpcAddr = ":" + port
+
 	tracer = opentracinggo.GlobalTracer()
 
 	el := endpoint.GetEndpointList()

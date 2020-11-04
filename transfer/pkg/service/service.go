@@ -6,7 +6,7 @@ import (
 )
 
 type SendMoney interface {
-	SendTo(amount float64, recipient, currency string) error
+	SendTo(amount int, recipient, currency string) error
 }
 
 // TransferService describes the service.
