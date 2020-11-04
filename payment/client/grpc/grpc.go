@@ -19,6 +19,8 @@ func New(conn *grpc.ClientConn, options map[string][]grpcTrans.ClientOption) ser
 		CapturePaymentEndpoint:         makeCapturePaymentClient(conn, options[endpoint.CapturePayment]).Endpoint(),
 		GetPaymentIntentSecretEndpoint: makeGetPaymentSecretClient(conn, options[endpoint.CapturePayment]).Endpoint(),
 		SaveCardEndpoint:               makeSaveCardClient(conn, options[endpoint.SaveCard]).Endpoint(),
+		GetCustomerIDEndpoint:          makeGetCustomerIDClient(conn, options[endpoint.GetCustomerID]).Endpoint(),
+		CreateTransactionEndpoint:      makeCreateTransactionClient(conn, options[endpoint.CreateTransaction]).Endpoint(),
 	}
 }
 

@@ -21,5 +21,7 @@ func NewGRPCServer(endpoints endpoint.Endpoints, options map[string][]grpc.Serve
 		getPaymentIntentSecret: makeGetPaymentIntentSecretHandler(endpoints, options[endpoint.GetPaymentIntentSecret]),
 		saveCard:               makeSaveCardHandler(endpoints, options[endpoint.SaveCard]),
 		capturePayment:         makeCapturePaymentHandler(endpoints, options[endpoint.CapturePayment]),
+		getCustomerID:          makeGetCustomerIDHandler(endpoints, options[endpoint.GetCustomerID]),
+		createTransaction:      makeCreateTransactionHandler(endpoints, options[endpoint.GetCustomerID]),
 	}
 }
