@@ -15,14 +15,44 @@ type loggingMiddleware struct {
 	next   UsersService
 }
 
-func (l loggingMiddleware) CreateContact(ctx context.Context, contact *pb.Contact) error {
-	err := l.next.CreateContact(ctx, contact)
+func (l loggingMiddleware) UpdateUserProfile(ctx context.Context, user *pb.User) (*pb.User, error) {
+	u, err := l.next.UpdateUserProfile(ctx, user)
+
+	defer func() {
+		_ = l.logger.Log("method", "UpdateUserProfile", "err", err)
+	}()
+
+	return u, err
+}
+
+func (l loggingMiddleware) UpdateContact(ctx context.Context, contact *pb.Contact) (*pb.Contact, error) {
+	c, err := l.next.UpdateContact(ctx, contact)
+
+	defer func() {
+		_ = l.logger.Log("method", "UpdateContact", "err", err)
+	}()
+
+	return c, err
+}
+
+func (l loggingMiddleware) SetUserProfile(ctx context.Context, user *pb.User) (*pb.User, error) {
+	u, err := l.next.SetUserProfile(ctx, user)
+
+	defer func() {
+		_ = l.logger.Log("method", "SetUserProfile", "err", err)
+	}()
+
+	return u, err
+}
+
+func (l loggingMiddleware) CreateContact(ctx context.Context, contact *pb.Contact) (*pb.Contact, error) {
+	c, err := l.next.CreateContact(ctx, contact)
 
 	defer func() {
 		_ = l.logger.Log("method", "CreateContact", "user", contact, "err", err)
 	}()
 
-	return err
+	return c, err
 }
 
 func (l loggingMiddleware) GetContacts(ctx context.Context, uid string) ([]*pb.Contact, error) {
@@ -35,14 +65,14 @@ func (l loggingMiddleware) GetContacts(ctx context.Context, uid string) ([]*pb.C
 	return cs, err
 }
 
-func (l loggingMiddleware) Create(ctx context.Context, user *pb.User) error {
-	err := l.next.Create(ctx, user)
+func (l loggingMiddleware) Create(ctx context.Context, user *pb.User) (*pb.User, error) {
+	u, err := l.next.Create(ctx, user)
 
 	defer func() {
-		_ = l.logger.Log("method", "Create", "user", user, "err", err)
+		_ = l.logger.Log("method", "Create", "user", u, "err", err)
 	}()
 
-	return err
+	return u, err
 }
 
 func (l loggingMiddleware) GetUserByID(ctx context.Context, id int64) (*pb.User, error) {
@@ -80,16 +110,6 @@ func (l loggingMiddleware) UpdateEmail(ctx context.Context, user *pb.User) error
 
 	defer func() {
 		_ = l.logger.Log("method", "UpdateEmail", "user", user, "err", err)
-	}()
-
-	return err
-}
-
-func (l loggingMiddleware) UpdateStatus(ctx context.Context, user *pb.User) error {
-	err := l.next.UpdateStatus(ctx, user)
-
-	defer func() {
-		_ = l.logger.Log("method", "Updatestatus", "user", user, "err", err)
 	}()
 
 	return err

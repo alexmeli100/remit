@@ -79,7 +79,14 @@ func encodeGetUserByEmailRequest(_ context.Context, r interface{}) (interface{},
 }
 
 func makeUpdateEmailClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
-	return grpcTrans.NewClient(conn, "pb.Users", "UpdateEmail", encodeUpdateEmailRequest, decodeUpdateEmailResponse, pb.UpdateEmailReply{}, options...)
+	return grpcTrans.NewClient(
+		conn,
+		"pb.Users",
+		"UpdateEmail",
+		encodeUpdateEmailRequest,
+		decodeUpdateEmailResponse,
+		pb.UpdateEmailReply{},
+		options...)
 }
 
 func decodeUpdateEmailResponse(_ context.Context, r interface{}) (interface{}, error) {
@@ -94,20 +101,73 @@ func encodeUpdateEmailRequest(_ context.Context, r interface{}) (interface{}, er
 	return &pb.UpdateEmailRequest{User: req.User}, nil
 }
 
-func makeUpdateStatusClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
-	return grpcTrans.NewClient(conn, "pb.Users", "UpdateStatus", encodeUpdateStatusRequest, decodeUpdateStatusResponse, pb.UpdateStatusReply{}, options...)
+func makeUpdateContactClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
+	return grpcTrans.NewClient(
+		conn,
+		"pb.Users",
+		"UpdateContact",
+		encodeUpdateContactRequest,
+		decodeUpdateContactResponse,
+		pb.UpdateContactReply{},
+		options...)
 }
 
-func decodeUpdateStatusResponse(_ context.Context, r interface{}) (interface{}, error) {
-	res := r.(*pb.UpdateStatusReply)
+func encodeUpdateContactRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(endpoint.UpdateContactRequest)
 
-	return endpoint.UpdateStatusResponse{Err: str2err(res.Err)}, nil
+	return &pb.UpdateContactRequest{Contact: req.Contact}, nil
 }
 
-func encodeUpdateStatusRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(endpoint.UpdateStatusRequest)
+func decodeUpdateContactResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(*pb.UpdateContactReply)
 
-	return &pb.UpdateStatusRequest{User: req.User}, nil
+	return endpoint.UpdateContactResponse{Contact: res.Contact, Err: str2err(res.Err)}, nil
+}
+
+func makeUpdateUserProfileClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
+	return grpcTrans.NewClient(
+		conn,
+		"pb.Users",
+		"UpdateUserProfile",
+		encodeUpdateUserProfileRequest,
+		decodeUpdateUserProfileResponse,
+		pb.UpdateUserProfileReply{},
+		options...)
+}
+
+func encodeUpdateUserProfileRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(endpoint.UpdateUserProfileRequest)
+
+	return &pb.UpdateUserProfileRequest{User: req.User}, nil
+}
+
+func decodeUpdateUserProfileResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(*pb.UpdateUserProfileReply)
+
+	return endpoint.UpdateUserProfileResponse{User: res.User, Err: str2err(res.Err)}, nil
+}
+
+func makeSetUserProfileClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
+	return grpcTrans.NewClient(
+		conn,
+		"pb.Users",
+		"SetUserProfile",
+		encodeSetUserProfileRequest,
+		decodeSetUserProfileResponse,
+		pb.SetUserProfileReply{},
+		options...)
+}
+
+func encodeSetUserProfileRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(endpoint.SetUserProfileRequest)
+
+	return &pb.SetUserProfileRequest{User: req.User}, nil
+}
+
+func decodeSetUserProfileResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(*pb.SetUserProfileReply)
+
+	return endpoint.SetUserProfileResponse{User: res.User, Err: str2err(res.Err)}, nil
 }
 
 func str2err(s string) error {
@@ -120,11 +180,13 @@ func str2err(s string) error {
 
 func NewGRPCClient(conn *grpc.ClientConn, options map[string][]grpcTrans.ClientOption) service.UsersService {
 	return endpoint.Endpoints{
-		CreateEndpoint:         makeCreateClient(conn, options[endpoint.Create]).Endpoint(),
-		GetUserByEmailEndpoint: makeGetUserByEmailClient(conn, options[endpoint.GetUserByEmail]).Endpoint(),
-		GetUserByIDEndpoint:    makeGetUserByIDClient(conn, options[endpoint.GetUserById]).Endpoint(),
-		GetUserByUUIDEndpoint:  makeGetUserByUUIDClient(conn, options[endpoint.GetUserByUUID]).Endpoint(),
-		UpdateEmailEndpoint:    makeUpdateEmailClient(conn, options[endpoint.UpdateEmail]).Endpoint(),
-		UpdateStatusEndpoint:   makeUpdateStatusClient(conn, options[endpoint.UpdateStatus]).Endpoint(),
+		CreateEndpoint:            makeCreateClient(conn, options[endpoint.Create]).Endpoint(),
+		GetUserByEmailEndpoint:    makeGetUserByEmailClient(conn, options[endpoint.GetUserByEmail]).Endpoint(),
+		GetUserByIDEndpoint:       makeGetUserByIDClient(conn, options[endpoint.GetUserById]).Endpoint(),
+		GetUserByUUIDEndpoint:     makeGetUserByUUIDClient(conn, options[endpoint.GetUserByUUID]).Endpoint(),
+		UpdateEmailEndpoint:       makeUpdateEmailClient(conn, options[endpoint.UpdateEmail]).Endpoint(),
+		UpdateContactEndpoint:     makeUpdateContactClient(conn, options[endpoint.UpdateContact]).Endpoint(),
+		UpdateUserProfileEndpoint: makeUpdateUserProfileClient(conn, options[endpoint.UpdateUserProfile]).Endpoint(),
+		SetUserProfileEndpoint:    makeSetUserProfileClient(conn, options[endpoint.SetUserProfile]).Endpoint(),
 	}
 }

@@ -7,14 +7,16 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 //The Users service definition.
 service Users {
- rpc Create         (CreateRequest        ) returns (CreateReply        );
- rpc GetUserByID    (GetUserByIDRequest   ) returns (GetUserByIDReply   );
- rpc GetUserByEmail (GetUserByEmailRequest) returns (GetUserByEmailReply);
- rpc GetUserByUUID  (GetUserByUUIDRequest ) returns (GetUserByUUIDReply );
- rpc UpdateEmail    (UpdateEmailRequest   ) returns (UpdateEmailReply   );
- rpc UpdateStatus   (UpdateStatusRequest  ) returns (UpdateStatusReply  );
- rpc CreateContact  (CreateContactRequest ) returns (CreateContactReply );
- rpc GetContacts    (GetContactsRequest   ) returns (GetContactsReply   );
+ rpc Create            (CreateRequest           ) returns (CreateReply           );
+ rpc GetUserByID       (GetUserByIDRequest      ) returns (GetUserByIDReply      );
+ rpc GetUserByEmail    (GetUserByEmailRequest   ) returns (GetUserByEmailReply   );
+ rpc GetUserByUUID     (GetUserByUUIDRequest    ) returns (GetUserByUUIDReply    );
+ rpc UpdateEmail       (UpdateEmailRequest      ) returns (UpdateEmailReply      );
+ rpc CreateContact     (CreateContactRequest    ) returns (CreateContactReply    );
+ rpc GetContacts       (GetContactsRequest      ) returns (GetContactsReply      );
+ rpc UpdateContact     (UpdateContactRequest    ) returns (UpdateContactReply    );
+ rpc SetUserProfile    (SetUserProfileRequest   ) returns (SetUserProfileReply   );
+ rpc UpdateUserProfile (UpdateUserProfileRequest) returns (UpdateUserProfileReply);
 }
 
 message UserEvent {
@@ -50,31 +52,51 @@ message User {
 }
 
 message Profile {
+ // @inject_tag: db:"gender"
  string gender = 1;
+ // @inject_tag: db:"occupation"
  string occupation = 2;
+ // @inject_tag: db:"birth_date"
  google.protobuf.Timestamp birthDate = 3 [(gogoproto.stdtime) = true];
  Address address = 4;
 }
 
 message Address {
+ // @inject_tag: db:"country"
  string country = 1;
+ // @inject_tag: db:"address_1"
  string address1 = 2;
+ // @inject_tag: db:"address_2"
  string address2 = 3;
+ // @inject_tag: db:"city_town"
  string cityTown = 4;
+ // @inject_tag: db:"province_state"
  string provinceState = 5;
+ // @inject_tag: db: "postalcode_zip"
  string postalcodeZip = 6;
 }
 
 message Contact {
+ // @inject_tag: db: "first_name"
  string firstName = 1;
+ // @inject_tag: db: "middle_name"
  string middleName = 2;
+ // @inject_tag: db: "last_name"
  string lastName = 3;
+ // @inject_tag: db: "email"
  string email = 4;
+ // @inject_tag: db: "mobile"
  string mobile = 5;
+ // @inject_tag: db: "mobile_account"
  string mobileAccount = 6;
+ // @inject_tag: db: "id"
  int64 id = 7;
+ // @inject_tag: db: "user_id"
  string userId = 8;
+ // @inject_tag: db: "created_at"
  google.protobuf.Timestamp createdAt = 9 [(gogoproto.stdtime) = true];
+ // @inject_tag: db: "updated_at"
+ google.protobuf.Timestamp updatedAt = 10 [(gogoproto.stdtime) = true];
 }
 
 message CreateRequest {
@@ -120,22 +142,6 @@ message UpdateEmailReply {
  string err = 1;
 }
 
-message UpdatePasswordRequest {
- User user = 1;
-}
-
-message UpdatePasswordReply {
- string err = 1;
-}
-
-message UpdateStatusRequest {
- User user = 1;
-}
-
-message UpdateStatusReply {
- string err = 1;
-}
-
 message CreateContactRequest {
  Contact contact = 1;
 }
@@ -151,5 +157,32 @@ message GetContactsRequest {
 message GetContactsReply {
  string err = 1;
  repeated Contact contacts = 2;
+}
+
+message UpdateContactRequest {
+ Contact contact = 1;
+}
+
+message UpdateContactReply {
+ string err = 1;
+ Contact contact = 2;
+}
+
+message SetUserProfileRequest {
+ User user = 1;
+}
+
+message SetUserProfileReply {
+ string err = 1;
+ User user = 2;
+}
+
+message UpdateUserProfileRequest {
+ User user = 1;
+}
+
+message UpdateUserProfileReply {
+ string err = 1;
+ User user = 2;
 }
 

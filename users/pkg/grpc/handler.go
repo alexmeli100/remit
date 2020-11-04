@@ -158,33 +158,56 @@ func (g *grpcServer) UpdateEmail(ctx context.Context, req *pb.UpdateEmailRequest
 	return rep.(*pb.UpdateEmailReply), nil
 }
 
-// makeUpdateStatusHandler creates the handler logic
-func makeUpdateStatusHandler(endpoints endpoint.Endpoints, options []grpcTrans.ServerOption) grpcTrans.Handler {
-	return grpcTrans.NewServer(endpoints.UpdateStatusEndpoint, decodeUpdateStatusRequest, encodeUpdateStatusResponse, options...)
+func makeSetUserProfileHandler(endpoints endpoint.Endpoints, options []grpcTrans.ServerOption) grpcTrans.Handler {
+	return grpcTrans.NewServer(endpoints.SetUserProfileEndpoint, decodeSetUserProfileRequest, endcodeSetUserProfileResponse, options...)
 }
 
-// decodeUpdateStatusResponse is a transport/grpc.DecodeRequestFunc that converts a
-// gRPC request to a user-domain UpdateStatus request.
-func decodeUpdateStatusRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(*pb.UpdateStatusRequest)
+func decodeSetUserProfileRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(*pb.SetUserProfileRequest)
 
-	return endpoint.UpdateStatusRequest{User: req.User}, nil
+	return endpoint.SetUserProfileRequest{User: req.User}, nil
 }
 
-// encodeUpdateStatusResponse is a transport/grpc.EncodeResponseFunc that converts
-// a user-domain response to a gRPC reply.
-func encodeUpdateStatusResponse(_ context.Context, r interface{}) (interface{}, error) {
-	res := r.(endpoint.UpdateStatusResponse)
+func endcodeSetUserProfileResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(endpoint.SetUserProfileResponse)
 
-	return &pb.UpdateStatusReply{Err: err2str(res.Err)}, nil
+	return &pb.SetUserProfileReply{Err: err2str(res.Err), User: res.User}, nil
 }
 
-func (g *grpcServer) UpdateStatus(ctx context.Context, req *pb.UpdateStatusRequest) (*pb.UpdateStatusReply, error) {
-	_, rep, err := g.updateStatus.ServeGRPC(ctx, req)
+func (g *grpcServer) SetUserProfile(ctx context.Context, request *pb.SetUserProfileRequest) (*pb.SetUserProfileReply, error) {
+	_, rep, err := g.setUserProfile.ServeGRPC(ctx, request)
+
 	if err != nil {
 		return nil, err
 	}
-	return rep.(*pb.UpdateStatusReply), nil
+
+	return rep.(*pb.SetUserProfileReply), nil
+}
+
+func makeUpdateUserProfileHandler(endpoints endpoint.Endpoints, options []grpcTrans.ServerOption) grpcTrans.Handler {
+	return grpcTrans.NewServer(endpoints.UpdateUserProfileEndpoint, decodeUpdateUserProfileEndpoint, encodeUpdateUserProfileEndpoint, options...)
+}
+
+func decodeUpdateUserProfileEndpoint(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(*pb.UpdateUserProfileRequest)
+
+	return endpoint.UpdateUserProfileRequest{User: req.User}, nil
+}
+
+func encodeUpdateUserProfileEndpoint(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(endpoint.UpdateUserProfileResponse)
+
+	return &pb.UpdateUserProfileReply{User: res.User, Err: err2str(res.Err)}, nil
+}
+
+func (g *grpcServer) UpdateUserProfile(ctx context.Context, request *pb.UpdateUserProfileRequest) (*pb.UpdateUserProfileReply, error) {
+	_, rep, err := g.updateUserProfile.ServeGRPC(ctx, request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rep.(*pb.UpdateUserProfileReply), nil
 }
 
 func makeCreateContactHandler(endpoints endpoint.Endpoints, options []grpcTrans.ServerOption) grpcTrans.Handler {
@@ -237,6 +260,32 @@ func (g *grpcServer) GetContacts(ctx context.Context, req *pb.GetContactsRequest
 	}
 
 	return rep.(*pb.GetContactsReply), nil
+}
+
+func makeUpdateContactHandler(endpoints endpoint.Endpoints, options []grpcTrans.ServerOption) grpcTrans.Handler {
+	return grpcTrans.NewServer(endpoints.UpdateContactEndpoint, decodeUpdateContactRequest, encodeUpdateContactResponse, options...)
+}
+
+func decodeUpdateContactRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(*pb.UpdateContactRequest)
+
+	return endpoint.UpdateContactRequest{Contact: req.Contact}, nil
+}
+
+func encodeUpdateContactResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(endpoint.UpdateContactResponse)
+
+	return &pb.UpdateContactReply{Contact: res.Contact, Err: err2str(res.Err)}, nil
+}
+
+func (g *grpcServer) UpdateContact(ctx context.Context, request *pb.UpdateContactRequest) (*pb.UpdateContactReply, error) {
+	_, rep, err := g.updateContact.ServeGRPC(ctx, request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rep.(*pb.UpdateContactReply), nil
 }
 
 func err2str(err error) string {

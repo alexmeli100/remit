@@ -14,16 +14,17 @@ type CreateRequest struct {
 
 // CreateResponse collects the response parameters for the Create method.
 type CreateResponse struct {
-	Err error `json:"err"`
+	User *pb.User `json:"user"`
+	Err  error    `json:"err"`
 }
 
 // MakeCreateEndpoint returns an endpoint that invokes Create on the service.
 func MakeCreateEndpoint(s service.UsersService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(CreateRequest)
-		err := s.Create(ctx, req.User)
+		u, err := s.Create(ctx, req.User)
 
-		return CreateResponse{Err: err}, nil
+		return CreateResponse{Err: err, User: u}, nil
 	}
 }
 
@@ -146,50 +147,88 @@ func (r UpdateEmailResponse) Failed() error {
 	return r.Err
 }
 
-// UpdateStatusRequest collects the request parameters for the UpdateStatus method.
-type UpdateStatusRequest struct {
-	User *pb.User `json:"user"`
-}
-
-// UpdateStatusResponse collects the response parameters for the UpdateStatus method.
-type UpdateStatusResponse struct {
-	Err error `json:"err"`
-}
-
-// MakeUpdateStatusEndpoint returns an endpoint that invokes UpdateStatus on the service.
-func MakeUpdateStatusEndpoint(s service.UsersService) endpoint.Endpoint {
-	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(UpdateStatusRequest)
-		err := s.UpdateStatus(ctx, req.User)
-
-		return UpdateStatusResponse{Err: err}, nil
-	}
-}
-
-// Failed implements Failer.
-func (r UpdateStatusResponse) Failed() error {
-	return r.Err
-}
-
 type CreateContactRequest struct {
 	Contact *pb.Contact `json:"contact"`
 }
 
 type CreateContactResponse struct {
-	Err error `json:"err"`
+	Contact *pb.Contact `json:"contact"`
+	Err     error       `json:"err"`
 }
 
 func MakeCreateContactEndpoint(s service.UsersService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(CreateContactRequest)
-		err := s.CreateContact(ctx, req.Contact)
+		c, err := s.CreateContact(ctx, req.Contact)
 
-		return CreateContactResponse{Err: err}, nil
+		return CreateContactResponse{Err: err, Contact: c}, nil
 	}
 }
 
 func (r CreateContactResponse) Failed() error {
 	return r.Err
+}
+
+type UpdateContactRequest struct {
+	Contact *pb.Contact `json:"contact"`
+}
+
+type UpdateContactResponse struct {
+	Contact *pb.Contact `json:"contact"`
+	Err     error       `json:"err"`
+}
+
+func MakeUpdateContactEndpoint(s service.UsersService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(UpdateContactRequest)
+		c, err := s.UpdateContact(ctx, req.Contact)
+
+		return UpdateContactResponse{Err: err, Contact: c}, nil
+	}
+}
+
+func (r UpdateContactResponse) Failed() error {
+	return r.Err
+}
+
+type SetUserProfileRequest struct {
+	User *pb.User `json:"user"`
+}
+
+type SetUserProfileResponse struct {
+	User *pb.User `json:"user"`
+	Err  error    `json:"err"`
+}
+
+func MakeSetUserProfileResponse(s service.UsersService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(SetUserProfileRequest)
+		u, err := s.SetUserProfile(ctx, req.User)
+
+		return SetUserProfileResponse{User: u, Err: err}, nil
+	}
+}
+
+func (r SetUserProfileResponse) Failed() error {
+	return r.Err
+}
+
+type UpdateUserProfileRequest struct {
+	User *pb.User `json:"user"`
+}
+
+type UpdateUserProfileResponse struct {
+	User *pb.User `json:"user"`
+	Err  error    `json:"err"`
+}
+
+func MakeUpdateUserProfileEndpoint(s service.UsersService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(UpdateUserProfileRequest)
+		u, err := s.UpdateUserProfile(ctx, req.User)
+
+		return UpdateUserProfileResponse{User: u, Err: err}, nil
+	}
 }
 
 type GetContactsRequest struct {
@@ -211,15 +250,17 @@ func MakeGetContactsEndpoint(s service.UsersService) endpoint.Endpoint {
 }
 
 // Create implements Service. Primarily useful in a client.
-func (e Endpoints) Create(ctx context.Context, user *pb.User) error {
+func (e Endpoints) Create(ctx context.Context, user *pb.User) (*pb.User, error) {
 	request := CreateRequest{User: user}
 	response, err := e.CreateEndpoint(ctx, request)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return response.(CreateResponse).Err
+	res := response.(CreateResponse)
+
+	return res.User, res.Err
 }
 
 // GetUserByID implements Service. Primarily useful in a client.
@@ -271,27 +312,17 @@ func (e Endpoints) UpdateEmail(ctx context.Context, user *pb.User) error {
 	return response.(UpdateEmailResponse).Err
 }
 
-// UpdateStatus implements Service. Primarily useful in a client.
-func (e Endpoints) UpdateStatus(ctx context.Context, user *pb.User) error {
-	request := UpdateStatusRequest{User: user}
-	response, err := e.UpdateStatusEndpoint(ctx, request)
-
-	if err != nil {
-		return err
-	}
-
-	return response.(UpdateStatusResponse).Err
-}
-
-func (e Endpoints) CreateContact(ctx context.Context, contact *pb.Contact) error {
+func (e Endpoints) CreateContact(ctx context.Context, contact *pb.Contact) (*pb.Contact, error) {
 	request := CreateContactRequest{Contact: contact}
 	response, err := e.CreateContactEndpoint(ctx, request)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return response.(CreateContactResponse).Err
+	res := response.(CreateContactResponse)
+
+	return res.Contact, res.Err
 }
 
 func (e Endpoints) GetContacts(ctx context.Context, userId string) ([]*pb.Contact, error) {
@@ -304,4 +335,40 @@ func (e Endpoints) GetContacts(ctx context.Context, userId string) ([]*pb.Contac
 
 	res := response.(GetContactsResponse)
 	return res.Contacts, res.Err
+}
+
+func (e Endpoints) UpdateContact(ctx context.Context, contact *pb.Contact) (*pb.Contact, error) {
+	request := UpdateContactRequest{Contact: contact}
+	response, err := e.UpdateContactEndpoint(ctx, request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res := response.(UpdateContactResponse)
+	return res.Contact, res.Err
+}
+
+func (e Endpoints) SetUserProfile(ctx context.Context, user *pb.User) (*pb.User, error) {
+	request := SetUserProfileRequest{User: user}
+	response, err := e.SetUserProfileEndpoint(ctx, request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res := response.(SetUserProfileResponse)
+	return res.User, res.Err
+}
+
+func (e Endpoints) UpdateUserProfile(ctx context.Context, user *pb.User) (*pb.User, error) {
+	request := UpdateUserProfileRequest{User: user}
+	response, err := e.UpdateUserProfileEndpoint(ctx, request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res := response.(UpdateUserProfileResponse)
+	return res.User, res.Err
 }
