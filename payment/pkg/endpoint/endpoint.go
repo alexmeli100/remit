@@ -61,6 +61,50 @@ func (r CapturePaymentResponse) Failed() error {
 	return r.Err
 }
 
+type GetCustomerIDRequest struct {
+	Uid string `json:"uid"`
+}
+
+type GetCustomerIDResponse struct {
+	CustomerID string `json:"customerID"`
+	Err        error  `json:"err"`
+}
+
+func MakeGetCustomerIDEndpoint(s service.PaymentService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(GetCustomerIDRequest)
+		c, err := s.GetCustomerID(ctx, req.Uid)
+
+		return GetCustomerIDResponse{CustomerID: c, Err: err}, nil
+	}
+}
+
+func (r GetCustomerIDResponse) Failed() error {
+	return r.Err
+}
+
+type CreateTransactionRequest struct {
+	Transaction *pb.Transaction `json:"transaction"`
+}
+
+type CreateTransactionResponse struct {
+	Transaction *pb.Transaction `json:"transaction"`
+	Err         error           `json:"err"`
+}
+
+func MakeCreateTransactionEndpoint(s service.PaymentService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(CreateTransactionRequest)
+		tr, err := s.CreateTransaction(ctx, req.Transaction)
+
+		return CreateTransactionResponse{Transaction: tr, Err: err}, nil
+	}
+}
+
+func (r CreateTransactionResponse) Failed() error {
+	return r.Err
+}
+
 // GetPaymentIntentSecretRequest collects the request parameters for the GetPaymentIntentSecret method.
 type GetPaymentIntentSecretRequest struct {
 	Req *pb.PaymentRequest `json:"req"`
@@ -126,6 +170,29 @@ func (e Endpoints) CapturePayment(ctx context.Context, pi string, amount float64
 	}
 
 	res := response.(CapturePaymentResponse)
-
 	return res.Secret, res.Err
+}
+
+func (e Endpoints) GetCustomerID(ctx context.Context, uid string) (string, error) {
+	request := GetCustomerIDRequest{Uid: uid}
+	response, err := e.GetCustomerIDEndpoint(ctx, request)
+
+	if err != nil {
+		return "", err
+	}
+
+	res := response.(GetCustomerIDResponse)
+	return res.CustomerID, res.Err
+}
+
+func (e Endpoints) CreateTransaction(ctx context.Context, tr *pb.Transaction) (*pb.Transaction, error) {
+	request := CreateTransactionRequest{Transaction: tr}
+	response, err := e.CreateTransactionEndpoint(ctx, request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res := response.(CreateTransactionResponse)
+	return res.Transaction, res.Err
 }

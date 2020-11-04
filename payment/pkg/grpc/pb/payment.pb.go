@@ -35,18 +35,30 @@ var _ = time.Kitchen
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type Transaction struct {
-	Id              int64      `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	RecipientId     int64      `protobuf:"varint,2,opt,name=recipientId,proto3" json:"recipientId,omitempty"`
-	UserId          string     `protobuf:"bytes,3,opt,name=userId,proto3" json:"userId,omitempty"`
-	CreatedAt       *time.Time `protobuf:"bytes,4,opt,name=createdAt,proto3,stdtime" json:"createdAt,omitempty"`
-	AmountReceived  float64    `protobuf:"fixed64,5,opt,name=amountReceived,proto3" json:"amountReceived,omitempty"`
-	AmountSent      float64    `protobuf:"fixed64,6,opt,name=amountSent,proto3" json:"amountSent,omitempty"`
-	TransactionFee  float64    `protobuf:"fixed64,7,opt,name=transactionFee,proto3" json:"transactionFee,omitempty"`
-	TransactionType string     `protobuf:"bytes,8,opt,name=transactionType,proto3" json:"transactionType,omitempty"`
-	SendCurrency    string     `protobuf:"bytes,9,opt,name=sendCurrency,proto3" json:"sendCurrency,omitempty"`
-	ReceiveCurrency string     `protobuf:"bytes,10,opt,name=receiveCurrency,proto3" json:"receiveCurrency,omitempty"`
-	ExchangeRate    float64    `protobuf:"fixed64,11,opt,name=exchangeRate,proto3" json:"exchangeRate,omitempty"`
-	PaymentIntent   string     `protobuf:"bytes,12,opt,name=paymentIntent,proto3" json:"paymentIntent,omitempty"`
+	// @inject_tag: db:"id"
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" db:"id"`
+	// @inject_tag: db:"recipient_id"
+	RecipientId int64 `protobuf:"varint,2,opt,name=recipientId,proto3" json:"recipientId,omitempty" db:"recipient_id"`
+	// @inject_tag: db:"user_id"
+	UserId string `protobuf:"bytes,3,opt,name=userId,proto3" json:"userId,omitempty" db:"user_id"`
+	// @inject_tag: db:"created_at"
+	CreatedAt *time.Time `protobuf:"bytes,4,opt,name=createdAt,proto3,stdtime" json:"createdAt,omitempty" db:"created_at"`
+	// @inject_tag: db:"amount_received"
+	AmountReceived float64 `protobuf:"fixed64,5,opt,name=amountReceived,proto3" json:"amountReceived,omitempty" db:"amount_received"`
+	// @inject_tag: db:"amount_sent"
+	AmountSent float64 `protobuf:"fixed64,6,opt,name=amountSent,proto3" json:"amountSent,omitempty" db:"amount_sent"`
+	// @inject_tag: db:"transaction_fee"
+	TransactionFee float64 `protobuf:"fixed64,7,opt,name=transactionFee,proto3" json:"transactionFee,omitempty" db:"transaction_fee"`
+	// @inject_tag: db:"transaction_type"
+	TransactionType string `protobuf:"bytes,8,opt,name=transactionType,proto3" json:"transactionType,omitempty" db:"transaction_type"`
+	// @inject_tag: db:"send_currency"
+	SendCurrency string `protobuf:"bytes,9,opt,name=sendCurrency,proto3" json:"sendCurrency,omitempty" db:"send_currency"`
+	// @inject_tag: db:"receive_currency"
+	ReceiveCurrency string `protobuf:"bytes,10,opt,name=receiveCurrency,proto3" json:"receiveCurrency,omitempty" db:"receive_currency"`
+	// @inject_tag: db:"exchange_rate"
+	ExchangeRate float64 `protobuf:"fixed64,11,opt,name=exchangeRate,proto3" json:"exchangeRate,omitempty" db:"exchange_rate"`
+	// @inject_tag: db:"payment_intent"
+	PaymentIntent string `protobuf:"bytes,12,opt,name=paymentIntent,proto3" json:"paymentIntent,omitempty" db:"payment_intent"`
 }
 
 func (m *Transaction) Reset()      { *m = Transaction{} }
@@ -530,6 +542,194 @@ func (m *CapturePaymentReply) GetErr() string {
 	return ""
 }
 
+type GetCustomerIDRequest struct {
+	Uid string `protobuf:"bytes,1,opt,name=uid,proto3" json:"uid,omitempty"`
+}
+
+func (m *GetCustomerIDRequest) Reset()      { *m = GetCustomerIDRequest{} }
+func (*GetCustomerIDRequest) ProtoMessage() {}
+func (*GetCustomerIDRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6362648dfa63d410, []int{8}
+}
+func (m *GetCustomerIDRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GetCustomerIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GetCustomerIDRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GetCustomerIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetCustomerIDRequest.Merge(m, src)
+}
+func (m *GetCustomerIDRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *GetCustomerIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetCustomerIDRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetCustomerIDRequest proto.InternalMessageInfo
+
+func (m *GetCustomerIDRequest) GetUid() string {
+	if m != nil {
+		return m.Uid
+	}
+	return ""
+}
+
+type GetCustomerIDReply struct {
+	CustomerID string `protobuf:"bytes,1,opt,name=customerID,proto3" json:"customerID,omitempty"`
+	Err        string `protobuf:"bytes,2,opt,name=err,proto3" json:"err,omitempty"`
+}
+
+func (m *GetCustomerIDReply) Reset()      { *m = GetCustomerIDReply{} }
+func (*GetCustomerIDReply) ProtoMessage() {}
+func (*GetCustomerIDReply) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6362648dfa63d410, []int{9}
+}
+func (m *GetCustomerIDReply) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GetCustomerIDReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GetCustomerIDReply.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GetCustomerIDReply) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetCustomerIDReply.Merge(m, src)
+}
+func (m *GetCustomerIDReply) XXX_Size() int {
+	return m.Size()
+}
+func (m *GetCustomerIDReply) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetCustomerIDReply.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetCustomerIDReply proto.InternalMessageInfo
+
+func (m *GetCustomerIDReply) GetCustomerID() string {
+	if m != nil {
+		return m.CustomerID
+	}
+	return ""
+}
+
+func (m *GetCustomerIDReply) GetErr() string {
+	if m != nil {
+		return m.Err
+	}
+	return ""
+}
+
+type CreateTransactionRequest struct {
+	Transaction *Transaction `protobuf:"bytes,1,opt,name=transaction,proto3" json:"transaction,omitempty"`
+}
+
+func (m *CreateTransactionRequest) Reset()      { *m = CreateTransactionRequest{} }
+func (*CreateTransactionRequest) ProtoMessage() {}
+func (*CreateTransactionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6362648dfa63d410, []int{10}
+}
+func (m *CreateTransactionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CreateTransactionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CreateTransactionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CreateTransactionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateTransactionRequest.Merge(m, src)
+}
+func (m *CreateTransactionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *CreateTransactionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateTransactionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateTransactionRequest proto.InternalMessageInfo
+
+func (m *CreateTransactionRequest) GetTransaction() *Transaction {
+	if m != nil {
+		return m.Transaction
+	}
+	return nil
+}
+
+type CreateTransactionReply struct {
+	Transaction *Transaction `protobuf:"bytes,1,opt,name=transaction,proto3" json:"transaction,omitempty"`
+	Err         string       `protobuf:"bytes,2,opt,name=err,proto3" json:"err,omitempty"`
+}
+
+func (m *CreateTransactionReply) Reset()      { *m = CreateTransactionReply{} }
+func (*CreateTransactionReply) ProtoMessage() {}
+func (*CreateTransactionReply) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6362648dfa63d410, []int{11}
+}
+func (m *CreateTransactionReply) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CreateTransactionReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CreateTransactionReply.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CreateTransactionReply) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateTransactionReply.Merge(m, src)
+}
+func (m *CreateTransactionReply) XXX_Size() int {
+	return m.Size()
+}
+func (m *CreateTransactionReply) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateTransactionReply.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateTransactionReply proto.InternalMessageInfo
+
+func (m *CreateTransactionReply) GetTransaction() *Transaction {
+	if m != nil {
+		return m.Transaction
+	}
+	return nil
+}
+
+func (m *CreateTransactionReply) GetErr() string {
+	if m != nil {
+		return m.Err
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*Transaction)(nil), "pb.Transaction")
 	proto.RegisterType((*PaymentRequest)(nil), "pb.PaymentRequest")
@@ -539,51 +739,62 @@ func init() {
 	proto.RegisterType((*GetPaymentIntentSecretReply)(nil), "pb.GetPaymentIntentSecretReply")
 	proto.RegisterType((*CapturePaymentRequest)(nil), "pb.CapturePaymentRequest")
 	proto.RegisterType((*CapturePaymentReply)(nil), "pb.CapturePaymentReply")
+	proto.RegisterType((*GetCustomerIDRequest)(nil), "pb.GetCustomerIDRequest")
+	proto.RegisterType((*GetCustomerIDReply)(nil), "pb.GetCustomerIDReply")
+	proto.RegisterType((*CreateTransactionRequest)(nil), "pb.CreateTransactionRequest")
+	proto.RegisterType((*CreateTransactionReply)(nil), "pb.CreateTransactionReply")
 }
 
 func init() { proto.RegisterFile("payment.proto", fileDescriptor_6362648dfa63d410) }
 
 var fileDescriptor_6362648dfa63d410 = []byte{
-	// 624 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x54, 0x41, 0x4f, 0xdb, 0x4c,
-	0x10, 0xcd, 0x26, 0x7c, 0x90, 0x4c, 0x20, 0x7c, 0x5d, 0x54, 0xea, 0xba, 0xea, 0x92, 0xba, 0xa8,
-	0xca, 0xa5, 0x46, 0x4a, 0x7b, 0xe9, 0xa5, 0xa8, 0x40, 0x8b, 0x72, 0x43, 0x0b, 0xc7, 0x5e, 0x1c,
-	0x7b, 0x1a, 0x2c, 0x11, 0x7b, 0xd9, 0xac, 0x51, 0x73, 0xeb, 0xb1, 0x47, 0x7e, 0x46, 0x7f, 0x4a,
-	0x7b, 0xe3, 0xc8, 0xad, 0x8d, 0xb9, 0xf4, 0xc8, 0x4f, 0xa8, 0x76, 0xed, 0x90, 0xd8, 0x02, 0x24,
-	0x6e, 0x3b, 0x6f, 0xdf, 0xbc, 0x7d, 0x33, 0xcf, 0x32, 0xac, 0x08, 0x6f, 0x3c, 0xc4, 0x48, 0xb9,
-	0x42, 0xc6, 0x2a, 0xa6, 0x55, 0xd1, 0xb7, 0x37, 0x06, 0x71, 0x3c, 0x38, 0xc1, 0x2d, 0x83, 0xf4,
-	0x93, 0x2f, 0x5b, 0x2a, 0x1c, 0xe2, 0x48, 0x79, 0x43, 0x91, 0x91, 0xec, 0xd7, 0x83, 0x50, 0x1d,
-	0x27, 0x7d, 0xd7, 0x8f, 0x87, 0x5b, 0x83, 0x78, 0x10, 0xcf, 0x98, 0xba, 0x32, 0x85, 0x39, 0x65,
-	0x74, 0xe7, 0x57, 0x0d, 0x9a, 0x47, 0xd2, 0x8b, 0x46, 0x9e, 0xaf, 0xc2, 0x38, 0xa2, 0x2d, 0xa8,
-	0x86, 0x81, 0x45, 0xda, 0xa4, 0x53, 0xe3, 0xd5, 0x30, 0xa0, 0x6d, 0x68, 0x4a, 0xf4, 0x43, 0x11,
-	0x62, 0xa4, 0x7a, 0x81, 0x55, 0x35, 0x17, 0xf3, 0x10, 0x5d, 0x87, 0xc5, 0x64, 0x84, 0xb2, 0x17,
-	0x58, 0xb5, 0x36, 0xe9, 0x34, 0x78, 0x5e, 0xd1, 0xf7, 0xd0, 0xf0, 0x25, 0x7a, 0x0a, 0x83, 0x0f,
-	0xca, 0x5a, 0x68, 0x93, 0x4e, 0xb3, 0x6b, 0xbb, 0x99, 0x7b, 0x77, 0xea, 0xc9, 0x3d, 0x9a, 0xba,
-	0xdf, 0x59, 0x38, 0xff, 0xbd, 0x41, 0xf8, 0xac, 0x85, 0xbe, 0x82, 0x96, 0x37, 0x8c, 0x93, 0x48,
-	0x71, 0xf4, 0x31, 0x3c, 0xc3, 0xc0, 0xfa, 0xaf, 0x4d, 0x3a, 0x84, 0x97, 0x50, 0xca, 0x00, 0x32,
-	0xe4, 0x10, 0x23, 0x65, 0x2d, 0x1a, 0xce, 0x1c, 0xa2, 0x75, 0xd4, 0x6c, 0xc0, 0x4f, 0x88, 0xd6,
-	0x52, 0xa6, 0x53, 0x44, 0x69, 0x07, 0x56, 0xe7, 0x90, 0xa3, 0xb1, 0x40, 0xab, 0x6e, 0x06, 0x2a,
-	0xc3, 0xd4, 0x81, 0xe5, 0x11, 0x46, 0xc1, 0x6e, 0x22, 0x25, 0x46, 0xfe, 0xd8, 0x6a, 0x18, 0x5a,
-	0x01, 0xd3, 0x6a, 0x32, 0x73, 0x78, 0x43, 0x83, 0x4c, 0xad, 0x04, 0x6b, 0x35, 0xfc, 0xea, 0x1f,
-	0x7b, 0xd1, 0x00, 0xb9, 0xa7, 0xd0, 0x6a, 0x1a, 0x77, 0x05, 0x8c, 0x6e, 0xde, 0x7c, 0x0a, 0xbd,
-	0x48, 0xe9, 0x31, 0x97, 0x8d, 0x56, 0x11, 0x74, 0xbe, 0x13, 0x68, 0x1d, 0x64, 0x08, 0xc7, 0xd3,
-	0x04, 0x47, 0x8a, 0xfe, 0x0f, 0xb5, 0x24, 0xcf, 0xb3, 0xc1, 0xf5, 0x51, 0xc7, 0x95, 0x2d, 0xc7,
-	0x64, 0x49, 0x78, 0x5e, 0x51, 0x1b, 0xea, 0xfe, 0xd4, 0x69, 0x16, 0xe4, 0x4d, 0xad, 0x7b, 0x7c,
-	0x4f, 0x06, 0xbd, 0x3d, 0x93, 0x63, 0x83, 0xe7, 0x15, 0xb5, 0x60, 0xc9, 0xf7, 0x84, 0x4a, 0x24,
-	0x9a, 0x6c, 0xea, 0x7c, 0x5a, 0x3a, 0x2f, 0x61, 0xf5, 0xd0, 0x3b, 0xc3, 0x5d, 0x4f, 0x06, 0x77,
-	0x5a, 0x71, 0xde, 0xc1, 0xca, 0x8c, 0x24, 0x4e, 0xcc, 0x3b, 0x23, 0xf4, 0x25, 0xaa, 0x9c, 0x95,
-	0x57, 0xba, 0x15, 0xa5, 0x34, 0x86, 0x1b, 0x5c, 0x1f, 0x9d, 0x8f, 0xf0, 0x7c, 0x1f, 0xd5, 0xc1,
-	0xfc, 0xf8, 0x87, 0x86, 0x3b, 0x7d, 0x6d, 0x13, 0x6a, 0x12, 0x4f, 0x8d, 0x4e, 0xb3, 0x4b, 0x5d,
-	0xd1, 0x77, 0x8b, 0x9b, 0xe1, 0xfa, 0xda, 0xd9, 0x87, 0x67, 0x77, 0xc9, 0x3c, 0xcc, 0xcf, 0x36,
-	0x3c, 0xde, 0xcd, 0x46, 0x2f, 0x05, 0xd0, 0x82, 0xaa, 0x08, 0xf3, 0xf6, 0xaa, 0x08, 0xef, 0x5a,
-	0xbf, 0xb3, 0x0d, 0x6b, 0x65, 0x81, 0x07, 0x39, 0xe8, 0x4e, 0x08, 0x2c, 0xe5, 0xad, 0xb4, 0x0b,
-	0xf5, 0xe9, 0x62, 0xe9, 0x9a, 0x9e, 0xbd, 0x94, 0x85, 0xfd, 0xa8, 0x08, 0xea, 0x97, 0x3e, 0xc3,
-	0xfa, 0xed, 0xab, 0xa0, 0x2f, 0x34, 0xf9, 0xde, 0x6d, 0xdb, 0x1b, 0xf7, 0x51, 0xb4, 0xfa, 0x1e,
-	0xb4, 0x8a, 0xe3, 0xd1, 0xa7, 0xba, 0xe5, 0xd6, 0x9d, 0xd9, 0x4f, 0x6e, 0xbb, 0x12, 0x27, 0xe3,
-	0x9d, 0xb7, 0x17, 0x13, 0x56, 0xb9, 0x9c, 0xb0, 0xca, 0xf5, 0x84, 0x91, 0x6f, 0x29, 0x23, 0x3f,
-	0x52, 0x46, 0x7e, 0xa6, 0x8c, 0x5c, 0xa4, 0x8c, 0xfc, 0x49, 0x19, 0xf9, 0x9b, 0xb2, 0xca, 0x75,
-	0xca, 0xc8, 0xf9, 0x15, 0xab, 0x5c, 0x5c, 0xb1, 0xca, 0xe5, 0x15, 0xab, 0xf4, 0x17, 0xcd, 0xdf,
-	0xe6, 0xcd, 0xbf, 0x00, 0x00, 0x00, 0xff, 0xff, 0xa7, 0x8e, 0x96, 0x2f, 0x4e, 0x05, 0x00, 0x00,
+	// 729 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x55, 0xc1, 0x53, 0xd3, 0x4e,
+	0x14, 0xee, 0xb6, 0xfc, 0xa0, 0x7d, 0x85, 0xf2, 0x63, 0xd1, 0x1a, 0xa3, 0x2e, 0x35, 0x32, 0x4e,
+	0x2f, 0x96, 0xb1, 0x7a, 0xf1, 0x22, 0x03, 0x45, 0x98, 0x1e, 0x98, 0x61, 0x02, 0x47, 0x3d, 0xa4,
+	0xc9, 0xb3, 0x64, 0x86, 0x26, 0x61, 0xbb, 0x61, 0xec, 0xcd, 0xa3, 0x47, 0xfe, 0x0c, 0xff, 0x14,
+	0xbd, 0x71, 0xe4, 0xa6, 0x94, 0x8b, 0x47, 0x66, 0xfc, 0x07, 0x9c, 0xdd, 0xa4, 0x6d, 0x12, 0x5a,
+	0x66, 0xb8, 0xed, 0xfb, 0xf6, 0xdb, 0xef, 0x7d, 0xbb, 0xdf, 0x4b, 0x0b, 0x4b, 0x81, 0x35, 0xe8,
+	0xa1, 0x27, 0x1a, 0x01, 0xf7, 0x85, 0x4f, 0xf3, 0x41, 0x47, 0x5f, 0xeb, 0xfa, 0x7e, 0xf7, 0x04,
+	0x37, 0x14, 0xd2, 0x09, 0x3f, 0x6f, 0x08, 0xb7, 0x87, 0x7d, 0x61, 0xf5, 0x82, 0x88, 0xa4, 0xbf,
+	0xea, 0xba, 0xe2, 0x38, 0xec, 0x34, 0x6c, 0xbf, 0xb7, 0xd1, 0xf5, 0xbb, 0xfe, 0x84, 0x29, 0x2b,
+	0x55, 0xa8, 0x55, 0x44, 0x37, 0x7e, 0x16, 0xa0, 0x7c, 0xc4, 0x2d, 0xaf, 0x6f, 0xd9, 0xc2, 0xf5,
+	0x3d, 0x5a, 0x81, 0xbc, 0xeb, 0x68, 0xa4, 0x46, 0xea, 0x05, 0x33, 0xef, 0x3a, 0xb4, 0x06, 0x65,
+	0x8e, 0xb6, 0x1b, 0xb8, 0xe8, 0x89, 0xb6, 0xa3, 0xe5, 0xd5, 0x46, 0x12, 0xa2, 0x55, 0x98, 0x0f,
+	0xfb, 0xc8, 0xdb, 0x8e, 0x56, 0xa8, 0x91, 0x7a, 0xc9, 0x8c, 0x2b, 0xfa, 0x1e, 0x4a, 0x36, 0x47,
+	0x4b, 0xa0, 0xb3, 0x25, 0xb4, 0xb9, 0x1a, 0xa9, 0x97, 0x9b, 0x7a, 0x23, 0x72, 0xdf, 0x18, 0x79,
+	0x6a, 0x1c, 0x8d, 0xdc, 0x6f, 0xcf, 0x9d, 0xff, 0x5a, 0x23, 0xe6, 0xe4, 0x08, 0x7d, 0x09, 0x15,
+	0xab, 0xe7, 0x87, 0x9e, 0x30, 0xd1, 0x46, 0xf7, 0x0c, 0x1d, 0xed, 0xbf, 0x1a, 0xa9, 0x13, 0x33,
+	0x83, 0x52, 0x06, 0x10, 0x21, 0x87, 0xe8, 0x09, 0x6d, 0x5e, 0x71, 0x12, 0x88, 0xd4, 0x11, 0x93,
+	0x0b, 0xee, 0x22, 0x6a, 0x0b, 0x91, 0x4e, 0x1a, 0xa5, 0x75, 0x58, 0x4e, 0x20, 0x47, 0x83, 0x00,
+	0xb5, 0xa2, 0xba, 0x50, 0x16, 0xa6, 0x06, 0x2c, 0xf6, 0xd1, 0x73, 0x5a, 0x21, 0xe7, 0xe8, 0xd9,
+	0x03, 0xad, 0xa4, 0x68, 0x29, 0x4c, 0xaa, 0xf1, 0xc8, 0xe1, 0x98, 0x06, 0x91, 0x5a, 0x06, 0x96,
+	0x6a, 0xf8, 0xc5, 0x3e, 0xb6, 0xbc, 0x2e, 0x9a, 0x96, 0x40, 0xad, 0xac, 0xdc, 0xa5, 0x30, 0xba,
+	0x3e, 0x1e, 0x85, 0xb6, 0x27, 0xe4, 0x35, 0x17, 0x95, 0x56, 0x1a, 0x34, 0xbe, 0x11, 0xa8, 0x1c,
+	0x44, 0x88, 0x89, 0xa7, 0x21, 0xf6, 0x05, 0xfd, 0x1f, 0x0a, 0x61, 0x9c, 0x67, 0xc9, 0x94, 0x4b,
+	0x19, 0x57, 0xf4, 0x38, 0x2a, 0x4b, 0x62, 0xc6, 0x15, 0xd5, 0xa1, 0x68, 0x8f, 0x9c, 0x46, 0x41,
+	0x8e, 0x6b, 0x79, 0xc6, 0xb6, 0xb8, 0xd3, 0xde, 0x51, 0x39, 0x96, 0xcc, 0xb8, 0xa2, 0x1a, 0x2c,
+	0xd8, 0x56, 0x20, 0x42, 0x8e, 0x2a, 0x9b, 0xa2, 0x39, 0x2a, 0x8d, 0x17, 0xb0, 0x7c, 0x68, 0x9d,
+	0x61, 0xcb, 0xe2, 0xce, 0x4c, 0x2b, 0xc6, 0x3b, 0x58, 0x9a, 0x90, 0x82, 0x13, 0xd5, 0xa7, 0x8f,
+	0x36, 0x47, 0x11, 0xb3, 0xe2, 0x4a, 0x1e, 0x45, 0xce, 0x95, 0xe1, 0x92, 0x29, 0x97, 0xc6, 0x07,
+	0x78, 0xb6, 0x87, 0xe2, 0x20, 0x79, 0xfd, 0x43, 0xc5, 0x1d, 0x75, 0x5b, 0x87, 0x02, 0xc7, 0x53,
+	0xa5, 0x53, 0x6e, 0xd2, 0x46, 0xd0, 0x69, 0xa4, 0x5f, 0xc6, 0x94, 0xdb, 0xc6, 0x1e, 0x3c, 0x99,
+	0x25, 0x73, 0x3f, 0x3f, 0x9b, 0xf0, 0xb0, 0x15, 0x5d, 0x3d, 0x13, 0x40, 0x05, 0xf2, 0x81, 0x1b,
+	0x1f, 0xcf, 0x07, 0xee, 0xac, 0xe7, 0x37, 0x36, 0x61, 0x35, 0x2b, 0x70, 0x3f, 0x07, 0x75, 0x78,
+	0xb0, 0x87, 0xa2, 0x15, 0xf6, 0x85, 0xdf, 0x43, 0xde, 0xde, 0x99, 0xfd, 0xec, 0xbb, 0x40, 0x33,
+	0x4c, 0xd9, 0x89, 0x01, 0xd8, 0x63, 0x28, 0xa6, 0x27, 0x90, 0x29, 0x1d, 0xf7, 0x41, 0x6b, 0xa9,
+	0xaf, 0x35, 0xf1, 0xfb, 0x31, 0xea, 0xfa, 0x1a, 0xca, 0x89, 0xaf, 0x26, 0x8e, 0x61, 0x59, 0xc6,
+	0x90, 0x24, 0x27, 0x39, 0xc6, 0x27, 0xa8, 0x4e, 0x91, 0x93, 0xd6, 0xee, 0x2f, 0x76, 0xdb, 0x6d,
+	0xf3, 0x6f, 0x1e, 0x16, 0xe2, 0xa7, 0xa5, 0x4d, 0x28, 0x8e, 0x06, 0x8f, 0xae, 0x4a, 0x9d, 0xcc,
+	0xac, 0xea, 0x2b, 0x69, 0x50, 0x9a, 0xf8, 0x08, 0xd5, 0xe9, 0xa3, 0x42, 0x9f, 0x4b, 0xf2, 0x9d,
+	0xd3, 0xa8, 0xaf, 0xdd, 0x45, 0x91, 0xea, 0x3b, 0x50, 0x49, 0xc7, 0x4f, 0x1f, 0xcb, 0x23, 0x53,
+	0x67, 0x4a, 0x7f, 0x34, 0x6d, 0x4b, 0xaa, 0x6c, 0xc1, 0x52, 0x2a, 0x59, 0xaa, 0xc5, 0x7d, 0x6f,
+	0x8d, 0x85, 0x5e, 0x9d, 0xb2, 0x23, 0x25, 0xf6, 0x61, 0xe5, 0x56, 0x0a, 0xf4, 0xa9, 0x6a, 0x38,
+	0x23, 0x6b, 0x5d, 0x9f, 0xb1, 0x1b, 0x9c, 0x0c, 0xb6, 0xdf, 0x5e, 0x5c, 0xb1, 0xdc, 0xe5, 0x15,
+	0xcb, 0xdd, 0x5c, 0x31, 0xf2, 0x75, 0xc8, 0xc8, 0xf7, 0x21, 0x23, 0x3f, 0x86, 0x8c, 0x5c, 0x0c,
+	0x19, 0xf9, 0x3d, 0x64, 0xe4, 0xcf, 0x90, 0xe5, 0x6e, 0x86, 0x8c, 0x9c, 0x5f, 0xb3, 0xdc, 0xc5,
+	0x35, 0xcb, 0x5d, 0x5e, 0xb3, 0x5c, 0x67, 0x5e, 0xfd, 0x3f, 0xbc, 0xf9, 0x17, 0x00, 0x00, 0xff,
+	0xff, 0x89, 0x79, 0x27, 0x03, 0x00, 0x07, 0x00, 0x00,
 }
 
 func (this *Transaction) Equal(that interface{}) bool {
@@ -839,6 +1050,108 @@ func (this *CapturePaymentReply) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *GetCustomerIDRequest) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*GetCustomerIDRequest)
+	if !ok {
+		that2, ok := that.(GetCustomerIDRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Uid != that1.Uid {
+		return false
+	}
+	return true
+}
+func (this *GetCustomerIDReply) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*GetCustomerIDReply)
+	if !ok {
+		that2, ok := that.(GetCustomerIDReply)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.CustomerID != that1.CustomerID {
+		return false
+	}
+	if this.Err != that1.Err {
+		return false
+	}
+	return true
+}
+func (this *CreateTransactionRequest) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*CreateTransactionRequest)
+	if !ok {
+		that2, ok := that.(CreateTransactionRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Transaction.Equal(that1.Transaction) {
+		return false
+	}
+	return true
+}
+func (this *CreateTransactionReply) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*CreateTransactionReply)
+	if !ok {
+		that2, ok := that.(CreateTransactionReply)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Transaction.Equal(that1.Transaction) {
+		return false
+	}
+	if this.Err != that1.Err {
+		return false
+	}
+	return true
+}
 func (this *Transaction) GoString() string {
 	if this == nil {
 		return "nil"
@@ -940,6 +1253,52 @@ func (this *CapturePaymentReply) GoString() string {
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
+func (this *GetCustomerIDRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 5)
+	s = append(s, "&pb.GetCustomerIDRequest{")
+	s = append(s, "Uid: "+fmt.Sprintf("%#v", this.Uid)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *GetCustomerIDReply) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 6)
+	s = append(s, "&pb.GetCustomerIDReply{")
+	s = append(s, "CustomerID: "+fmt.Sprintf("%#v", this.CustomerID)+",\n")
+	s = append(s, "Err: "+fmt.Sprintf("%#v", this.Err)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *CreateTransactionRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 5)
+	s = append(s, "&pb.CreateTransactionRequest{")
+	if this.Transaction != nil {
+		s = append(s, "Transaction: "+fmt.Sprintf("%#v", this.Transaction)+",\n")
+	}
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *CreateTransactionReply) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 6)
+	s = append(s, "&pb.CreateTransactionReply{")
+	if this.Transaction != nil {
+		s = append(s, "Transaction: "+fmt.Sprintf("%#v", this.Transaction)+",\n")
+	}
+	s = append(s, "Err: "+fmt.Sprintf("%#v", this.Err)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
 func valueToGoStringPayment(v interface{}, typ string) string {
 	rv := reflect.ValueOf(v)
 	if rv.IsNil() {
@@ -964,6 +1323,8 @@ type PaymentClient interface {
 	SaveCard(ctx context.Context, in *SaveCardRequest, opts ...grpc.CallOption) (*SaveCardReply, error)
 	GetPaymentIntentSecret(ctx context.Context, in *GetPaymentIntentSecretRequest, opts ...grpc.CallOption) (*GetPaymentIntentSecretReply, error)
 	CapturePayment(ctx context.Context, in *CapturePaymentRequest, opts ...grpc.CallOption) (*CapturePaymentReply, error)
+	GetCustomerID(ctx context.Context, in *GetCustomerIDRequest, opts ...grpc.CallOption) (*GetCustomerIDReply, error)
+	CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*CreateTransactionReply, error)
 }
 
 type paymentClient struct {
@@ -1001,11 +1362,31 @@ func (c *paymentClient) CapturePayment(ctx context.Context, in *CapturePaymentRe
 	return out, nil
 }
 
+func (c *paymentClient) GetCustomerID(ctx context.Context, in *GetCustomerIDRequest, opts ...grpc.CallOption) (*GetCustomerIDReply, error) {
+	out := new(GetCustomerIDReply)
+	err := c.cc.Invoke(ctx, "/pb.Payment/GetCustomerID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paymentClient) CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*CreateTransactionReply, error) {
+	out := new(CreateTransactionReply)
+	err := c.cc.Invoke(ctx, "/pb.Payment/CreateTransaction", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PaymentServer is the server API for Payment service.
 type PaymentServer interface {
 	SaveCard(context.Context, *SaveCardRequest) (*SaveCardReply, error)
 	GetPaymentIntentSecret(context.Context, *GetPaymentIntentSecretRequest) (*GetPaymentIntentSecretReply, error)
 	CapturePayment(context.Context, *CapturePaymentRequest) (*CapturePaymentReply, error)
+	GetCustomerID(context.Context, *GetCustomerIDRequest) (*GetCustomerIDReply, error)
+	CreateTransaction(context.Context, *CreateTransactionRequest) (*CreateTransactionReply, error)
 }
 
 // UnimplementedPaymentServer can be embedded to have forward compatible implementations.
@@ -1020,6 +1401,12 @@ func (*UnimplementedPaymentServer) GetPaymentIntentSecret(ctx context.Context, r
 }
 func (*UnimplementedPaymentServer) CapturePayment(ctx context.Context, req *CapturePaymentRequest) (*CapturePaymentReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CapturePayment not implemented")
+}
+func (*UnimplementedPaymentServer) GetCustomerID(ctx context.Context, req *GetCustomerIDRequest) (*GetCustomerIDReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCustomerID not implemented")
+}
+func (*UnimplementedPaymentServer) CreateTransaction(ctx context.Context, req *CreateTransactionRequest) (*CreateTransactionReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTransaction not implemented")
 }
 
 func RegisterPaymentServer(s *grpc.Server, srv PaymentServer) {
@@ -1080,6 +1467,42 @@ func _Payment_CapturePayment_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Payment_GetCustomerID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCustomerIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServer).GetCustomerID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.Payment/GetCustomerID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServer).GetCustomerID(ctx, req.(*GetCustomerIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Payment_CreateTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTransactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServer).CreateTransaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.Payment/CreateTransaction",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServer).CreateTransaction(ctx, req.(*CreateTransactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Payment_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "pb.Payment",
 	HandlerType: (*PaymentServer)(nil),
@@ -1095,6 +1518,14 @@ var _Payment_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CapturePayment",
 			Handler:    _Payment_CapturePayment_Handler,
+		},
+		{
+			MethodName: "GetCustomerID",
+			Handler:    _Payment_GetCustomerID_Handler,
+		},
+		{
+			MethodName: "CreateTransaction",
+			Handler:    _Payment_CreateTransaction_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1475,6 +1906,150 @@ func (m *CapturePaymentReply) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *GetCustomerIDRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GetCustomerIDRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GetCustomerIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Uid) > 0 {
+		i -= len(m.Uid)
+		copy(dAtA[i:], m.Uid)
+		i = encodeVarintPayment(dAtA, i, uint64(len(m.Uid)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *GetCustomerIDReply) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GetCustomerIDReply) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GetCustomerIDReply) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Err) > 0 {
+		i -= len(m.Err)
+		copy(dAtA[i:], m.Err)
+		i = encodeVarintPayment(dAtA, i, uint64(len(m.Err)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.CustomerID) > 0 {
+		i -= len(m.CustomerID)
+		copy(dAtA[i:], m.CustomerID)
+		i = encodeVarintPayment(dAtA, i, uint64(len(m.CustomerID)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *CreateTransactionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CreateTransactionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CreateTransactionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Transaction != nil {
+		{
+			size, err := m.Transaction.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintPayment(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *CreateTransactionReply) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CreateTransactionReply) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CreateTransactionReply) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Err) > 0 {
+		i -= len(m.Err)
+		copy(dAtA[i:], m.Err)
+		i = encodeVarintPayment(dAtA, i, uint64(len(m.Err)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Transaction != nil {
+		{
+			size, err := m.Transaction.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintPayment(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintPayment(dAtA []byte, offset int, v uint64) int {
 	offset -= sovPayment(v)
 	base := offset
@@ -1657,6 +2232,66 @@ func (m *CapturePaymentReply) Size() (n int) {
 	return n
 }
 
+func (m *GetCustomerIDRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Uid)
+	if l > 0 {
+		n += 1 + l + sovPayment(uint64(l))
+	}
+	return n
+}
+
+func (m *GetCustomerIDReply) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.CustomerID)
+	if l > 0 {
+		n += 1 + l + sovPayment(uint64(l))
+	}
+	l = len(m.Err)
+	if l > 0 {
+		n += 1 + l + sovPayment(uint64(l))
+	}
+	return n
+}
+
+func (m *CreateTransactionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Transaction != nil {
+		l = m.Transaction.Size()
+		n += 1 + l + sovPayment(uint64(l))
+	}
+	return n
+}
+
+func (m *CreateTransactionReply) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Transaction != nil {
+		l = m.Transaction.Size()
+		n += 1 + l + sovPayment(uint64(l))
+	}
+	l = len(m.Err)
+	if l > 0 {
+		n += 1 + l + sovPayment(uint64(l))
+	}
+	return n
+}
+
 func sovPayment(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
@@ -1757,6 +2392,48 @@ func (this *CapturePaymentReply) String() string {
 	}
 	s := strings.Join([]string{`&CapturePaymentReply{`,
 		`Secret:` + fmt.Sprintf("%v", this.Secret) + `,`,
+		`Err:` + fmt.Sprintf("%v", this.Err) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *GetCustomerIDRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&GetCustomerIDRequest{`,
+		`Uid:` + fmt.Sprintf("%v", this.Uid) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *GetCustomerIDReply) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&GetCustomerIDReply{`,
+		`CustomerID:` + fmt.Sprintf("%v", this.CustomerID) + `,`,
+		`Err:` + fmt.Sprintf("%v", this.Err) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *CreateTransactionRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&CreateTransactionRequest{`,
+		`Transaction:` + strings.Replace(this.Transaction.String(), "Transaction", "Transaction", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *CreateTransactionReply) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&CreateTransactionReply{`,
+		`Transaction:` + strings.Replace(this.Transaction.String(), "Transaction", "Transaction", 1) + `,`,
 		`Err:` + fmt.Sprintf("%v", this.Err) + `,`,
 		`}`,
 	}, "")
@@ -2845,6 +3522,418 @@ func (m *CapturePaymentReply) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Secret = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Err", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPayment
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPayment
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Err = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPayment(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GetCustomerIDRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPayment
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GetCustomerIDRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GetCustomerIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Uid", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPayment
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPayment
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Uid = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPayment(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GetCustomerIDReply) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPayment
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GetCustomerIDReply: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GetCustomerIDReply: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CustomerID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPayment
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPayment
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CustomerID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Err", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPayment
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPayment
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Err = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPayment(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CreateTransactionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPayment
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CreateTransactionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CreateTransactionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Transaction", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPayment
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthPayment
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Transaction == nil {
+				m.Transaction = &Transaction{}
+			}
+			if err := m.Transaction.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPayment(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CreateTransactionReply) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPayment
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CreateTransactionReply: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CreateTransactionReply: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Transaction", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPayment
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthPayment
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthPayment
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Transaction == nil {
+				m.Transaction = &Transaction{}
+			}
+			if err := m.Transaction.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {

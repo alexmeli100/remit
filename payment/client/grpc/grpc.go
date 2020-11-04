@@ -106,6 +106,52 @@ func decodeCapturePaymentResponse(_ context.Context, r interface{}) (interface{}
 	return endpoint.CapturePaymentResponse{Secret: res.Secret, Err: str2err(res.Err)}, nil
 }
 
+func makeGetCustomerIDClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
+	return grpcTrans.NewClient(
+		conn,
+		"pb.Payment",
+		endpoint.GetCustomerID,
+		encodeGetCustomerIDRequest,
+		decodeGetCustomerIDResponse,
+		pb.GetCustomerIDReply{},
+		options...)
+}
+
+func decodeGetCustomerIDResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(*pb.GetCustomerIDReply)
+
+	return endpoint.GetCustomerIDResponse{Err: str2err(res.Err), CustomerID: res.CustomerID}, nil
+}
+
+func encodeGetCustomerIDRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(endpoint.GetCustomerIDRequest)
+
+	return &pb.GetCustomerIDRequest{Uid: req.Uid}, nil
+}
+
+func makeCreateTransactionClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
+	return grpcTrans.NewClient(
+		conn,
+		"pb.Payment",
+		endpoint.CreateTransaction,
+		encodeCreateTransactionRequest,
+		decodeCreateTransactionResponse,
+		pb.CreateTransactionReply{},
+		options...)
+}
+
+func decodeCreateTransactionResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(*pb.CreateTransactionReply)
+
+	return endpoint.CreateTransactionResponse{Err: str2err(res.Err), Transaction: res.Transaction}, nil
+}
+
+func encodeCreateTransactionRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(endpoint.CreateTransactionRequest)
+
+	return &pb.CreateTransactionRequest{Transaction: req.Transaction}, nil
+}
+
 func str2err(s string) error {
 	if s == "" {
 		return nil

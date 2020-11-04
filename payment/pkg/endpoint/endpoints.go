@@ -10,6 +10,8 @@ const (
 	GetPaymentIntentSecret = "GetPaymentIntentSecret"
 	SaveCard               = "SaveCard"
 	CapturePayment         = "CapturePayment"
+	GetCustomerID          = "GetCustomerID"
+	CreateTransaction      = "CreateTransaction"
 )
 
 // Endpoints collects all of the endpoints that compose a profile service. It's
@@ -19,6 +21,8 @@ type Endpoints struct {
 	SaveCardEndpoint               endpoint.Endpoint
 	GetPaymentIntentSecretEndpoint endpoint.Endpoint
 	CapturePaymentEndpoint         endpoint.Endpoint
+	GetCustomerIDEndpoint          endpoint.Endpoint
+	CreateTransactionEndpoint      endpoint.Endpoint
 }
 
 // New returns a Endpoints struct that wraps the provided service, and wires in all of the
@@ -48,5 +52,7 @@ func GetEndpointList() []string {
 		SaveCard,
 		GetPaymentIntentSecret,
 		CapturePayment,
+		GetCustomerID,
+		CreateTransaction,
 	}
 }

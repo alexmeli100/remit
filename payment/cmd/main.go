@@ -72,6 +72,7 @@ func main() {
 	svc, err := payService.NewStripeService(
 		postgres,
 		sc,
+		logger,
 		withUserEventListener(ctx, conn, logger),
 		withTransferEventListener(ctx, conn, logger))
 
@@ -121,7 +122,6 @@ func withTransferEventListener(ctx context.Context, conn stan.Conn, logger log.L
 
 		return err
 	}
-
 }
 
 func addEventListener(ctx context.Context, conn stan.Conn, logger log.Logger, handlers events.Handlers, topic, queue string) error {

@@ -6,10 +6,10 @@ import (
 	eventpb "github.com/alexmeli100/remit/events/pb"
 	"github.com/alexmeli100/remit/payment/pkg/grpc/pb"
 	userPb "github.com/alexmeli100/remit/users/pkg/grpc/pb"
+	"github.com/go-kit/kit/log"
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go/v71"
 	"github.com/stripe/stripe-go/v71/client"
-	"time"
 )
 
 const (
@@ -23,7 +23,7 @@ type PaymentStore interface {
 	GetCustomerID(ctx context.Context, uid string) (string, error)
 	DeleteCustomer(ctx context.Context, uid string) error
 	StorePayment(ctx context.Context, uid, intent string) error
-	CreateTransaction(ctx context.Context, t *pb.Transaction) error
+	CreateTransaction(ctx context.Context, t *pb.Transaction) (*pb.Transaction, error)
 	GetTransactions(ctx context.Context, uid string) ([]*pb.Transaction, error)
 }
 
@@ -35,12 +35,18 @@ type Customer struct {
 type StripeService struct {
 	client *client.API
 	db     PaymentStore
+	logger log.Logger
 }
 
-func NewStripeService(db PaymentStore, client *client.API, opts ...func(service *StripeService) error) (PaymentService, error) {
+func (s *StripeService) GetCustomerID(ctx context.Context, uid string) (string, error) {
+	return s.db.GetCustomerID(ctx, uid)
+}
+
+func NewStripeService(db PaymentStore, client *client.API, logger log.Logger, opts ...func(service *StripeService) error) (PaymentService, error) {
 	svc := &StripeService{
 		client: client,
 		db:     db,
+		logger: logger,
 	}
 
 	for _, opt := range opts {
@@ -71,6 +77,10 @@ func (s *StripeService) SaveCard(ctx context.Context, uid string) (string, error
 	}
 
 	return intent.ClientSecret, err
+}
+
+func (s *StripeService) CreateTransaction(ctx context.Context, t *pb.Transaction) (*pb.Transaction, error) {
+	return s.db.CreateTransaction(ctx, t)
 }
 
 func (s *StripeService) CapturePayment(_ context.Context, pi string, amount float64) (string, error) {
@@ -178,21 +188,5 @@ func (s *StripeService) OnPaymentSucceded(ctx context.Context, data *eventpb.Eve
 
 func (s *StripeService) OnTransferSucceded(ctx context.Context, data *eventpb.EventData) error {
 	tr := data.GetTransfer()
-	now := time.Now()
-
-	order := &pb.Transaction{
-		RecipientId:     tr.RecipientId,
-		UserId:          tr.SenderId,
-		CreatedAt:       &now,
-		AmountReceived:  tr.ReceiveAmount,
-		AmountSent:      tr.Amount,
-		TransactionFee:  tr.SendFee,
-		TransactionType: MobileMoney,
-		SendCurrency:    tr.Currency,
-		ReceiveCurrency: tr.ReceiveCurrency,
-		ExchangeRate:    tr.ExchangeRate,
-		PaymentIntent:   tr.PaymentIntent,
-	}
-
-	return s.db.CreateTransaction(ctx, order)
+	return s.logger.Log("Transfer", tr)
 }

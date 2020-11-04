@@ -14,6 +14,26 @@ type loggingMiddleware struct {
 	next   PaymentService
 }
 
+func (l loggingMiddleware) GetCustomerID(ctx context.Context, uid string) (string, error) {
+	c, err := l.next.GetCustomerID(ctx, uid)
+
+	defer func() {
+		l.logger.Log("method", "GetCustomerID", "err", err)
+	}()
+
+	return c, err
+}
+
+func (l loggingMiddleware) CreateTransaction(ctx context.Context, tr *pb.Transaction) (*pb.Transaction, error) {
+	tr, err := l.next.CreateTransaction(ctx, tr)
+
+	defer func() {
+		l.logger.Log("method", "CreateTransaction", "err", err)
+	}()
+
+	return tr, err
+}
+
 // LoggingMiddleware takes a logger as a dependency
 // and returns a PaymentService Middleware.
 func LoggingMiddleware(logger log.Logger) Middleware {

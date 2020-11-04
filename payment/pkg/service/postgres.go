@@ -7,6 +7,7 @@ import (
 	"github.com/alexmeli100/remit/payment/pkg/grpc/pb"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"time"
 )
 
 const (
@@ -20,8 +21,8 @@ const (
 			recipient_id, user_id, created_at, amount_received, amount_sent, transaction_fee, 
 			transaction_type, send_currency, receive_currency, exchange_rate, payment_intent)
 		values(
-			:recipientID, :userID, :createdAt, :amountReceived, :amountSent, :transactionFee, 
-			:transactionType, :sendCurrency, :receiveCurrency, :exchangeRate, :paymentIntent)
+			$1, $2, $3, $4, $5, $6,$7, $8, $9, $10, $11)
+		RETURNING id
 		`
 	DeleteCustomerQuery = "DELETE FROM customers WHERE uid=$1"
 )
@@ -84,10 +85,20 @@ func (p *PostgresDB) StorePayment(ctx context.Context, uid, intent string) error
 	return nil
 }
 
-func (p *PostgresDB) CreateTransaction(ctx context.Context, t *pb.Transaction) error {
-	_, err := p.db.NamedExec(CreateTransactionQuery, t)
+func (p *PostgresDB) CreateTransaction(ctx context.Context, t *pb.Transaction) (*pb.Transaction, error) {
+	var lastInsertId int
 
-	return err
+	err := p.db.QueryRowx(CreateTransactionQuery,
+		t.RecipientId, t.UserId, time.Now(), t.AmountReceived, t.AmountSent, t.TransactionFee,
+		t.TransactionType, t.SendCurrency, t.ReceiveCurrency, t.ExchangeRate, t.PaymentIntent,
+	).Scan(&lastInsertId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	t.Id = int64(lastInsertId)
+	return t, nil
 }
 
 func (p *PostgresDB) GetTransactions(ctx context.Context, uid string) ([]*pb.Transaction, error) {

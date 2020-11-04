@@ -12,6 +12,8 @@ type grpcServer struct {
 	saveCard               grpc.Handler
 	getPaymentIntentSecret grpc.Handler
 	capturePayment         grpc.Handler
+	getCustomerID          grpc.Handler
+	createTransaction      grpc.Handler
 }
 
 func NewGRPCServer(endpoints endpoint.Endpoints, options map[string][]grpc.ServerOption) pb.PaymentServer {
