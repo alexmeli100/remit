@@ -150,6 +150,32 @@ func (g *grpcServer) CreateTransaction(ctx context.Context, request *pb.CreateTr
 	return res.(*pb.CreateTransactionReply), nil
 }
 
+func makeGetTransactionsHandler(endpoints endpoint.Endpoints, options []grpc.ServerOption) grpc.Handler {
+	return grpc.NewServer(endpoints.GetTransactionsEndpoint, decodeGetTransactionsRequest, encodeGetTransactionsResponse, options...)
+}
+
+func decodeGetTransactionsRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(*pb.GetTransactionsRequest)
+
+	return endpoint.GetTransactionsRequest{Uid: req.Uid}, nil
+}
+
+func encodeGetTransactionsResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(endpoint.GetTransactionsResponse)
+
+	return &pb.GetTransactionsReply{Transactions: res.Transactions, Err: err2str(res.Err)}, nil
+}
+
+func (g *grpcServer) GetTransactions(ctx context.Context, request *pb.GetTransactionsRequest) (*pb.GetTransactionsReply, error) {
+	_, res, err := g.getTransactions.ServeGRPC(ctx, request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res.(*pb.GetTransactionsReply), nil
+}
+
 func err2str(err error) string {
 	if err == nil {
 		return ""

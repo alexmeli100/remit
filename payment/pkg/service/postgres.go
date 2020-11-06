@@ -30,7 +30,7 @@ const (
 var ErrNoUser = errors.New("user not found")
 
 type PostgresDB struct {
-	db *sqlx.DB
+	DB *sqlx.DB
 }
 
 func NewPostgresDB(db *sqlx.DB) PaymentStore {
@@ -38,14 +38,14 @@ func NewPostgresDB(db *sqlx.DB) PaymentStore {
 }
 
 func (p *PostgresDB) CreateCustomer(ctx context.Context, c *Customer) error {
-	_, err := p.db.NamedExec(CreateCustomerQuery, c)
+	_, err := p.DB.NamedExecContext(ctx, CreateCustomerQuery, c)
 
 	return err
 }
 
 func (p *PostgresDB) GetUserID(ctx context.Context, cid string) (string, error) {
 	var c Customer
-	err := p.db.Get(&c, GetUserIDQuery, cid)
+	err := p.DB.GetContext(ctx, &c, GetUserIDQuery, cid)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", ErrNoUser
@@ -57,14 +57,14 @@ func (p *PostgresDB) GetUserID(ctx context.Context, cid string) (string, error) 
 }
 
 func (p *PostgresDB) DeleteCustomer(ctx context.Context, uid string) error {
-	_, err := p.db.Exec(DeleteCustomerQuery, uid)
+	_, err := p.DB.ExecContext(ctx, DeleteCustomerQuery, uid)
 
 	return err
 }
 
 func (p *PostgresDB) GetCustomerID(ctx context.Context, uid string) (string, error) {
 	var c Customer
-	err := p.db.Get(&c, GetCustomerIDQuery, uid)
+	err := p.DB.GetContext(ctx, &c, GetCustomerIDQuery, uid)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", ErrNoUser
@@ -76,7 +76,7 @@ func (p *PostgresDB) GetCustomerID(ctx context.Context, uid string) (string, err
 }
 
 func (p *PostgresDB) StorePayment(ctx context.Context, uid, intent string) error {
-	_, err := p.db.Exec(StorePaymentQuery, uid, intent)
+	_, err := p.DB.ExecContext(ctx, StorePaymentQuery, uid, intent)
 
 	if err != nil {
 		return err
@@ -88,7 +88,7 @@ func (p *PostgresDB) StorePayment(ctx context.Context, uid, intent string) error
 func (p *PostgresDB) CreateTransaction(ctx context.Context, t *pb.Transaction) (*pb.Transaction, error) {
 	var lastInsertId int
 
-	err := p.db.QueryRowx(CreateTransactionQuery,
+	err := p.DB.QueryRowxContext(ctx, CreateTransactionQuery,
 		t.RecipientId, t.UserId, time.Now(), t.AmountReceived, t.AmountSent, t.TransactionFee,
 		t.TransactionType, t.SendCurrency, t.ReceiveCurrency, t.ExchangeRate, t.PaymentIntent,
 	).Scan(&lastInsertId)
@@ -104,7 +104,7 @@ func (p *PostgresDB) CreateTransaction(ctx context.Context, t *pb.Transaction) (
 func (p *PostgresDB) GetTransactions(ctx context.Context, uid string) ([]*pb.Transaction, error) {
 	var trs []*pb.Transaction
 
-	err := p.db.Select(trs, GetTransactionsQuery, uid)
+	err := p.DB.SelectContext(ctx, trs, GetTransactionsQuery, uid)
 
 	return trs, err
 }

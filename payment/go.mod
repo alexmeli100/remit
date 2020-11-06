@@ -19,6 +19,7 @@ require (
 	github.com/openzipkin/zipkin-go v0.2.2 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.7.1 // indirect
+	github.com/stretchr/testify v1.6.1
 	github.com/stripe/stripe-go/v71 v71.41.0
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
 	google.golang.org/grpc v1.31.0

@@ -21,6 +21,7 @@ func New(conn *grpc.ClientConn, options map[string][]grpcTrans.ClientOption) ser
 		SaveCardEndpoint:               makeSaveCardClient(conn, options[endpoint.SaveCard]).Endpoint(),
 		GetCustomerIDEndpoint:          makeGetCustomerIDClient(conn, options[endpoint.GetCustomerID]).Endpoint(),
 		CreateTransactionEndpoint:      makeCreateTransactionClient(conn, options[endpoint.CreateTransaction]).Endpoint(),
+		GetTransactionsEndpoint:        makeGetTransactionsClient(conn, options[endpoint.GetTransactions]).Endpoint(),
 	}
 }
 
@@ -152,6 +153,29 @@ func encodeCreateTransactionRequest(_ context.Context, r interface{}) (interface
 	req := r.(endpoint.CreateTransactionRequest)
 
 	return &pb.CreateTransactionRequest{Transaction: req.Transaction}, nil
+}
+
+func makeGetTransactionsClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
+	return grpcTrans.NewClient(
+		conn,
+		"pb.Payment",
+		endpoint.GetTransactions,
+		encodeGetTransactionsRequest,
+		decodeGetTransactionsResponse,
+		pb.GetTransactionsReply{},
+		options...)
+}
+
+func decodeGetTransactionsResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(*pb.GetTransactionsReply)
+
+	return endpoint.GetTransactionsResponse{Err: str2err(res.Err), Transactions: res.Transactions}, nil
+}
+
+func encodeGetTransactionsRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(endpoint.GetTransactionsRequest)
+
+	return &pb.GetTransactionsRequest{Uid: req.Uid}, nil
 }
 
 func str2err(s string) error {

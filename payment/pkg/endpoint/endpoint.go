@@ -22,11 +22,11 @@ type SaveCardResponse struct {
 func MakeSaveCardEndpoint(s service.PaymentService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(SaveCardRequest)
-		s, err := s.SaveCard(ctx, req.Uid)
+		secret, err := s.SaveCard(ctx, req.Uid)
 
 		return SaveCardResponse{
 			Err:    err,
-			Secret: s,
+			Secret: secret,
 		}, nil
 	}
 }
@@ -120,10 +120,11 @@ type GetPaymentIntentSecretResponse struct {
 func MakeGetPaymentIntentSecretEndpoint(s service.PaymentService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(GetPaymentIntentSecretRequest)
-		s, err := s.GetPaymentIntentSecret(ctx, req.Req)
+		secret, err := s.GetPaymentIntentSecret(ctx, req.Req)
+
 		return GetPaymentIntentSecretResponse{
 			Err:    err,
-			Secret: s,
+			Secret: secret,
 		}, nil
 	}
 }
@@ -138,6 +139,29 @@ func (r GetPaymentIntentSecretResponse) Failed() error {
 // failed, and if so encode them using a separate write path based on the error.
 type Failure interface {
 	Failed() error
+}
+
+type GetTransactionsRequest struct {
+	Uid string `json:"uid"`
+}
+
+type GetTransactionsResponse struct {
+	Transactions []*pb.Transaction
+	Err          error
+}
+
+func MakeGetTransactionsEndpoint(s service.PaymentService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(GetCustomerIDRequest)
+		trs, err := s.GetTransactions(ctx, req.Uid)
+
+		if err != nil {
+			return nil, err
+		}
+
+		res := GetTransactionsResponse{Transactions: trs, Err: err}
+		return res, nil
+	}
 }
 
 // SaveCard implements Service. Primarily useful in a client.
@@ -195,4 +219,17 @@ func (e Endpoints) CreateTransaction(ctx context.Context, tr *pb.Transaction) (*
 
 	res := response.(CreateTransactionResponse)
 	return res.Transaction, res.Err
+}
+
+func (e Endpoints) GetTransactions(ctx context.Context, uid string) ([]*pb.Transaction, error) {
+	request := GetTransactionsRequest{Uid: uid}
+	response, err := e.GetTransactionsEndpoint(ctx, request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res := response.(GetTransactionsResponse)
+
+	return res.Transactions, res.Err
 }

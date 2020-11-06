@@ -11,6 +11,7 @@ const (
 	SaveCard               = "SaveCard"
 	CapturePayment         = "CapturePayment"
 	GetCustomerID          = "GetCustomerID"
+	GetTransactions        = "GetTransactions"
 	CreateTransaction      = "CreateTransaction"
 )
 
@@ -23,6 +24,7 @@ type Endpoints struct {
 	CapturePaymentEndpoint         endpoint.Endpoint
 	GetCustomerIDEndpoint          endpoint.Endpoint
 	CreateTransactionEndpoint      endpoint.Endpoint
+	GetTransactionsEndpoint        endpoint.Endpoint
 }
 
 // New returns a Endpoints struct that wraps the provided service, and wires in all of the
@@ -32,6 +34,9 @@ func New(s service.PaymentService, mdw map[string][]endpoint.Middleware) Endpoin
 		GetPaymentIntentSecretEndpoint: MakeGetPaymentIntentSecretEndpoint(s),
 		SaveCardEndpoint:               MakeSaveCardEndpoint(s),
 		CapturePaymentEndpoint:         MakeCapturePaymentEndpoint(s),
+		GetCustomerIDEndpoint:          MakeGetCustomerIDEndpoint(s),
+		CreateTransactionEndpoint:      MakeCreateTransactionEndpoint(s),
+		GetTransactionsEndpoint:        MakeGetTransactionsEndpoint(s),
 	}
 
 	for _, m := range mdw[SaveCard] {
@@ -54,5 +59,6 @@ func GetEndpointList() []string {
 		CapturePayment,
 		GetCustomerID,
 		CreateTransaction,
+		GetTransactions,
 	}
 }

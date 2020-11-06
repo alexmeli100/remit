@@ -28,18 +28,14 @@ type PaymentStore interface {
 }
 
 type Customer struct {
-	UID        string `db:"uid"`
-	CustomerID string `db:"customer_id"`
+	UID        string `DB:"uid"`
+	CustomerID string `DB:"customer_id"`
 }
 
 type StripeService struct {
 	client *client.API
 	db     PaymentStore
 	logger log.Logger
-}
-
-func (s *StripeService) GetCustomerID(ctx context.Context, uid string) (string, error) {
-	return s.db.GetCustomerID(ctx, uid)
 }
 
 func NewStripeService(db PaymentStore, client *client.API, logger log.Logger, opts ...func(service *StripeService) error) (PaymentService, error) {
@@ -56,6 +52,14 @@ func NewStripeService(db PaymentStore, client *client.API, logger log.Logger, op
 	}
 
 	return svc, nil
+}
+
+func (s *StripeService) GetCustomerID(ctx context.Context, uid string) (string, error) {
+	return s.db.GetCustomerID(ctx, uid)
+}
+
+func (s *StripeService) GetTransactions(ctx context.Context, uid string) ([]*pb.Transaction, error) {
+	return s.db.GetTransactions(ctx, uid)
 }
 
 func (s *StripeService) SaveCard(ctx context.Context, uid string) (string, error) {

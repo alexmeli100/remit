@@ -14,6 +14,16 @@ type loggingMiddleware struct {
 	next   PaymentService
 }
 
+func (l loggingMiddleware) GetTransactions(ctx context.Context, uid string) ([]*pb.Transaction, error) {
+	trs, err := l.next.GetTransactions(ctx, uid)
+
+	defer func() {
+		l.logger.Log("method", "GetTransactions", "err", err)
+	}()
+
+	return trs, err
+}
+
 func (l loggingMiddleware) GetCustomerID(ctx context.Context, uid string) (string, error) {
 	c, err := l.next.GetCustomerID(ctx, uid)
 

@@ -12,6 +12,7 @@ type PaymentService interface {
 	CapturePayment(ctx context.Context, pi string, amount float64) (string, error)
 	GetCustomerID(ctx context.Context, uid string) (string, error)
 	CreateTransaction(ctx context.Context, tr *pb.Transaction) (*pb.Transaction, error)
+	GetTransactions(ctx context.Context, uid string) ([]*pb.Transaction, error)
 }
 
 // New returns a PaymentService with all of the expected middleware wired in.

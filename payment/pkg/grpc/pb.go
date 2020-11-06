@@ -14,6 +14,7 @@ type grpcServer struct {
 	capturePayment         grpc.Handler
 	getCustomerID          grpc.Handler
 	createTransaction      grpc.Handler
+	getTransactions        grpc.Handler
 }
 
 func NewGRPCServer(endpoints endpoint.Endpoints, options map[string][]grpc.ServerOption) pb.PaymentServer {
@@ -23,5 +24,6 @@ func NewGRPCServer(endpoints endpoint.Endpoints, options map[string][]grpc.Serve
 		capturePayment:         makeCapturePaymentHandler(endpoints, options[endpoint.CapturePayment]),
 		getCustomerID:          makeGetCustomerIDHandler(endpoints, options[endpoint.GetCustomerID]),
 		createTransaction:      makeCreateTransactionHandler(endpoints, options[endpoint.GetCustomerID]),
+		getTransactions:        makeGetTransactionsHandler(endpoints, options[endpoint.GetTransactions]),
 	}
 }

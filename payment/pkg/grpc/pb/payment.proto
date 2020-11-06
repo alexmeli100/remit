@@ -12,6 +12,7 @@ service Payment {
  rpc CapturePayment         (CapturePaymentRequest)         returns (CapturePaymentReply);
  rpc GetCustomerID          (GetCustomerIDRequest)          returns (GetCustomerIDReply);
  rpc CreateTransaction      (CreateTransactionRequest)      returns (CreateTransactionReply);
+ rpc GetTransactions        (GetTransactionsRequest)        returns (GetTransactionsReply);
 }
 
 message Transaction {
@@ -95,5 +96,14 @@ message CreateTransactionRequest {
 
 message CreateTransactionReply {
  Transaction transaction = 1;
+ string err = 2;
+}
+
+message GetTransactionsRequest {
+ string uid = 1;
+}
+
+message GetTransactionsReply {
+ repeated Transaction transactions = 1;
  string err = 2;
 }
