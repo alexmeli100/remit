@@ -10,10 +10,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-// New returns a UserService backed by a gRPC server at the other end
-//  of the conn. The caller is responsible for constructing the conn, and
-// eventually closing the underlying transport. We bake-in certain middlewares,
-// implementing the client library pattern.
 func makeCreateClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
 	return grpcTrans.NewClient(conn, "pb.Users", "Create", encodeCreateRequest, decodeCreateResponse, pb.CreateReply{}, options...)
 }
@@ -170,6 +166,75 @@ func decodeSetUserProfileResponse(_ context.Context, r interface{}) (interface{}
 	return endpoint.SetUserProfileResponse{User: res.User, Err: str2err(res.Err)}, nil
 }
 
+func makeDeleteContactClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
+	return grpcTrans.NewClient(
+		conn,
+		"pb.Users",
+		"DeleteContact",
+		encodeDeleteContactRequest,
+		decodeDeleteContactResponse,
+		pb.DeleteContactReply{},
+		options...)
+}
+
+func encodeDeleteContactRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(endpoint.DeleteContactRequest)
+
+	return &pb.DeleteContactRequest{Contact: req.Contact}, nil
+}
+
+func decodeDeleteContactResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(*pb.DeleteContactReply)
+
+	return endpoint.DeleteContactResponse{Err: str2err(res.Err)}, nil
+}
+
+func makeCreateContactClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
+	return grpcTrans.NewClient(
+		conn,
+		"pb.Users",
+		"CreateContact",
+		encodeCreateContactRequest,
+		decodeCreateContactResponse,
+		pb.CreateContactReply{},
+		options...)
+}
+
+func encodeCreateContactRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(endpoint.CreateContactRequest)
+
+	return &pb.CreateContactRequest{Contact: req.Contact}, nil
+}
+
+func decodeCreateContactResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(*pb.CreateContactReply)
+
+	return endpoint.CreateContactResponse{Contact: res.Contact, Err: str2err(res.Err)}, nil
+}
+
+func makeGetContactsClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {
+	return grpcTrans.NewClient(
+		conn,
+		"pb.Users",
+		"GetContacts",
+		encodeGetContactsRequest,
+		decodeGetContactsResponse,
+		pb.GetContactsReply{},
+		options...)
+}
+
+func encodeGetContactsRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(endpoint.GetContactsRequest)
+
+	return &pb.GetContactsRequest{UserID: req.UserId}, nil
+}
+
+func decodeGetContactsResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(*pb.GetContactsReply)
+
+	return endpoint.GetContactsResponse{Contacts: res.Contacts, Err: str2err(res.Err)}, nil
+}
+
 func str2err(s string) error {
 	if s == "" {
 		return nil
@@ -178,6 +243,10 @@ func str2err(s string) error {
 	return errors.New(s)
 }
 
+// NewGRPCClient returns a UserService backed by a gRPC server at the other end
+//  of the conn. The caller is responsible for constructing the conn, and
+// eventually closing the underlying transport. We bake-in certain middlewares,
+// implementing the client library pattern.
 func NewGRPCClient(conn *grpc.ClientConn, options map[string][]grpcTrans.ClientOption) service.UsersService {
 	return endpoint.Endpoints{
 		CreateEndpoint:            makeCreateClient(conn, options[endpoint.Create]).Endpoint(),
@@ -188,5 +257,8 @@ func NewGRPCClient(conn *grpc.ClientConn, options map[string][]grpcTrans.ClientO
 		UpdateContactEndpoint:     makeUpdateContactClient(conn, options[endpoint.UpdateContact]).Endpoint(),
 		UpdateUserProfileEndpoint: makeUpdateUserProfileClient(conn, options[endpoint.UpdateUserProfile]).Endpoint(),
 		SetUserProfileEndpoint:    makeSetUserProfileClient(conn, options[endpoint.SetUserProfile]).Endpoint(),
+		DeleteContactEndpoint:     makeDeleteContactClient(conn, options[endpoint.DeleteContact]).Endpoint(),
+		CreateContactEndpoint:     makeCreateContactClient(conn, options[endpoint.CreateContact]).Endpoint(),
+		GetContactsEndpoint:       makeGetContactsClient(conn, options[endpoint.GetContacts]).Endpoint(),
 	}
 }

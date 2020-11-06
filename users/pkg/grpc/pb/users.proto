@@ -15,6 +15,7 @@ service Users {
  rpc CreateContact     (CreateContactRequest    ) returns (CreateContactReply    );
  rpc GetContacts       (GetContactsRequest      ) returns (GetContactsReply      );
  rpc UpdateContact     (UpdateContactRequest    ) returns (UpdateContactReply    );
+ rpc DeleteContact     (DeleteContactRequest    ) returns (DeleteContactReply    );
  rpc SetUserProfile    (SetUserProfileRequest   ) returns (SetUserProfileReply   );
  rpc UpdateUserProfile (UpdateUserProfileRequest) returns (UpdateUserProfileReply);
 }
@@ -147,11 +148,12 @@ message CreateContactRequest {
 }
 
 message CreateContactReply {
- string err = 1;
+ Contact contact = 1;
+ string err = 2;
 }
 
 message GetContactsRequest {
- string userId = 1;
+ int64 userID = 1;
 }
 
 message GetContactsReply {
@@ -186,3 +188,10 @@ message UpdateUserProfileReply {
  User user = 2;
 }
 
+message DeleteContactRequest {
+ Contact contact = 1;
+}
+
+message DeleteContactReply {
+ string err = 1;
+}

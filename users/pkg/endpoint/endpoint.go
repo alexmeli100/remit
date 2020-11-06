@@ -232,7 +232,7 @@ func MakeUpdateUserProfileEndpoint(s service.UsersService) endpoint.Endpoint {
 }
 
 type GetContactsRequest struct {
-	UserId string `json:"userId"`
+	UserId int64 `json:"userId"`
 }
 
 type GetContactsResponse struct {
@@ -246,6 +246,23 @@ func MakeGetContactsEndpoint(s service.UsersService) endpoint.Endpoint {
 		c, err := s.GetContacts(ctx, req.UserId)
 
 		return GetContactsResponse{Err: err, Contacts: c}, nil
+	}
+}
+
+type DeleteContactRequest struct {
+	Contact *pb.Contact `json:"contact"`
+}
+
+type DeleteContactResponse struct {
+	Err error `json:"err"`
+}
+
+func MakeDeleteContactEndpoint(s service.UsersService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(DeleteContactRequest)
+		err := s.DeleteContact(ctx, req.Contact)
+
+		return DeleteContactResponse{Err: err}, nil
 	}
 }
 
@@ -325,7 +342,7 @@ func (e Endpoints) CreateContact(ctx context.Context, contact *pb.Contact) (*pb.
 	return res.Contact, res.Err
 }
 
-func (e Endpoints) GetContacts(ctx context.Context, userId string) ([]*pb.Contact, error) {
+func (e Endpoints) GetContacts(ctx context.Context, userId int64) ([]*pb.Contact, error) {
 	request := GetContactsRequest{UserId: userId}
 	response, err := e.GetContactsEndpoint(ctx, request)
 
@@ -347,6 +364,18 @@ func (e Endpoints) UpdateContact(ctx context.Context, contact *pb.Contact) (*pb.
 
 	res := response.(UpdateContactResponse)
 	return res.Contact, res.Err
+}
+
+func (e Endpoints) DeleteContact(ctx context.Context, contact *pb.Contact) error {
+	request := DeleteContactRequest{Contact: contact}
+	response, err := e.DeleteContactEndpoint(ctx, request)
+
+	if err != nil {
+		return err
+	}
+
+	res := response.(DeleteContactResponse)
+	return res.Err
 }
 
 func (e Endpoints) SetUserProfile(ctx context.Context, user *pb.User) (*pb.User, error) {

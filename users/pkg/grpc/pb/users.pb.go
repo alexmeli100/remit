@@ -231,10 +231,13 @@ func (m *User) GetProfile() *Profile {
 }
 
 type Profile struct {
-	Gender     string     `protobuf:"bytes,1,opt,name=gender,proto3" json:"gender,omitempty"`
-	Occupation string     `protobuf:"bytes,2,opt,name=occupation,proto3" json:"occupation,omitempty"`
-	BirthDate  *time.Time `protobuf:"bytes,3,opt,name=birthDate,proto3,stdtime" json:"birthDate,omitempty"`
-	Address    *Address   `protobuf:"bytes,4,opt,name=address,proto3" json:"address,omitempty"`
+	// @inject_tag: db:"gender"
+	Gender string `protobuf:"bytes,1,opt,name=gender,proto3" json:"gender,omitempty" db:"gender"`
+	// @inject_tag: db:"occupation"
+	Occupation string `protobuf:"bytes,2,opt,name=occupation,proto3" json:"occupation,omitempty" db:"occupation"`
+	// @inject_tag: db:"birth_date"
+	BirthDate *time.Time `protobuf:"bytes,3,opt,name=birthDate,proto3,stdtime" json:"birthDate,omitempty" db:"birth_date"`
+	Address   *Address   `protobuf:"bytes,4,opt,name=address,proto3" json:"address,omitempty"`
 }
 
 func (m *Profile) Reset()      { *m = Profile{} }
@@ -298,11 +301,17 @@ func (m *Profile) GetAddress() *Address {
 }
 
 type Address struct {
-	Country       string `protobuf:"bytes,1,opt,name=country,proto3" json:"country,omitempty"`
-	Address1      string `protobuf:"bytes,2,opt,name=address1,proto3" json:"address1,omitempty"`
-	Address2      string `protobuf:"bytes,3,opt,name=address2,proto3" json:"address2,omitempty"`
-	CityTown      string `protobuf:"bytes,4,opt,name=cityTown,proto3" json:"cityTown,omitempty"`
-	ProvinceState string `protobuf:"bytes,5,opt,name=provinceState,proto3" json:"provinceState,omitempty"`
+	// @inject_tag: db:"country"
+	Country string `protobuf:"bytes,1,opt,name=country,proto3" json:"country,omitempty" db:"country"`
+	// @inject_tag: db:"address_1"
+	Address1 string `protobuf:"bytes,2,opt,name=address1,proto3" json:"address1,omitempty" db:"address_1"`
+	// @inject_tag: db:"address_2"
+	Address2 string `protobuf:"bytes,3,opt,name=address2,proto3" json:"address2,omitempty" db:"address_2"`
+	// @inject_tag: db:"city_town"
+	CityTown string `protobuf:"bytes,4,opt,name=cityTown,proto3" json:"cityTown,omitempty" db:"city_town"`
+	// @inject_tag: db:"province_state"
+	ProvinceState string `protobuf:"bytes,5,opt,name=provinceState,proto3" json:"provinceState,omitempty" db:"province_state"`
+	// @inject_tag: db: "postalcode_zip"
 	PostalcodeZip string `protobuf:"bytes,6,opt,name=postalcodeZip,proto3" json:"postalcodeZip,omitempty"`
 }
 
@@ -381,15 +390,26 @@ func (m *Address) GetPostalcodeZip() string {
 }
 
 type Contact struct {
-	FirstName     string     `protobuf:"bytes,1,opt,name=firstName,proto3" json:"firstName,omitempty"`
-	MiddleName    string     `protobuf:"bytes,2,opt,name=middleName,proto3" json:"middleName,omitempty"`
-	LastName      string     `protobuf:"bytes,3,opt,name=lastName,proto3" json:"lastName,omitempty"`
-	Email         string     `protobuf:"bytes,4,opt,name=email,proto3" json:"email,omitempty"`
-	Mobile        string     `protobuf:"bytes,5,opt,name=mobile,proto3" json:"mobile,omitempty"`
-	MobileAccount string     `protobuf:"bytes,6,opt,name=mobileAccount,proto3" json:"mobileAccount,omitempty"`
-	Id            int64      `protobuf:"varint,7,opt,name=id,proto3" json:"id,omitempty"`
-	UserId        string     `protobuf:"bytes,8,opt,name=userId,proto3" json:"userId,omitempty"`
-	CreatedAt     *time.Time `protobuf:"bytes,9,opt,name=createdAt,proto3,stdtime" json:"createdAt,omitempty"`
+	// @inject_tag: db: "first_name"
+	FirstName string `protobuf:"bytes,1,opt,name=firstName,proto3" json:"firstName,omitempty"`
+	// @inject_tag: db: "middle_name"
+	MiddleName string `protobuf:"bytes,2,opt,name=middleName,proto3" json:"middleName,omitempty"`
+	// @inject_tag: db: "last_name"
+	LastName string `protobuf:"bytes,3,opt,name=lastName,proto3" json:"lastName,omitempty"`
+	// @inject_tag: db: "email"
+	Email string `protobuf:"bytes,4,opt,name=email,proto3" json:"email,omitempty"`
+	// @inject_tag: db: "mobile"
+	Mobile string `protobuf:"bytes,5,opt,name=mobile,proto3" json:"mobile,omitempty"`
+	// @inject_tag: db: "mobile_account"
+	MobileAccount string `protobuf:"bytes,6,opt,name=mobileAccount,proto3" json:"mobileAccount,omitempty"`
+	// @inject_tag: db: "id"
+	Id int64 `protobuf:"varint,7,opt,name=id,proto3" json:"id,omitempty"`
+	// @inject_tag: db: "user_id"
+	UserId string `protobuf:"bytes,8,opt,name=userId,proto3" json:"userId,omitempty"`
+	// @inject_tag: db: "created_at"
+	CreatedAt *time.Time `protobuf:"bytes,9,opt,name=createdAt,proto3,stdtime" json:"createdAt,omitempty"`
+	// @inject_tag: db: "updated_at"
+	UpdatedAt *time.Time `protobuf:"bytes,10,opt,name=updatedAt,proto3,stdtime" json:"updatedAt,omitempty"`
 }
 
 func (m *Contact) Reset()      { *m = Contact{} }
@@ -483,6 +503,13 @@ func (m *Contact) GetUserId() string {
 func (m *Contact) GetCreatedAt() *time.Time {
 	if m != nil {
 		return m.CreatedAt
+	}
+	return nil
+}
+
+func (m *Contact) GetUpdatedAt() *time.Time {
+	if m != nil {
+		return m.UpdatedAt
 	}
 	return nil
 }
@@ -985,7 +1012,8 @@ func (m *CreateContactRequest) GetContact() *Contact {
 }
 
 type CreateContactReply struct {
-	Err string `protobuf:"bytes,1,opt,name=err,proto3" json:"err,omitempty"`
+	Contact *Contact `protobuf:"bytes,1,opt,name=contact,proto3" json:"contact,omitempty"`
+	Err     string   `protobuf:"bytes,2,opt,name=err,proto3" json:"err,omitempty"`
 }
 
 func (m *CreateContactReply) Reset()      { *m = CreateContactReply{} }
@@ -1020,6 +1048,13 @@ func (m *CreateContactReply) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CreateContactReply proto.InternalMessageInfo
 
+func (m *CreateContactReply) GetContact() *Contact {
+	if m != nil {
+		return m.Contact
+	}
+	return nil
+}
+
 func (m *CreateContactReply) GetErr() string {
 	if m != nil {
 		return m.Err
@@ -1028,7 +1063,7 @@ func (m *CreateContactReply) GetErr() string {
 }
 
 type GetContactsRequest struct {
-	UserId string `protobuf:"bytes,1,opt,name=userId,proto3" json:"userId,omitempty"`
+	UserID int64 `protobuf:"varint,1,opt,name=userID,proto3" json:"userID,omitempty"`
 }
 
 func (m *GetContactsRequest) Reset()      { *m = GetContactsRequest{} }
@@ -1063,11 +1098,11 @@ func (m *GetContactsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetContactsRequest proto.InternalMessageInfo
 
-func (m *GetContactsRequest) GetUserId() string {
+func (m *GetContactsRequest) GetUserID() int64 {
 	if m != nil {
-		return m.UserId
+		return m.UserID
 	}
-	return ""
+	return 0
 }
 
 type GetContactsReply struct {
@@ -1403,6 +1438,92 @@ func (m *UpdateUserProfileReply) GetUser() *User {
 	return nil
 }
 
+type DeleteContactRequest struct {
+	Contact *Contact `protobuf:"bytes,1,opt,name=contact,proto3" json:"contact,omitempty"`
+}
+
+func (m *DeleteContactRequest) Reset()      { *m = DeleteContactRequest{} }
+func (*DeleteContactRequest) ProtoMessage() {}
+func (*DeleteContactRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_030765f334c86cea, []int{25}
+}
+func (m *DeleteContactRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *DeleteContactRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_DeleteContactRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *DeleteContactRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteContactRequest.Merge(m, src)
+}
+func (m *DeleteContactRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *DeleteContactRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteContactRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteContactRequest proto.InternalMessageInfo
+
+func (m *DeleteContactRequest) GetContact() *Contact {
+	if m != nil {
+		return m.Contact
+	}
+	return nil
+}
+
+type DeleteContactReply struct {
+	Err string `protobuf:"bytes,1,opt,name=err,proto3" json:"err,omitempty"`
+}
+
+func (m *DeleteContactReply) Reset()      { *m = DeleteContactReply{} }
+func (*DeleteContactReply) ProtoMessage() {}
+func (*DeleteContactReply) Descriptor() ([]byte, []int) {
+	return fileDescriptor_030765f334c86cea, []int{26}
+}
+func (m *DeleteContactReply) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *DeleteContactReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_DeleteContactReply.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *DeleteContactReply) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteContactReply.Merge(m, src)
+}
+func (m *DeleteContactReply) XXX_Size() int {
+	return m.Size()
+}
+func (m *DeleteContactReply) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteContactReply.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteContactReply proto.InternalMessageInfo
+
+func (m *DeleteContactReply) GetErr() string {
+	if m != nil {
+		return m.Err
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterEnum("pb.UserEventKind", UserEventKind_name, UserEventKind_value)
 	proto.RegisterType((*UserEvent)(nil), "pb.UserEvent")
@@ -1430,77 +1551,82 @@ func init() {
 	proto.RegisterType((*SetUserProfileReply)(nil), "pb.SetUserProfileReply")
 	proto.RegisterType((*UpdateUserProfileRequest)(nil), "pb.UpdateUserProfileRequest")
 	proto.RegisterType((*UpdateUserProfileReply)(nil), "pb.UpdateUserProfileReply")
+	proto.RegisterType((*DeleteContactRequest)(nil), "pb.DeleteContactRequest")
+	proto.RegisterType((*DeleteContactReply)(nil), "pb.DeleteContactReply")
 }
 
 func init() { proto.RegisterFile("users.proto", fileDescriptor_030765f334c86cea) }
 
 var fileDescriptor_030765f334c86cea = []byte{
-	// 1036 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x56, 0xcb, 0x6e, 0xdb, 0x46,
-	0x17, 0xd6, 0xd0, 0xb2, 0x2e, 0x47, 0x90, 0x23, 0x4f, 0x6c, 0xfd, 0xfc, 0x09, 0x83, 0x16, 0x08,
-	0xbb, 0x35, 0x82, 0x58, 0x46, 0xd5, 0x16, 0x2d, 0x50, 0xb4, 0x80, 0x1c, 0x1b, 0x6d, 0x50, 0xb8,
-	0x08, 0x98, 0x78, 0xd3, 0x1d, 0x45, 0x8e, 0x15, 0xa2, 0x12, 0xc9, 0x92, 0xa3, 0x04, 0xda, 0xf5,
-	0x11, 0xfc, 0x06, 0xdd, 0xe6, 0x15, 0xba, 0xee, 0xa6, 0x4b, 0x2f, 0xb3, 0x6b, 0x2d, 0x6f, 0xba,
-	0xcc, 0x23, 0x14, 0x73, 0xe3, 0x45, 0x62, 0x85, 0xc4, 0x8b, 0xee, 0xe6, 0x5c, 0xe6, 0x5c, 0xbe,
-	0x73, 0xbe, 0x21, 0xa1, 0x35, 0x4b, 0x48, 0x9c, 0xf4, 0xa3, 0x38, 0xa4, 0x21, 0xd6, 0xa2, 0x91,
-	0xb1, 0x3f, 0x0e, 0xc3, 0xf1, 0x84, 0x9c, 0x70, 0xcd, 0x68, 0x76, 0x75, 0x42, 0xfd, 0x29, 0x49,
-	0xa8, 0x33, 0x8d, 0x84, 0x93, 0x71, 0x3c, 0xf6, 0xe9, 0xcb, 0xd9, 0xa8, 0xef, 0x86, 0xd3, 0x93,
-	0x71, 0x38, 0x0e, 0x33, 0x4f, 0x26, 0x71, 0x81, 0x9f, 0x84, 0xbb, 0xf5, 0x0c, 0x9a, 0x97, 0x09,
-	0x89, 0xcf, 0x5f, 0x91, 0x80, 0xe2, 0x43, 0xa8, 0xfe, 0xe4, 0x07, 0x9e, 0x8e, 0x7a, 0xe8, 0x68,
-	0x6b, 0xb0, 0xdd, 0x8f, 0x46, 0xfd, 0xd4, 0xf8, 0xbd, 0x1f, 0x78, 0x36, 0x37, 0xe3, 0x3d, 0xa8,
-	0xb2, 0xb2, 0x74, 0xad, 0x87, 0x8e, 0x5a, 0x83, 0x86, 0x72, 0xb3, 0xb9, 0xd6, 0xfa, 0x4d, 0x83,
-	0x2a, 0x13, 0xf1, 0x1e, 0x34, 0xaf, 0xfc, 0x38, 0xa1, 0x3f, 0x38, 0x53, 0xc2, 0x43, 0x36, 0xed,
-	0x4c, 0x81, 0x4d, 0x80, 0xa9, 0xef, 0x79, 0x13, 0xc2, 0xcd, 0x1a, 0x37, 0xe7, 0x34, 0xd8, 0x80,
-	0xc6, 0xc4, 0x91, 0x97, 0x37, 0xb8, 0x35, 0x95, 0xf1, 0x0e, 0x6c, 0x92, 0xa9, 0xe3, 0x4f, 0xf4,
-	0x2a, 0x37, 0x08, 0x01, 0x63, 0xa8, 0xce, 0x66, 0xbe, 0xa7, 0x6f, 0x72, 0x25, 0x3f, 0xe3, 0x2d,
-	0xd0, 0x7c, 0x4f, 0xaf, 0xf5, 0xd0, 0xd1, 0x86, 0xad, 0xf9, 0x1e, 0xd6, 0xa1, 0xee, 0x86, 0xb3,
-	0x80, 0xc6, 0x73, 0xbd, 0xce, 0xdd, 0x94, 0x88, 0xbf, 0x81, 0xa6, 0x1b, 0x13, 0x87, 0x12, 0x6f,
-	0x48, 0xf5, 0x06, 0xef, 0xcc, 0xe8, 0x0b, 0xb0, 0xfb, 0x0a, 0xc2, 0xfe, 0x0b, 0x05, 0xf6, 0x69,
-	0xf5, 0xfa, 0xcf, 0x7d, 0x64, 0x67, 0x57, 0x58, 0xb7, 0x6e, 0x18, 0x5c, 0xf9, 0xf1, 0x94, 0x78,
-	0x7a, 0xb3, 0x87, 0x8e, 0x1a, 0x76, 0xa6, 0xc0, 0x87, 0x50, 0x8f, 0xe2, 0xf0, 0xca, 0x9f, 0x10,
-	0x1d, 0x78, 0xec, 0x16, 0x43, 0xed, 0x99, 0x50, 0xd9, 0xca, 0x66, 0xbd, 0x41, 0x50, 0x97, 0x4a,
-	0xdc, 0x85, 0xda, 0x98, 0x04, 0x1e, 0x89, 0x25, 0x76, 0x52, 0x62, 0xc0, 0x85, 0xae, 0x3b, 0x8b,
-	0x1c, 0xea, 0x87, 0x81, 0x02, 0x2e, 0xd3, 0xb0, 0x46, 0x46, 0x7e, 0x4c, 0x5f, 0x9e, 0x39, 0x54,
-	0x20, 0xf7, 0x5e, 0x8d, 0xa4, 0x57, 0x58, 0xa9, 0x8e, 0xe7, 0xc5, 0x24, 0x49, 0x38, 0xbc, 0xb2,
-	0xd4, 0xa1, 0x50, 0xd9, 0xca, 0x66, 0xfd, 0x8e, 0xa0, 0x2e, 0x95, 0x79, 0x54, 0x51, 0x11, 0x55,
-	0x03, 0x1a, 0xf2, 0xc2, 0x27, 0xb2, 0xd4, 0x54, 0xce, 0xd9, 0x06, 0x6a, 0xc2, 0x4a, 0x66, 0x36,
-	0xd7, 0xa7, 0xf3, 0x17, 0xe1, 0xeb, 0x40, 0x0e, 0x39, 0x95, 0xf1, 0x01, 0xb4, 0xa3, 0x38, 0x7c,
-	0xe5, 0x07, 0x2e, 0x79, 0x4e, 0x59, 0x93, 0x62, 0xe0, 0x45, 0x25, 0xf7, 0x0a, 0x13, 0xea, 0x4c,
-	0xdc, 0xd0, 0x23, 0x3f, 0xfa, 0x11, 0x5f, 0x02, 0xe6, 0x95, 0x57, 0x5a, 0xbf, 0x6a, 0x50, 0x7f,
-	0x12, 0x06, 0xd4, 0x71, 0xe9, 0x7f, 0xbe, 0xaf, 0x5d, 0xa8, 0x4d, 0xc3, 0x11, 0x5b, 0x09, 0xd1,
-	0x80, 0x94, 0x58, 0xe5, 0xe2, 0x34, 0x74, 0x39, 0x8c, 0xaa, 0xf2, 0x82, 0x52, 0x6e, 0x76, 0x3d,
-	0xdd, 0xec, 0x2e, 0xd4, 0x18, 0xfd, 0x9e, 0x7a, 0x7c, 0x79, 0x9b, 0xb6, 0x94, 0x8a, 0x7b, 0xdd,
-	0xfc, 0xe0, 0xbd, 0xb6, 0x8e, 0xa1, 0xfd, 0x84, 0x0b, 0x36, 0xf9, 0x79, 0x46, 0x12, 0x9a, 0xb2,
-	0x1f, 0x95, 0xb2, 0x7f, 0x1f, 0x5a, 0xca, 0x3d, 0x9a, 0xcc, 0x71, 0x07, 0x36, 0x48, 0xac, 0x36,
-	0x98, 0x1d, 0xad, 0x03, 0xc0, 0xdf, 0x12, 0xca, 0x6e, 0x9c, 0xce, 0x9f, 0x9e, 0xa9, 0xa0, 0xa2,
-	0x1b, 0xa4, 0xba, 0xb1, 0x4e, 0xa1, 0x53, 0xf0, 0x62, 0xb1, 0xd6, 0x26, 0x56, 0x99, 0xb4, 0x2c,
-	0xd3, 0x23, 0xd8, 0x49, 0x63, 0x5c, 0x5e, 0x66, 0xb9, 0x30, 0x54, 0x99, 0x28, 0x8b, 0xe2, 0x67,
-	0xeb, 0x2c, 0x57, 0x95, 0xf0, 0xbd, 0x4f, 0xc6, 0x63, 0xd8, 0x4d, 0xa3, 0x9c, 0xb3, 0x19, 0xab,
-	0x94, 0xe9, 0x02, 0xa0, 0xdc, 0x02, 0x58, 0xe7, 0xf0, 0x70, 0xd9, 0xfd, 0x3e, 0x59, 0x07, 0x80,
-	0x2f, 0x23, 0xcf, 0xa1, 0xa4, 0x90, 0x72, 0xfd, 0x98, 0x0e, 0xa0, 0x53, 0xb8, 0x53, 0x3e, 0xab,
-	0xaf, 0x61, 0x47, 0x0c, 0x53, 0x52, 0x44, 0xc5, 0x3e, 0x64, 0x7c, 0xe7, 0x1a, 0x19, 0x9e, 0x3f,
-	0x11, 0xca, 0x49, 0xd9, 0xac, 0x8f, 0x00, 0x2f, 0x5d, 0x2f, 0x4f, 0xf3, 0x98, 0x83, 0x2f, 0x9d,
-	0x12, 0x95, 0x24, 0x5b, 0x68, 0x94, 0x5f, 0x68, 0xeb, 0x82, 0xaf, 0x46, 0xe6, 0x5d, 0x1a, 0x13,
-	0x7f, 0x0c, 0x0d, 0x59, 0x46, 0xa2, 0x6b, 0xbd, 0x8d, 0xe5, 0x1a, 0x53, 0x23, 0xeb, 0x51, 0x20,
-	0x71, 0xbf, 0x1e, 0x2f, 0x14, 0xf8, 0xeb, 0x7b, 0xcc, 0x87, 0xd3, 0xd6, 0x84, 0xfb, 0x1c, 0x76,
-	0x9f, 0x8b, 0x95, 0x50, 0xdf, 0x86, 0xf7, 0x1a, 0xe7, 0x39, 0x3c, 0x5c, 0xbe, 0x56, 0x5e, 0xc6,
-	0xfa, 0x4f, 0xf7, 0x97, 0xa0, 0x8b, 0x66, 0x3e, 0xb8, 0x80, 0xef, 0xa0, 0x5b, 0x72, 0xf3, 0x1e,
-	0x35, 0x3c, 0xfa, 0x02, 0xda, 0x85, 0x7f, 0x0e, 0xfc, 0x00, 0x5a, 0x4c, 0x21, 0x36, 0xc9, 0xeb,
-	0x54, 0xf0, 0x2e, 0x6c, 0xf3, 0x2c, 0x4e, 0x92, 0xbc, 0x0e, 0x63, 0xcf, 0x26, 0x09, 0xa1, 0x1d,
-	0x34, 0xb8, 0xde, 0x84, 0x4d, 0xa6, 0x4f, 0xf0, 0x63, 0xa8, 0x09, 0x6f, 0xcc, 0x7f, 0x61, 0x0a,
-	0xcf, 0x97, 0xf1, 0x20, 0xaf, 0x62, 0x05, 0x7e, 0x05, 0xad, 0xdc, 0x53, 0x83, 0xbb, 0xcc, 0xbe,
-	0xfa, 0x42, 0x19, 0x3b, 0x2b, 0x7a, 0x76, 0xf9, 0x0c, 0xb6, 0x8a, 0x14, 0xc6, 0xff, 0x2f, 0xf8,
-	0xe5, 0x29, 0x69, 0xfc, 0xaf, 0xcc, 0xc4, 0xa2, 0x0c, 0xa1, 0x5d, 0x78, 0x7d, 0xb0, 0x5e, 0xf0,
-	0xcc, 0x3d, 0x5e, 0x46, 0xb7, 0xc4, 0x22, 0xbb, 0xc8, 0x11, 0x5a, 0x74, 0xb1, 0xfa, 0x2a, 0x88,
-	0x2e, 0x56, 0x98, 0x3f, 0x54, 0x6f, 0xbc, 0xfa, 0x14, 0xea, 0x19, 0x48, 0x45, 0x5a, 0x88, 0xfc,
-	0x25, 0xac, 0x16, 0x28, 0x2a, 0x56, 0xa6, 0x28, 0x2e, 0x91, 0x3a, 0x45, 0xb1, 0x48, 0xdf, 0x21,
-	0xb4, 0x0b, 0x24, 0x12, 0xf9, 0xcb, 0x68, 0x69, 0x74, 0x4b, 0x2c, 0x72, 0x10, 0x45, 0x06, 0x88,
-	0x41, 0x94, 0x92, 0x49, 0x0c, 0xa2, 0x8c, 0x30, 0x17, 0xb0, 0xbd, 0xb2, 0xc6, 0x78, 0x2f, 0x4b,
-	0x59, 0x12, 0xcb, 0xf8, 0x17, 0x6b, 0x34, 0x99, 0x9f, 0x7e, 0x76, 0x73, 0x6b, 0x56, 0xde, 0xde,
-	0x9a, 0x95, 0x77, 0xb7, 0x26, 0xfa, 0x65, 0x61, 0xa2, 0x37, 0x0b, 0x13, 0xfd, 0xb1, 0x30, 0xd1,
-	0xcd, 0xc2, 0x44, 0x7f, 0x2d, 0x4c, 0xf4, 0xf7, 0xc2, 0xac, 0xbc, 0x5b, 0x98, 0xe8, 0xfa, 0xce,
-	0xac, 0xdc, 0xdc, 0x99, 0x95, 0xb7, 0x77, 0x66, 0x65, 0x54, 0xe3, 0x9f, 0xe5, 0x4f, 0xff, 0x09,
-	0x00, 0x00, 0xff, 0xff, 0x73, 0x99, 0x14, 0xeb, 0xfc, 0x0b, 0x00, 0x00,
+	// 1078 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x56, 0x3b, 0x6f, 0xdb, 0x56,
+	0x14, 0xd6, 0xa5, 0x65, 0x3d, 0x8e, 0x60, 0xc7, 0xbe, 0xb1, 0x55, 0x96, 0x30, 0x68, 0x81, 0xb0,
+	0x5b, 0x23, 0x88, 0x65, 0x54, 0x6d, 0xd1, 0x02, 0x45, 0x02, 0xc8, 0x91, 0xd1, 0x06, 0x85, 0x8b,
+	0x80, 0x89, 0x97, 0x6e, 0x14, 0x79, 0xad, 0x10, 0x95, 0x48, 0x96, 0xbc, 0x4a, 0xa0, 0xad, 0x3f,
+	0x21, 0x3f, 0x23, 0x7f, 0xa1, 0x73, 0x97, 0x8e, 0x06, 0xba, 0x64, 0x4b, 0x2d, 0x2f, 0x1d, 0xf3,
+	0x13, 0x8a, 0xfb, 0xe2, 0x43, 0x62, 0x0d, 0x47, 0x43, 0xb7, 0x7b, 0xde, 0xe7, 0x7c, 0xe7, 0x41,
+	0x42, 0x6b, 0x9a, 0x90, 0x38, 0xe9, 0x46, 0x71, 0x48, 0x43, 0xac, 0x45, 0x43, 0x63, 0x7f, 0x14,
+	0x86, 0xa3, 0x31, 0x39, 0xe1, 0x9c, 0xe1, 0xf4, 0xf2, 0x84, 0xfa, 0x13, 0x92, 0x50, 0x67, 0x12,
+	0x09, 0x25, 0xe3, 0x78, 0xe4, 0xd3, 0x97, 0xd3, 0x61, 0xd7, 0x0d, 0x27, 0x27, 0xa3, 0x70, 0x14,
+	0x66, 0x9a, 0x8c, 0xe2, 0x04, 0x7f, 0x09, 0x75, 0xeb, 0x19, 0x34, 0x2f, 0x12, 0x12, 0x9f, 0xbd,
+	0x22, 0x01, 0xc5, 0x87, 0x50, 0xfd, 0xc5, 0x0f, 0x3c, 0x1d, 0x75, 0xd0, 0xd1, 0x66, 0x6f, 0xbb,
+	0x1b, 0x0d, 0xbb, 0xa9, 0xf0, 0x47, 0x3f, 0xf0, 0x6c, 0x2e, 0xc6, 0x7b, 0x50, 0x65, 0x69, 0xe9,
+	0x5a, 0x07, 0x1d, 0xb5, 0x7a, 0x0d, 0xa5, 0x66, 0x73, 0xae, 0xf5, 0xbb, 0x06, 0x55, 0x46, 0xe2,
+	0x3d, 0x68, 0x5e, 0xfa, 0x71, 0x42, 0x7f, 0x72, 0x26, 0x84, 0xbb, 0x6c, 0xda, 0x19, 0x03, 0x9b,
+	0x00, 0x13, 0xdf, 0xf3, 0xc6, 0x84, 0x8b, 0x35, 0x2e, 0xce, 0x71, 0xb0, 0x01, 0x8d, 0xb1, 0x23,
+	0x8d, 0xd7, 0xb8, 0x34, 0xa5, 0xf1, 0x0e, 0xac, 0x93, 0x89, 0xe3, 0x8f, 0xf5, 0x2a, 0x17, 0x08,
+	0x02, 0x63, 0xa8, 0x4e, 0xa7, 0xbe, 0xa7, 0xaf, 0x73, 0x26, 0x7f, 0xe3, 0x4d, 0xd0, 0x7c, 0x4f,
+	0xaf, 0x75, 0xd0, 0xd1, 0x9a, 0xad, 0xf9, 0x1e, 0xd6, 0xa1, 0xee, 0x86, 0xd3, 0x80, 0xc6, 0x33,
+	0xbd, 0xce, 0xd5, 0x14, 0x89, 0x1f, 0x43, 0xd3, 0x8d, 0x89, 0x43, 0x89, 0xd7, 0xa7, 0x7a, 0x83,
+	0x57, 0x66, 0x74, 0x05, 0xd8, 0x5d, 0x05, 0x61, 0xf7, 0x85, 0x02, 0xfb, 0xb4, 0xfa, 0xe6, 0xfd,
+	0x3e, 0xb2, 0x33, 0x13, 0x56, 0xad, 0x1b, 0x06, 0x97, 0x7e, 0x3c, 0x21, 0x9e, 0xde, 0xec, 0xa0,
+	0xa3, 0x86, 0x9d, 0x31, 0xf0, 0x21, 0xd4, 0xa3, 0x38, 0xbc, 0xf4, 0xc7, 0x44, 0x07, 0xee, 0xbb,
+	0xc5, 0x50, 0x7b, 0x26, 0x58, 0xb6, 0x92, 0x59, 0x6f, 0x11, 0xd4, 0x25, 0x13, 0xb7, 0xa1, 0x36,
+	0x22, 0x81, 0x47, 0x62, 0x89, 0x9d, 0xa4, 0x18, 0x70, 0xa1, 0xeb, 0x4e, 0x23, 0x87, 0xfa, 0x61,
+	0xa0, 0x80, 0xcb, 0x38, 0xac, 0x90, 0xa1, 0x1f, 0xd3, 0x97, 0x03, 0x87, 0x0a, 0xe4, 0xee, 0x54,
+	0x48, 0x6a, 0xc2, 0x52, 0x75, 0x3c, 0x2f, 0x26, 0x49, 0xc2, 0xe1, 0x95, 0xa9, 0xf6, 0x05, 0xcb,
+	0x56, 0x32, 0xeb, 0x0f, 0x04, 0x75, 0xc9, 0xcc, 0xa3, 0x8a, 0x8a, 0xa8, 0x1a, 0xd0, 0x90, 0x06,
+	0x5f, 0xc8, 0x54, 0x53, 0x3a, 0x27, 0xeb, 0xa9, 0x0e, 0x2b, 0x9a, 0xc9, 0x5c, 0x9f, 0xce, 0x5e,
+	0x84, 0xaf, 0x03, 0xd9, 0xe4, 0x94, 0xc6, 0x07, 0xb0, 0x11, 0xc5, 0xe1, 0x2b, 0x3f, 0x70, 0xc9,
+	0x73, 0xca, 0x8a, 0x14, 0x0d, 0x2f, 0x32, 0xb9, 0x56, 0x98, 0x50, 0x67, 0xec, 0x86, 0x1e, 0xf9,
+	0xd9, 0x8f, 0xf8, 0x10, 0x30, 0xad, 0x3c, 0xd3, 0x7a, 0xaf, 0x41, 0xfd, 0x49, 0x18, 0x50, 0xc7,
+	0xa5, 0xff, 0xfb, 0xbc, 0xb6, 0xa1, 0x36, 0x09, 0x87, 0x6c, 0x24, 0x44, 0x01, 0x92, 0x62, 0x99,
+	0x8b, 0x57, 0xdf, 0xe5, 0x30, 0xaa, 0xcc, 0x0b, 0x4c, 0x39, 0xd9, 0xf5, 0x74, 0xb2, 0xdb, 0x50,
+	0x63, 0xeb, 0xf7, 0xd4, 0xe3, 0xc3, 0xdb, 0xb4, 0x25, 0x55, 0x9c, 0xeb, 0xe6, 0xc7, 0xcf, 0xf5,
+	0x63, 0x68, 0x4e, 0x23, 0x4f, 0xda, 0xc3, 0x5d, 0xed, 0x53, 0x13, 0xeb, 0x18, 0x36, 0x9e, 0x70,
+	0x67, 0x36, 0xf9, 0x75, 0x4a, 0x12, 0x9a, 0x5e, 0x0f, 0x54, 0x7a, 0x3d, 0xf6, 0xa1, 0xa5, 0xd4,
+	0xa3, 0xf1, 0x0c, 0x6f, 0xc1, 0x1a, 0x89, 0xd5, 0x06, 0xb0, 0xa7, 0x75, 0x00, 0xf8, 0x7b, 0x42,
+	0x99, 0xc5, 0xe9, 0xec, 0xe9, 0x40, 0x39, 0x15, 0x68, 0x20, 0x85, 0x86, 0x75, 0x0a, 0x5b, 0x05,
+	0x2d, 0xe6, 0xeb, 0xd6, 0xc0, 0x2a, 0x92, 0x96, 0x45, 0x7a, 0x00, 0x3b, 0xa9, 0x8f, 0x8b, 0x8b,
+	0x2c, 0x16, 0x86, 0x2a, 0x23, 0x65, 0x52, 0xfc, 0x6d, 0x0d, 0x72, 0x59, 0x09, 0xdd, 0x55, 0x22,
+	0x1e, 0xc3, 0x6e, 0xea, 0xe5, 0x8c, 0xcd, 0x88, 0x0a, 0x99, 0x0e, 0x10, 0xca, 0x0d, 0x90, 0x75,
+	0x06, 0xf7, 0x17, 0xd5, 0x57, 0x89, 0xda, 0x03, 0x7c, 0xc1, 0xdb, 0x55, 0x08, 0x79, 0x7b, 0x9b,
+	0x0e, 0x60, 0xab, 0x60, 0x53, 0xde, 0xab, 0x47, 0xb0, 0x23, 0x9a, 0x29, 0x57, 0x4c, 0xf9, 0x3e,
+	0x64, 0xf7, 0x82, 0x73, 0xa4, 0x7b, 0x7e, 0x62, 0x94, 0x92, 0x92, 0x59, 0xe7, 0x80, 0x17, 0xcc,
+	0x59, 0x98, 0xbb, 0x19, 0x97, 0xd4, 0xf9, 0x90, 0xf7, 0x48, 0x2a, 0x26, 0x2a, 0x17, 0xb5, 0x37,
+	0x03, 0x39, 0x3d, 0x92, 0xb2, 0xce, 0xf9, 0x04, 0x65, 0xda, 0xa5, 0x15, 0xe2, 0xcf, 0xa1, 0x21,
+	0x03, 0x26, 0xba, 0xd6, 0x59, 0x5b, 0xcc, 0x26, 0x15, 0x32, 0x28, 0x04, 0x60, 0x2b, 0x43, 0xb1,
+	0x60, 0x5e, 0x9e, 0x4f, 0xce, 0x9d, 0x76, 0x8b, 0xbb, 0xaf, 0x61, 0xf7, 0xb9, 0x98, 0x1c, 0xf5,
+	0x09, 0xba, 0x53, 0xd7, 0xcf, 0xe0, 0xfe, 0xa2, 0x59, 0x79, 0x1a, 0xb7, 0xff, 0x21, 0x7c, 0x0b,
+	0xba, 0x28, 0xe6, 0xa3, 0x13, 0xf8, 0x01, 0xda, 0x25, 0x96, 0xab, 0xe4, 0xf0, 0x08, 0x76, 0x06,
+	0x64, 0x4c, 0x56, 0xed, 0xc7, 0x67, 0x80, 0x17, 0xcc, 0x4b, 0x93, 0x78, 0xf0, 0x0d, 0x6c, 0x14,
+	0xfe, 0xa0, 0xf0, 0x3d, 0x68, 0x31, 0x86, 0x98, 0x6b, 0x6f, 0xab, 0x82, 0x77, 0x61, 0x9b, 0x17,
+	0xe3, 0x24, 0xc9, 0xeb, 0x30, 0xf6, 0x6c, 0x92, 0x10, 0xba, 0x85, 0x7a, 0x7f, 0xad, 0xc3, 0x3a,
+	0xe3, 0x27, 0xf8, 0x21, 0xd4, 0x84, 0x36, 0xe6, 0x3f, 0x64, 0x85, 0x63, 0x6a, 0xdc, 0xcb, 0xb3,
+	0x58, 0x0a, 0xdf, 0x41, 0x2b, 0x77, 0xf8, 0x70, 0x9b, 0xc9, 0x97, 0xef, 0xa5, 0xb1, 0xb3, 0xc4,
+	0x67, 0xc6, 0x03, 0xd8, 0x2c, 0x1e, 0x14, 0xfc, 0x69, 0x41, 0x2f, 0x7f, 0x20, 0x8c, 0x4f, 0xca,
+	0x44, 0xcc, 0x4b, 0x1f, 0x36, 0x0a, 0xb7, 0x10, 0xeb, 0x05, 0xcd, 0xdc, 0x29, 0x35, 0xda, 0x25,
+	0x12, 0x59, 0x45, 0xee, 0xbc, 0x88, 0x2a, 0x96, 0x6f, 0x94, 0xa8, 0x62, 0xe9, 0x0e, 0xf5, 0xd5,
+	0x17, 0x47, 0x7d, 0xd8, 0xf5, 0x0c, 0xa4, 0x62, 0xb7, 0x45, 0xfc, 0x92, 0x1b, 0x23, 0x50, 0x54,
+	0xcb, 0x9f, 0xa2, 0xb8, 0x70, 0x3b, 0x52, 0x14, 0x8b, 0x57, 0xa2, 0x0f, 0x1b, 0x85, 0x5d, 0x15,
+	0xf1, 0xcb, 0xb6, 0xdf, 0x68, 0x97, 0x48, 0xa4, 0x8b, 0xc2, 0x78, 0x09, 0x17, 0x65, 0x03, 0x2b,
+	0x5c, 0x94, 0xcc, 0xe2, 0x00, 0x36, 0x8b, 0xbb, 0x2a, 0x7a, 0x59, 0xba, 0xf6, 0xa2, 0x97, 0x65,
+	0xab, 0x7d, 0x0e, 0xdb, 0x4b, 0x0b, 0x87, 0xf7, 0xb2, 0xac, 0x4b, 0x7c, 0x19, 0xff, 0x21, 0x8d,
+	0xc6, 0xb3, 0xd3, 0xaf, 0xae, 0xae, 0xcd, 0xca, 0xbb, 0x6b, 0xb3, 0xf2, 0xe1, 0xda, 0x44, 0xbf,
+	0xcd, 0x4d, 0xf4, 0x76, 0x6e, 0xa2, 0x3f, 0xe7, 0x26, 0xba, 0x9a, 0x9b, 0xe8, 0xef, 0xb9, 0x89,
+	0xfe, 0x99, 0x9b, 0x95, 0x0f, 0x73, 0x13, 0xbd, 0xb9, 0x31, 0x2b, 0x57, 0x37, 0x66, 0xe5, 0xdd,
+	0x8d, 0x59, 0x19, 0xd6, 0xf8, 0x7f, 0xc6, 0x97, 0xff, 0x06, 0x00, 0x00, 0xff, 0xff, 0x9e, 0xcb,
+	0x9f, 0x2a, 0x0d, 0x0d, 0x00, 0x00,
 }
 
 func (x UserEventKind) String() string {
@@ -1716,6 +1842,13 @@ func (this *Contact) Equal(that interface{}) bool {
 			return false
 		}
 	} else if !this.CreatedAt.Equal(*that1.CreatedAt) {
+		return false
+	}
+	if that1.UpdatedAt == nil {
+		if this.UpdatedAt != nil {
+			return false
+		}
+	} else if !this.UpdatedAt.Equal(*that1.UpdatedAt) {
 		return false
 	}
 	return true
@@ -2012,6 +2145,9 @@ func (this *CreateContactReply) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
+	if !this.Contact.Equal(that1.Contact) {
+		return false
+	}
 	if this.Err != that1.Err {
 		return false
 	}
@@ -2036,7 +2172,7 @@ func (this *GetContactsRequest) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if this.UserId != that1.UserId {
+	if this.UserID != that1.UserID {
 		return false
 	}
 	return true
@@ -2226,6 +2362,54 @@ func (this *UpdateUserProfileReply) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *DeleteContactRequest) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*DeleteContactRequest)
+	if !ok {
+		that2, ok := that.(DeleteContactRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Contact.Equal(that1.Contact) {
+		return false
+	}
+	return true
+}
+func (this *DeleteContactReply) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*DeleteContactReply)
+	if !ok {
+		that2, ok := that.(DeleteContactReply)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Err != that1.Err {
+		return false
+	}
+	return true
+}
 func (this *UserEvent) GoString() string {
 	if this == nil {
 		return "nil"
@@ -2294,7 +2478,7 @@ func (this *Contact) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 13)
+	s := make([]string, 0, 14)
 	s = append(s, "&pb.Contact{")
 	s = append(s, "FirstName: "+fmt.Sprintf("%#v", this.FirstName)+",\n")
 	s = append(s, "MiddleName: "+fmt.Sprintf("%#v", this.MiddleName)+",\n")
@@ -2305,6 +2489,7 @@ func (this *Contact) GoString() string {
 	s = append(s, "Id: "+fmt.Sprintf("%#v", this.Id)+",\n")
 	s = append(s, "UserId: "+fmt.Sprintf("%#v", this.UserId)+",\n")
 	s = append(s, "CreatedAt: "+fmt.Sprintf("%#v", this.CreatedAt)+",\n")
+	s = append(s, "UpdatedAt: "+fmt.Sprintf("%#v", this.UpdatedAt)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -2437,8 +2622,11 @@ func (this *CreateContactReply) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 5)
+	s := make([]string, 0, 6)
 	s = append(s, "&pb.CreateContactReply{")
+	if this.Contact != nil {
+		s = append(s, "Contact: "+fmt.Sprintf("%#v", this.Contact)+",\n")
+	}
 	s = append(s, "Err: "+fmt.Sprintf("%#v", this.Err)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
@@ -2449,7 +2637,7 @@ func (this *GetContactsRequest) GoString() string {
 	}
 	s := make([]string, 0, 5)
 	s = append(s, "&pb.GetContactsRequest{")
-	s = append(s, "UserId: "+fmt.Sprintf("%#v", this.UserId)+",\n")
+	s = append(s, "UserID: "+fmt.Sprintf("%#v", this.UserID)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -2541,6 +2729,28 @@ func (this *UpdateUserProfileReply) GoString() string {
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
+func (this *DeleteContactRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 5)
+	s = append(s, "&pb.DeleteContactRequest{")
+	if this.Contact != nil {
+		s = append(s, "Contact: "+fmt.Sprintf("%#v", this.Contact)+",\n")
+	}
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *DeleteContactReply) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 5)
+	s = append(s, "&pb.DeleteContactReply{")
+	s = append(s, "Err: "+fmt.Sprintf("%#v", this.Err)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
 func valueToGoStringUsers(v interface{}, typ string) string {
 	rv := reflect.ValueOf(v)
 	if rv.IsNil() {
@@ -2570,6 +2780,7 @@ type UsersClient interface {
 	CreateContact(ctx context.Context, in *CreateContactRequest, opts ...grpc.CallOption) (*CreateContactReply, error)
 	GetContacts(ctx context.Context, in *GetContactsRequest, opts ...grpc.CallOption) (*GetContactsReply, error)
 	UpdateContact(ctx context.Context, in *UpdateContactRequest, opts ...grpc.CallOption) (*UpdateContactReply, error)
+	DeleteContact(ctx context.Context, in *DeleteContactRequest, opts ...grpc.CallOption) (*DeleteContactReply, error)
 	SetUserProfile(ctx context.Context, in *SetUserProfileRequest, opts ...grpc.CallOption) (*SetUserProfileReply, error)
 	UpdateUserProfile(ctx context.Context, in *UpdateUserProfileRequest, opts ...grpc.CallOption) (*UpdateUserProfileReply, error)
 }
@@ -2654,6 +2865,15 @@ func (c *usersClient) UpdateContact(ctx context.Context, in *UpdateContactReques
 	return out, nil
 }
 
+func (c *usersClient) DeleteContact(ctx context.Context, in *DeleteContactRequest, opts ...grpc.CallOption) (*DeleteContactReply, error) {
+	out := new(DeleteContactReply)
+	err := c.cc.Invoke(ctx, "/pb.Users/DeleteContact", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *usersClient) SetUserProfile(ctx context.Context, in *SetUserProfileRequest, opts ...grpc.CallOption) (*SetUserProfileReply, error) {
 	out := new(SetUserProfileReply)
 	err := c.cc.Invoke(ctx, "/pb.Users/SetUserProfile", in, out, opts...)
@@ -2682,6 +2902,7 @@ type UsersServer interface {
 	CreateContact(context.Context, *CreateContactRequest) (*CreateContactReply, error)
 	GetContacts(context.Context, *GetContactsRequest) (*GetContactsReply, error)
 	UpdateContact(context.Context, *UpdateContactRequest) (*UpdateContactReply, error)
+	DeleteContact(context.Context, *DeleteContactRequest) (*DeleteContactReply, error)
 	SetUserProfile(context.Context, *SetUserProfileRequest) (*SetUserProfileReply, error)
 	UpdateUserProfile(context.Context, *UpdateUserProfileRequest) (*UpdateUserProfileReply, error)
 }
@@ -2713,6 +2934,9 @@ func (*UnimplementedUsersServer) GetContacts(ctx context.Context, req *GetContac
 }
 func (*UnimplementedUsersServer) UpdateContact(ctx context.Context, req *UpdateContactRequest) (*UpdateContactReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateContact not implemented")
+}
+func (*UnimplementedUsersServer) DeleteContact(ctx context.Context, req *DeleteContactRequest) (*DeleteContactReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteContact not implemented")
 }
 func (*UnimplementedUsersServer) SetUserProfile(ctx context.Context, req *SetUserProfileRequest) (*SetUserProfileReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetUserProfile not implemented")
@@ -2869,6 +3093,24 @@ func _Users_UpdateContact_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Users_DeleteContact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteContactRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).DeleteContact(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.Users/DeleteContact",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).DeleteContact(ctx, req.(*DeleteContactRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Users_SetUserProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SetUserProfileRequest)
 	if err := dec(in); err != nil {
@@ -2940,6 +3182,10 @@ var _Users_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateContact",
 			Handler:    _Users_UpdateContact_Handler,
+		},
+		{
+			MethodName: "DeleteContact",
+			Handler:    _Users_DeleteContact_Handler,
 		},
 		{
 			MethodName: "SetUserProfile",
@@ -3240,13 +3486,23 @@ func (m *Contact) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.CreatedAt != nil {
-		n6, err6 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.CreatedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.CreatedAt):])
+	if m.UpdatedAt != nil {
+		n6, err6 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.UpdatedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.UpdatedAt):])
 		if err6 != nil {
 			return 0, err6
 		}
 		i -= n6
 		i = encodeVarintUsers(dAtA, i, uint64(n6))
+		i--
+		dAtA[i] = 0x52
+	}
+	if m.CreatedAt != nil {
+		n7, err7 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.CreatedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.CreatedAt):])
+		if err7 != nil {
+			return 0, err7
+		}
+		i -= n7
+		i = encodeVarintUsers(dAtA, i, uint64(n7))
 		i--
 		dAtA[i] = 0x4a
 	}
@@ -3711,6 +3967,18 @@ func (m *CreateContactReply) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.Err)
 		i = encodeVarintUsers(dAtA, i, uint64(len(m.Err)))
 		i--
+		dAtA[i] = 0x12
+	}
+	if m.Contact != nil {
+		{
+			size, err := m.Contact.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintUsers(dAtA, i, uint64(size))
+		}
+		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
@@ -3736,12 +4004,10 @@ func (m *GetContactsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.UserId) > 0 {
-		i -= len(m.UserId)
-		copy(dAtA[i:], m.UserId)
-		i = encodeVarintUsers(dAtA, i, uint64(len(m.UserId)))
+	if m.UserID != 0 {
+		i = encodeVarintUsers(dAtA, i, uint64(m.UserID))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -4021,6 +4287,71 @@ func (m *UpdateUserProfileReply) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
+func (m *DeleteContactRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DeleteContactRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DeleteContactRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Contact != nil {
+		{
+			size, err := m.Contact.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintUsers(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *DeleteContactReply) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DeleteContactReply) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DeleteContactReply) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Err) > 0 {
+		i -= len(m.Err)
+		copy(dAtA[i:], m.Err)
+		i = encodeVarintUsers(dAtA, i, uint64(len(m.Err)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintUsers(dAtA []byte, offset int, v uint64) int {
 	offset -= sovUsers(v)
 	base := offset
@@ -4194,6 +4525,10 @@ func (m *Contact) Size() (n int) {
 		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.CreatedAt)
 		n += 1 + l + sovUsers(uint64(l))
 	}
+	if m.UpdatedAt != nil {
+		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.UpdatedAt)
+		n += 1 + l + sovUsers(uint64(l))
+	}
 	return n
 }
 
@@ -4357,6 +4692,10 @@ func (m *CreateContactReply) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if m.Contact != nil {
+		l = m.Contact.Size()
+		n += 1 + l + sovUsers(uint64(l))
+	}
 	l = len(m.Err)
 	if l > 0 {
 		n += 1 + l + sovUsers(uint64(l))
@@ -4370,9 +4709,8 @@ func (m *GetContactsRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.UserId)
-	if l > 0 {
-		n += 1 + l + sovUsers(uint64(l))
+	if m.UserID != 0 {
+		n += 1 + sovUsers(uint64(m.UserID))
 	}
 	return n
 }
@@ -4486,6 +4824,32 @@ func (m *UpdateUserProfileReply) Size() (n int) {
 	return n
 }
 
+func (m *DeleteContactRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Contact != nil {
+		l = m.Contact.Size()
+		n += 1 + l + sovUsers(uint64(l))
+	}
+	return n
+}
+
+func (m *DeleteContactReply) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Err)
+	if l > 0 {
+		n += 1 + l + sovUsers(uint64(l))
+	}
+	return n
+}
+
 func sovUsers(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
@@ -4564,6 +4928,7 @@ func (this *Contact) String() string {
 		`Id:` + fmt.Sprintf("%v", this.Id) + `,`,
 		`UserId:` + fmt.Sprintf("%v", this.UserId) + `,`,
 		`CreatedAt:` + strings.Replace(fmt.Sprintf("%v", this.CreatedAt), "Timestamp", "types.Timestamp", 1) + `,`,
+		`UpdatedAt:` + strings.Replace(fmt.Sprintf("%v", this.UpdatedAt), "Timestamp", "types.Timestamp", 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -4686,6 +5051,7 @@ func (this *CreateContactReply) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&CreateContactReply{`,
+		`Contact:` + strings.Replace(this.Contact.String(), "Contact", "Contact", 1) + `,`,
 		`Err:` + fmt.Sprintf("%v", this.Err) + `,`,
 		`}`,
 	}, "")
@@ -4696,7 +5062,7 @@ func (this *GetContactsRequest) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&GetContactsRequest{`,
-		`UserId:` + fmt.Sprintf("%v", this.UserId) + `,`,
+		`UserID:` + fmt.Sprintf("%v", this.UserID) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -4776,6 +5142,26 @@ func (this *UpdateUserProfileReply) String() string {
 	s := strings.Join([]string{`&UpdateUserProfileReply{`,
 		`Err:` + fmt.Sprintf("%v", this.Err) + `,`,
 		`User:` + strings.Replace(this.User.String(), "User", "User", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *DeleteContactRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&DeleteContactRequest{`,
+		`Contact:` + strings.Replace(this.Contact.String(), "Contact", "Contact", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *DeleteContactReply) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&DeleteContactReply{`,
+		`Err:` + fmt.Sprintf("%v", this.Err) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -5994,6 +6380,42 @@ func (m *Contact) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 10:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UpdatedAt", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.UpdatedAt == nil {
+				m.UpdatedAt = new(time.Time)
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.UpdatedAt, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipUsers(dAtA[iNdEx:])
@@ -7091,6 +7513,42 @@ func (m *CreateContactReply) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Contact", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Contact == nil {
+				m.Contact = &Contact{}
+			}
+			if err := m.Contact.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Err", wireType)
 			}
 			var stringLen uint64
@@ -7175,10 +7633,10 @@ func (m *GetContactsRequest) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field UserId", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UserID", wireType)
 			}
-			var stringLen uint64
+			m.UserID = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowUsers
@@ -7188,24 +7646,11 @@ func (m *GetContactsRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.UserID |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthUsers
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthUsers
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.UserId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipUsers(dAtA[iNdEx:])
@@ -7954,6 +8399,180 @@ func (m *UpdateUserProfileReply) Unmarshal(dAtA []byte) error {
 			if err := m.User.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipUsers(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DeleteContactRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowUsers
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DeleteContactRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DeleteContactRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Contact", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Contact == nil {
+				m.Contact = &Contact{}
+			}
+			if err := m.Contact.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipUsers(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DeleteContactReply) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowUsers
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DeleteContactReply: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DeleteContactReply: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Err", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthUsers
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Err = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

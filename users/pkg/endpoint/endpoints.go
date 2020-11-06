@@ -12,8 +12,8 @@ const (
 	GetUserByUUID     = "GetUserByUUID"
 	GetUserByEmail    = "GetUserByEmail"
 	UpdateEmail       = "UpdateEmail"
-	UpdateStatus      = "UpdateStatus"
 	CreateContact     = "CreateContact"
+	DeleteContact     = "DeleteContact"
 	GetContacts       = "GetContacts"
 	UpdateContact     = "UpdateContact"
 	SetUserProfile    = "SetUserProfile"
@@ -32,6 +32,7 @@ type Endpoints struct {
 	CreateContactEndpoint     endpoint.Endpoint
 	GetContactsEndpoint       endpoint.Endpoint
 	UpdateContactEndpoint     endpoint.Endpoint
+	DeleteContactEndpoint     endpoint.Endpoint
 	SetUserProfileEndpoint    endpoint.Endpoint
 	UpdateUserProfileEndpoint endpoint.Endpoint
 }
@@ -40,13 +41,17 @@ type Endpoints struct {
 // expected endpoint middlewares
 func New(s service.UsersService, mdw map[string][]endpoint.Middleware) Endpoints {
 	eps := Endpoints{
-		CreateEndpoint:         MakeCreateEndpoint(s),
-		GetUserByEmailEndpoint: MakeGetUserByEmailEndpoint(s),
-		GetUserByIDEndpoint:    MakeGetUserByIDEndpoint(s),
-		GetUserByUUIDEndpoint:  MakeGetUserByUUIDEndpoint(s),
-		UpdateEmailEndpoint:    MakeUpdateEmailEndpoint(s),
-		CreateContactEndpoint:  MakeCreateContactEndpoint(s),
-		GetContactsEndpoint:    MakeGetContactsEndpoint(s),
+		CreateEndpoint:            MakeCreateEndpoint(s),
+		GetUserByEmailEndpoint:    MakeGetUserByEmailEndpoint(s),
+		GetUserByIDEndpoint:       MakeGetUserByIDEndpoint(s),
+		GetUserByUUIDEndpoint:     MakeGetUserByUUIDEndpoint(s),
+		UpdateEmailEndpoint:       MakeUpdateEmailEndpoint(s),
+		CreateContactEndpoint:     MakeCreateContactEndpoint(s),
+		GetContactsEndpoint:       MakeGetContactsEndpoint(s),
+		SetUserProfileEndpoint:    MakeSetUserProfileResponse(s),
+		UpdateUserProfileEndpoint: MakeUpdateUserProfileEndpoint(s),
+		UpdateContactEndpoint:     MakeUpdateContactEndpoint(s),
+		DeleteContactEndpoint:     MakeDeleteContactEndpoint(s),
 	}
 
 	for _, m := range mdw[Create] {
@@ -80,6 +85,9 @@ func New(s service.UsersService, mdw map[string][]endpoint.Middleware) Endpoints
 	for _, m := range mdw[GetContacts] {
 		eps.GetContactsEndpoint = m(eps.GetContactsEndpoint)
 	}
+	for _, m := range mdw[DeleteContact] {
+		eps.DeleteContactEndpoint = m(eps.DeleteContactEndpoint)
+	}
 
 	return eps
 }
@@ -94,6 +102,7 @@ func GetEndpointList() []string {
 		UpdateEmail,
 		SetUserProfile,
 		UpdateContact,
+		DeleteContact,
 		UpdateUserProfile,
 	}
 }

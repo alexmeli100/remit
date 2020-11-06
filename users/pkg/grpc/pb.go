@@ -15,6 +15,7 @@ type grpcServer struct {
 	getContacts       grpcTrans.Handler
 	createContact     grpcTrans.Handler
 	updateContact     grpcTrans.Handler
+	deleteContact     grpcTrans.Handler
 	setUserProfile    grpcTrans.Handler
 	updateUserProfile grpcTrans.Handler
 }
@@ -29,6 +30,7 @@ func NewGRPCServer(endpoints endpoint.Endpoints, options map[string][]grpcTrans.
 		updateEmail:       makeUpdateEmailHandler(endpoints, options[endpoint.UpdateEmail]),
 		createContact:     makeCreateContactHandler(endpoints, options[endpoint.CreateContact]),
 		getContacts:       makeGetContactsHandler(endpoints, options[endpoint.GetContacts]),
+		deleteContact:     makeDeleteContactHandler(endpoints, options[endpoint.DeleteContact]),
 		setUserProfile:    makeSetUserProfileHandler(endpoints, options[endpoint.SetUserProfile]),
 		updateUserProfile: makeUpdateUserProfileHandler(endpoints, options[endpoint.UpdateUserProfile]),
 		updateContact:     makeUpdateContactHandler(endpoints, options[endpoint.UpdateContact]),

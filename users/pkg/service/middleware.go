@@ -15,6 +15,16 @@ type loggingMiddleware struct {
 	next   UsersService
 }
 
+func (l loggingMiddleware) DeleteContact(ctx context.Context, contact *pb.Contact) error {
+	err := l.next.DeleteContact(ctx, contact)
+
+	defer func() {
+		_ = l.logger.Log("method", "DeleteContact", "err", err)
+	}()
+
+	return err
+}
+
 func (l loggingMiddleware) UpdateUserProfile(ctx context.Context, user *pb.User) (*pb.User, error) {
 	u, err := l.next.UpdateUserProfile(ctx, user)
 
@@ -55,7 +65,7 @@ func (l loggingMiddleware) CreateContact(ctx context.Context, contact *pb.Contac
 	return c, err
 }
 
-func (l loggingMiddleware) GetContacts(ctx context.Context, uid string) ([]*pb.Contact, error) {
+func (l loggingMiddleware) GetContacts(ctx context.Context, uid int64) ([]*pb.Contact, error) {
 	cs, err := l.next.GetContacts(ctx, uid)
 
 	defer func() {

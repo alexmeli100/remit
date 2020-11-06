@@ -17,7 +17,8 @@ type UsersService interface {
 	UpdateEmail(ctx context.Context, user *pb.User) error
 	CreateContact(ctx context.Context, contact *pb.Contact) (*pb.Contact, error)
 	UpdateContact(ctx context.Context, contact *pb.Contact) (*pb.Contact, error)
-	GetContacts(ctx context.Context, uid string) ([]*pb.Contact, error)
+	GetContacts(ctx context.Context, uid int64) ([]*pb.Contact, error)
+	DeleteContact(ctx context.Context, contact *pb.Contact) error
 	SetUserProfile(ctx context.Context, user *pb.User) (*pb.User, error)
 	UpdateUserProfile(ctx context.Context, user *pb.User) (*pb.User, error)
 }

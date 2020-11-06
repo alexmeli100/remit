@@ -11,6 +11,7 @@ require (
 	github.com/lib/pq v1.8.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1
+	github.com/stretchr/testify v1.4.0
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
 	golang.org/x/sys v0.0.0-20200727154430-2d971f7391a4 // indirect
 	golang.org/x/text v0.3.3 // indirect

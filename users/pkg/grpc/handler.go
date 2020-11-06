@@ -223,7 +223,7 @@ func decodeCreateContactRequest(_ context.Context, r interface{}) (interface{}, 
 func encodeCreateContactResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(endpoint.CreateContactResponse)
 
-	return &pb.CreateContactReply{Err: err2str(res.Err)}, nil
+	return &pb.CreateContactReply{Err: err2str(res.Err), Contact: res.Contact}, nil
 }
 
 func (g *grpcServer) CreateContact(ctx context.Context, req *pb.CreateContactRequest) (*pb.CreateContactReply, error) {
@@ -243,7 +243,7 @@ func makeGetContactsHandler(endpoints endpoint.Endpoints, options []grpcTrans.Se
 func decodeGetContactsRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(*pb.GetContactsRequest)
 
-	return endpoint.GetContactsRequest{UserId: req.UserId}, nil
+	return endpoint.GetContactsRequest{UserId: req.UserID}, nil
 }
 
 func encodeGetContactsResponse(_ context.Context, r interface{}) (interface{}, error) {
@@ -286,6 +286,32 @@ func (g *grpcServer) UpdateContact(ctx context.Context, request *pb.UpdateContac
 	}
 
 	return rep.(*pb.UpdateContactReply), nil
+}
+
+func makeDeleteContactHandler(endpoints endpoint.Endpoints, options []grpcTrans.ServerOption) grpcTrans.Handler {
+	return grpcTrans.NewServer(endpoints.DeleteContactEndpoint, decodeDeleteContactRequest, encodeDeleteContactResponse, options...)
+}
+
+func decodeDeleteContactRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(*pb.DeleteContactRequest)
+
+	return endpoint.DeleteContactRequest{Contact: req.Contact}, nil
+}
+
+func encodeDeleteContactResponse(_ context.Context, r interface{}) (interface{}, error) {
+	res := r.(endpoint.DeleteContactResponse)
+
+	return &pb.DeleteContactReply{Err: err2str(res.Err)}, nil
+}
+
+func (g *grpcServer) DeleteContact(ctx context.Context, request *pb.DeleteContactRequest) (*pb.DeleteContactReply, error) {
+	_, rep, err := g.deleteContact.ServeGRPC(ctx, request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rep.(*pb.DeleteContactReply), nil
 }
 
 func err2str(err error) string {
