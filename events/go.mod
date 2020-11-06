@@ -3,9 +3,9 @@ module github.com/alexmeli100/remit/events
 go 1.14
 
 require (
-	github.com/alexmeli100/remit/payment v0.0.6
+	github.com/alexmeli100/remit/payment v0.0.7
 	github.com/alexmeli100/remit/transfer v0.0.4
-	github.com/alexmeli100/remit/users v0.0.4
+	github.com/alexmeli100/remit/users v0.0.8
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.2
 	github.com/nats-io/nats.go v1.10.0
