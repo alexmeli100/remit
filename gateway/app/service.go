@@ -4,6 +4,8 @@ import (
 	"context"
 	notificatorClient "github.com/alexmeli100/remit/notificator/client"
 	notificatorService "github.com/alexmeli100/remit/notificator/pkg/service"
+	paymentClient "github.com/alexmeli100/remit/payment/client/grpc"
+	payment "github.com/alexmeli100/remit/payment/pkg/service"
 	userClient "github.com/alexmeli100/remit/users/client"
 	usersService "github.com/alexmeli100/remit/users/pkg/service"
 	grpcTrans "github.com/go-kit/kit/transport/grpc"
@@ -56,6 +58,28 @@ func CreateNotificatorServiceClient(ctx context.Context, instance string, option
 	}
 
 	return notificatorClient.NewGRPCClient(conn, opts), nil
+}
+
+func CreatePaymentServiceClient(ctx context.Context, instance string, options ...GRPCClientOpt) (payment.PaymentService, error) {
+	conn, err := grpc.Dial(instance, grpc.WithInsecure())
+
+	if err != nil {
+		return nil, errors.Wrap(err, "error opening connection to payment service")
+
+	}
+
+	go func() {
+		defer conn.Close()
+		<-ctx.Done()
+	}()
+
+	opts := make(map[string][]grpcTrans.ClientOption)
+
+	for _, option := range options {
+		option(opts)
+	}
+
+	return paymentClient.New(conn, opts), nil
 }
 
 // inirialize the app from the options

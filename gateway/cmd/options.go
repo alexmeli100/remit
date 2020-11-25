@@ -8,31 +8,17 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/tracing/opentracing"
 	grpcTrans "github.com/go-kit/kit/transport/grpc"
+	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 	"github.com/nats-io/stan.go"
 	stdopentracing "github.com/opentracing/opentracing-go"
+	"github.com/rs/cors"
 	"google.golang.org/api/option"
 	"net/http"
 	"time"
 )
 
-// user service client options
-func userWithTracer(tracer stdopentracing.Tracer, logger log.Logger, endpoints ...string) app.GRPCClientOpt {
-	return func(m map[string][]grpcTrans.ClientOption) {
-		for _, endpoint := range endpoints {
-			e, ok := m[endpoint]
-
-			if !ok {
-				e = make([]grpcTrans.ClientOption, 0)
-			}
-
-			m[endpoint] = append(e, grpcTrans.ClientBefore(opentracing.ContextToGRPC(tracer, logger)))
-		}
-	}
-}
-
-// notificator service client options
-func notificatorWithTracer(tracer stdopentracing.Tracer, logger log.Logger, endpoints ...string) app.GRPCClientOpt {
+func svcWithTracer(tracer stdopentracing.Tracer, logger log.Logger, endpoints ...string) app.GRPCClientOpt {
 	return func(m map[string][]grpcTrans.ClientOption) {
 		for _, endpoint := range endpoints {
 			e, ok := m[endpoint]
@@ -67,7 +53,13 @@ func serverWithAddress(addr string) func(*http.Server) {
 
 func serverWithHandler(r *mux.Router) func(*http.Server) {
 	return func(s *http.Server) {
-		s.Handler = r
+		c := cors.New(cors.Options{
+			AllowedOrigins:   []string{"*"},
+			AllowedHeaders:   []string{"X-Requested-With", "Authorization", "Content-Type"},
+			AllowCredentials: true,
+		})
+
+		s.Handler = c.Handler(r)
 	}
 }
 
@@ -116,6 +108,18 @@ func appWithNotificatorService(ctx context.Context, instance string, opts ...app
 		return nil
 	}
 }
+func appWithPaymentService(ctx context.Context, instance string, opts ...app.GRPCClientOpt) func(*app.App) error {
+	return func(a *app.App) error {
+		p, err := app.CreatePaymentServiceClient(ctx, instance, opts...)
+
+		if err != nil {
+			return err
+		}
+
+		a.PaymentService = p
+		return nil
+	}
+}
 
 // add a listener for user events
 func appWithUserEventListener(ctx context.Context, conn stan.Conn, logger log.Logger) func(*app.App) error {
@@ -134,8 +138,9 @@ func appWithUserEventListener(ctx context.Context, conn stan.Conn, logger log.Lo
 			return err
 		}
 
+		// log errors from user event listener
 		go func() {
-			for err := range errc {
+			for err = range errc {
 				logger.Log("method", "listen-user-events", "err", err)
 			}
 		}()
@@ -165,6 +170,26 @@ func appWithFirebase(ctx context.Context, service string) func(*app.App) error {
 		}
 
 		a.FireApp = fireApp
+		return nil
+	}
+}
+
+func appWithRedisClient(ctx context.Context, options *redis.Options) func(*app.App) error {
+	return func(a *app.App) error {
+		client := redis.NewClient(options)
+
+		_, err := client.Ping(ctx).Result()
+
+		if err != nil {
+			return err
+		}
+
+		go func() {
+			<-ctx.Done()
+			a.Logger.Log("error", client.Close())
+		}()
+
+		a.RedisClient = client
 		return nil
 	}
 }

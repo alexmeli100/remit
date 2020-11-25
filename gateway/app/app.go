@@ -8,26 +8,39 @@ import (
 	"fmt"
 	"github.com/alexmeli100/remit/events"
 	notificator "github.com/alexmeli100/remit/notificator/pkg/service"
-	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
+	paymentpb "github.com/alexmeli100/remit/payment/pkg/grpc/pb"
+	payment "github.com/alexmeli100/remit/payment/pkg/service"
+	transferpb "github.com/alexmeli100/remit/transfer/pkg/grpc/pb"
+	transfer "github.com/alexmeli100/remit/transfer/pkg/service"
+	userpb "github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	user "github.com/alexmeli100/remit/users/pkg/service"
 	"github.com/go-kit/kit/log"
+	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
+	"github.com/stripe/stripe-go/v71"
+	stripeclient "github.com/stripe/stripe-go/v71/client"
+	"github.com/stripe/stripe-go/v71/webhook"
 	"io"
-	log1 "log"
+	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
 )
 
 type App struct {
-	Server       *http.Server
-	Events       events.EventManager
-	UsersService user.UsersService
-	Notificator  notificator.NotificatorService
-	FireApp      *firebase.App
-	Logger       log.Logger
+	RedisClient     *redis.Client
+	StripeClient    *stripeclient.API
+	Server          *http.Server
+	Events          events.EventManager
+	UsersService    user.UsersService
+	PaymentService  payment.PaymentService
+	TransferService transfer.TransferService
+	Notificator     notificator.NotificatorService
+	FireApp         *firebase.App
+	Logger          log.Logger
 }
 
 func (a *App) isAuthenticatedWeb(next http.Handler) http.Handler {
@@ -52,7 +65,7 @@ func (a *App) isAuthenticatedWeb(next http.Handler) http.Handler {
 	})
 }
 
-func (a *App) isAuthenticatedMobile(next http.Handler) http.Handler {
+func (a *App) isAuthenticated(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		client, err := a.FireApp.Auth(r.Context())
 
@@ -84,28 +97,239 @@ func (a *App) isAuthenticatedMobile(next http.Handler) http.Handler {
 	})
 }
 
+func (a *App) checkWebHookSignature(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		maxBodyBytes := int64(65536)
+		r.Body = http.MaxBytesReader(w, r.Body, maxBodyBytes)
+		payload, err := ioutil.ReadAll(r.Body)
+
+		if err != nil {
+			err = errors.Wrap(err, "error reading request body")
+			a.Logger.Log("error", err)
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+
+		endpointSecret := os.Getenv("STRIPE_ENDPOINT_SECRET")
+		signature := r.Header.Get("Stripe-Signature")
+		event, err := webhook.ConstructEvent(payload, signature, endpointSecret)
+
+		if err != nil {
+			err = errors.Wrap(err, "failed to verify webhook signature")
+			a.Logger.Log("error", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "event", &event)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
 // create user in firebase then add the user to our database.
 // an account activation email is sent afterwards.
 func (a *App) createUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		u, err := decodeBody(r.Body)
+		u := &userpb.User{}
+		err := decodeRequestBody(r.Body, u)
 
 		if err != nil {
 			a.badRequest(w, err)
 			return
 		}
 
-		name := fmt.Sprintf("%s %s", u.FirstName, u.LastName)
-		if err = a.UsersService.Create(r.Context(), u); err != nil {
+		cu, err := a.UsersService.Create(r.Context(), u)
+
+		if err != nil {
 			a.serverError(w, err)
 			return
 		}
-		respondWithJson(w, http.StatusCreated, map[string]string{"status": "user created"})
-		a.Logger.Log("method", "createUser", "name", name)
+
+		a.respondWithJson(w, http.StatusCreated, cu)
 
 		if err := a.Events.OnUserCreated(r.Context(), u); err != nil {
-			a.Logger.Log("method", "createUser", "err", err)
+			a.Logger.Log("method", "events.OnUserCreated", "err", err)
 		}
+	}
+}
+
+func (a *App) createContact() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c := &userpb.Contact{}
+		err := decodeRequestBody(r.Body, c)
+
+		if err != nil {
+			a.badRequest(w, err)
+			return
+		}
+
+		uc, err := a.UsersService.CreateContact(r.Context(), c)
+
+		if err != nil {
+			a.serverError(w, err)
+			return
+		}
+
+		a.respondWithJson(w, http.StatusCreated, uc)
+	}
+}
+
+func (a *App) getContacts() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		p := vars["id"]
+
+		id, err := strconv.Atoi(p)
+
+		if err != nil {
+			a.badRequest(w, err)
+			return
+		}
+
+		contacts, err := a.UsersService.GetContacts(r.Context(), int64(id))
+
+		if err != nil {
+			a.serverError(w, err)
+			return
+		}
+
+		a.respondWithJson(w, http.StatusCreated, contacts)
+	}
+}
+
+func (a *App) deleteContact() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		p := vars["id"]
+
+		id, err := strconv.Atoi(p)
+
+		if err != nil {
+			a.badRequest(w, err)
+			return
+		}
+
+		if err = a.UsersService.DeleteContact(r.Context(), &userpb.Contact{Id: int64(id)}); err != nil {
+			a.serverError(w, err)
+			return
+		}
+
+		a.respondWithJson(w, http.StatusOK, map[string]string{"status": "deleted"})
+	}
+}
+
+func (a *App) createTransaction() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		tr := &paymentpb.Transaction{}
+
+		if err := decodeRequestBody(r.Body, tr); err != nil {
+			a.badRequest(w, err)
+			return
+		}
+
+		tr, err := a.PaymentService.CreateTransaction(r.Context(), tr)
+
+		if err != nil {
+			a.serverError(w, err)
+			return
+		}
+
+		a.respondWithJson(w, http.StatusCreated, tr)
+	}
+}
+
+func (a *App) getTransactions() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		uid := vars["uid"]
+
+		trs, err := a.PaymentService.GetTransactions(r.Context(), uid)
+
+		if err != nil {
+			a.serverError(w, err)
+			return
+		}
+
+		a.respondWithJson(w, http.StatusOK, trs)
+	}
+}
+
+func (a *App) getCustomerID() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		uid := vars["uid"]
+
+		cid, err := a.PaymentService.GetCustomerID(r.Context(), uid)
+
+		if err != nil {
+			a.serverError(w, err)
+			return
+		}
+
+		res := map[string]string{"customerID": cid}
+		a.respondWithJson(w, http.StatusOK, res)
+	}
+}
+
+func (a *App) setUserProfile() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := &userpb.User{}
+
+		if err := decodeRequestBody(r.Body, u); err != nil {
+			a.badRequest(w, err)
+			return
+		}
+
+		u, err := a.UsersService.SetUserProfile(r.Context(), u)
+
+		if err != nil {
+			a.serverError(w, err)
+			return
+		}
+
+		a.respondWithJson(w, http.StatusOK, u)
+	}
+}
+
+func (a *App) updateUserProfile() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := &userpb.User{}
+
+		if err := decodeRequestBody(r.Body, u); err != nil {
+			a.badRequest(w, err)
+			return
+		}
+
+		u, err := a.UsersService.UpdateUserProfile(r.Context(), u)
+
+		if err != nil {
+			a.serverError(w, err)
+			return
+		}
+
+		a.respondWithJson(w, http.StatusOK, u)
+	}
+}
+
+func (a *App) updateContact() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c := &userpb.Contact{}
+
+		err := decodeRequestBody(r.Body, c)
+
+		if err != nil {
+			a.badRequest(w, err)
+			return
+		}
+
+		uc, err := a.UsersService.UpdateContact(r.Context(), c)
+
+		if err != nil {
+			a.serverError(w, err)
+			return
+		}
+
+		a.respondWithJson(w, http.StatusOK, uc)
 	}
 }
 
@@ -122,29 +346,96 @@ func (a *App) getUserByID() http.HandlerFunc {
 
 		u, err := a.UsersService.GetUserByID(r.Context(), int64(id))
 
-		if err != nil {
-			a.serverError(w, err)
-			return
-		}
-
-		respondWithJson(w, http.StatusOK, u)
+		a.checkGetUserError(err, w, u)
 	}
 }
 
 func (a *App) getUserByUUID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		id := vars["id"]
+		uid := vars["uid"]
 
-		u, err := a.UsersService.GetUserByUUID(r.Context(), id)
+		u, err := a.UsersService.GetUserByUUID(r.Context(), uid)
 
-		if err != nil {
-			a.serverError(w, err)
+		a.checkGetUserError(err, w, u)
+	}
+}
+
+func (a *App) stripeWebHook() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		event := r.Context().Value("event").(*stripe.Event)
+		err := a.checkIfPaymentEventProcessed(r.Context(), event)
+
+		if errors.Is(err, ErrorEventProcessed) {
+			w.WriteHeader(http.StatusOK)
+			return
+		} else if err != nil {
+			a.Logger.Log("method", "stripeWebHook", "error", err)
+			w.WriteHeader(http.StatusServiceUnavailable)
 			return
 		}
 
-		respondWithJson(w, http.StatusOK, u)
+		switch event.Type {
+		case "payment_intent.succeeded":
+			if err := a.handlePaymentSucceded(r.Context(), w, event); err != nil {
+				w.WriteHeader(http.StatusServiceUnavailable)
+				return
+			}
+		default:
+			a.Logger.Log("error", fmt.Sprintf("unexpected event type: %s\n", event.Type))
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
 	}
+}
+
+func (a *App) handlePaymentSucceded(ctx context.Context, w http.ResponseWriter, e *stripe.Event) error {
+	var intent stripe.PaymentIntent
+
+	if err := json.Unmarshal(e.Data.Raw, &intent); err != nil {
+		err = errors.Wrap(err, "error parsing webhook json")
+		a.Logger.Log("error", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return nil
+	}
+
+	if err := a.Events.OnPaymentSucceded(ctx, intent.ID); err != nil {
+		a.Logger.Log("error", err)
+		return err
+	}
+
+	return nil
+}
+
+func (a *App) checkIfPaymentEventProcessed(ctx context.Context, e *stripe.Event) error {
+	var cachedEvent stripe.Event
+	err := a.getKey(ctx, e.ID, cachedEvent)
+
+	if err == redis.Nil {
+		if err := a.setKey(ctx, e.ID, e, time.Hour*24); err != nil {
+			return err
+		}
+
+		return nil
+	} else if err != nil {
+		return err
+	}
+
+	return ErrorEventProcessed
+}
+
+func (a *App) checkGetUserError(err error, w http.ResponseWriter, u *userpb.User) {
+	if errors.Is(err, user.ErrUserNotFound) {
+		a.notFound(w, err)
+		return
+	} else if err != nil {
+		a.serverError(w, err)
+		return
+	}
+
+	a.respondWithJson(w, http.StatusOK, u)
 }
 
 func (a *App) signInWeb() http.HandlerFunc {
@@ -173,7 +464,10 @@ func (a *App) signInWeb() http.HandlerFunc {
 			return
 		}
 
-		if time.Now().Unix()-decoded.Claims["auth_time"].(int64) > 5*60 {
+		authTime := time.Now().Unix() - int64(decoded.Claims["auth_time"].(float64))
+		a.Logger.Log("authTime", authTime)
+
+		if authTime > 5*60 {
 			err = errors.New("recent sign-in required")
 			a.unauthorized(w, err)
 			return
@@ -196,67 +490,125 @@ func (a *App) signInWeb() http.HandlerFunc {
 		})
 
 		response := map[string]string{"status": "success"}
-		respondWithJson(w, http.StatusOK, response)
+		a.respondWithJson(w, http.StatusOK, response)
 	}
 }
 
-func (a *App) OnUserCreated(ctx context.Context, u *pb.User) error {
-	a.Logger.Log("method", "OnuserCreated", "email", u.Email)
+func (a *App) resetPassword() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := &userpb.User{}
+		err := decodeRequestBody(r.Body, u)
 
-	client, err := a.FireApp.Auth(ctx)
+		if err != nil {
+			a.badRequest(w, err)
+			return
+		}
 
-	if err != nil {
-		return err
+		err = a.Events.OnPasswordReset(r.Context(), u)
+		a.Logger.Log("method", "resetPassword", "error", err)
+		a.respondWithJson(w, http.StatusOK, nil)
 	}
-
-	url, err := client.EmailVerificationLink(ctx, u.Email)
-
-	if err != nil {
-		return errors.Wrap(err, "error getting email confirmation link")
-	}
-
-	if err = a.Notificator.SendConfirmEmail(ctx, u.FirstName, u.Email, url); err != nil {
-		return errors.Wrap(err, "error sending confirmation email")
-	}
-
-	if err = a.Notificator.SendWelcomeEmail(ctx, u.FirstName, u.Email); err != nil {
-		return errors.Wrap(err, "error sending welcome email")
-	}
-
-	return nil
 }
 
-func (a *App) OnPasswordReset(ctx context.Context, u *pb.User) error {
-	client, err := a.FireApp.Auth(ctx)
+func (a *App) transferMoney() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		t := &transferpb.TransferRequest{}
+		err := decodeRequestBody(r.Body, t)
 
-	if err != nil {
-		return err
+		if err != nil {
+			a.badRequest(w, err)
+			return
+		}
+
+		res := a.TransferService.Transfer(r.Context(), t)
+
+		if res.Status == "Failed" {
+			a.serverError(w, errors.New(res.FailReason))
+			return
+		}
+
+		a.respondWithJson(w, http.StatusOK, map[string]string{"ok": "transfer successful"})
+		if err = a.Events.OnTransferSucceded(r.Context(), res); err != nil {
+			a.Logger.Log("method", "transferMoney", "error", err)
+		}
 	}
-
-	url, err := client.PasswordResetLink(ctx, u.Email)
-
-	if err != nil {
-		return errors.Wrap(err, "error getting password reset link")
-	}
-
-	if err = a.Notificator.SendPasswordResetEmail(ctx, u.Email, url); err != nil {
-		return errors.Wrap(err, "error sending password reset link")
-	}
-
-	return nil
 }
 
-// decode body of a request containing user data.
-// used in create user method
-func decodeBody(body io.Reader) (*pb.User, error) {
-	var u pb.User
+func (a *App) saveUserCard() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := &userpb.User{}
+		err := decodeRequestBody(r.Body, u)
+
+		if err != nil {
+			a.badRequest(w, err)
+			return
+		}
+
+		s, err := a.PaymentService.SaveCard(r.Context(), u.Uuid)
+
+		if err != nil {
+			a.serverError(w, err)
+			return
+		}
+
+		a.respondWithJson(w, http.StatusOK, map[string]string{"secret": s})
+	}
+}
+
+func (a *App) getPaymentSecret() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		p := &paymentpb.PaymentRequest{}
+		err := decodeRequestBody(r.Body, p)
+
+		if err != nil {
+			a.badRequest(w, err)
+			return
+		}
+
+		s, err := a.PaymentService.GetPaymentIntentSecret(r.Context(), p)
+
+		if err != nil {
+			a.serverError(w, err)
+			return
+		}
+
+		a.respondWithJson(w, http.StatusOK, map[string]string{"secret": s})
+	}
+}
+
+func (a *App) capturePayment() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var c struct {
+			Pi     string  `json:"pi"`
+			Amount float64 `json:"amount"`
+		}
+		err := decodeRequestBody(r.Body, &c)
+
+		if err != nil {
+			a.badRequest(w, err)
+			return
+		}
+
+		s, err := a.PaymentService.CapturePayment(r.Context(), c.Pi, c.Amount)
+
+		if err != nil {
+			a.serverError(w, err)
+			return
+		}
+
+		a.respondWithJson(w, http.StatusOK, map[string]string{"secret": s})
+	}
+}
+
+// decode body of a request containing json data.
+func decodeRequestBody(body io.Reader, dst interface{}) error {
 	decoder := json.NewDecoder(body)
 
-	if err := decoder.Decode(&u); err != nil {
-		return nil, errors.Wrap(err, "error decoding request")
+	if err := decoder.Decode(&dst); err != nil {
+		return errors.Wrap(err, "error decoding request")
 	}
 
-	return &u, nil
+	return nil
 }
 
 // get id token from request body
@@ -290,14 +642,49 @@ func getTokenFromSession(ctx context.Context, app *firebase.App, idToken string)
 	return token, nil
 }
 
-func respondWithError(w http.ResponseWriter, code int, err error) {
-	respondWithJson(w, code, map[string]string{"error": err.Error()})
+func (a *App) respondWithError(w http.ResponseWriter, code int, err error) {
+	a.Logger.Log("code", code, "error", err)
+	a.respondWithJson(w, code, map[string]string{"error": err.Error()})
 }
 
-func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
+func (a *App) respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	if err := json.NewEncoder(w).Encode(payload); err != nil {
-		log1.Println(err)
+
+	if payload != nil {
+		if err := json.NewEncoder(w).Encode(payload); err != nil {
+			a.Logger.Log("error", err)
+		}
 	}
+
+}
+
+func (a *App) getKey(ctx context.Context, key string, src interface{}) error {
+	val, err := a.RedisClient.Get(ctx, key).Result()
+
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal([]byte(val), src); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *App) setKey(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
+	v, err := json.Marshal(value)
+
+	if err != nil {
+		return err
+	}
+
+	err = a.RedisClient.Set(ctx, key, v, expiration).Err()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

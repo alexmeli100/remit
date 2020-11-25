@@ -22,7 +22,7 @@ func TestMain(m *testing.M) {
 
 func TestTransfer(t *testing.T) {
 
-	tests := []struct {
+	testCases := []struct {
 		testCase       string
 		expectedStatus string
 	}{
@@ -34,7 +34,7 @@ func TestTransfer(t *testing.T) {
 		{"+256776564739", TransferSuccessFul},
 	}
 
-	for i, tc := range tests {
+	for i, tc := range testCases {
 		tr := createTransferRequest(tc.testCase)
 		refId, err := r.Transfer(tr)
 
@@ -54,6 +54,26 @@ func TestTransfer(t *testing.T) {
 	}
 }
 
+func TestSendTo(t *testing.T) {
+	tests := []struct {
+		testCase string
+		success  bool
+	}{
+		{"46733123450", false},
+		{"46733123451", false},
+		{"46733123452", false},
+		{"+256776564739", true},
+	}
+
+	for i, tc := range tests {
+		err := r.SendTo(500, tc.testCase, "EUR")
+
+		if err != nil && tc.success {
+			t.Errorf("[Test %d]wrong status, expected error to be nil, got %s", i, err.Error())
+		}
+	}
+}
+
 func createTransferRequest(n string) *TransferRequest {
 	id := uuid.New()
 	payee := &Payee{
@@ -62,7 +82,7 @@ func createTransferRequest(n string) *TransferRequest {
 	}
 
 	return &TransferRequest{
-		Amount:       "500",
+		Amount:       "50000",
 		Currency:     "EUR",
 		ExternalID:   id.String(),
 		Payee:        payee,

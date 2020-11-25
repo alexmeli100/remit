@@ -7,31 +7,21 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/stretchr/testify/assert"
 	"log"
-	"os"
 	"testing"
+	"time"
 )
 
 var pg PostgService
 
-const TableCreationQuery = `CREATE TABLE IF NOT EXISTS users
-	(
-	    id          SERIAL,
-	    uuid        TEXT 	  UNIQUE NOT NULL,
-	    first_name  TEXT      NOT NULL,
-	    last_name   TEXT      NOT NULL,
-	    email       TEXT 	  UNIQUE NOT NULL,
-	    confirmed   BOOLEAN   NOT NULL,
-	    created_at  TIMESTAMP NOT NULL,
-	    country     Text      Not NuLL,
-	    CONSTRAINT  user_pkey PRIMARY KEY (id)
-	)`
-
 func openConnection() (*sqlx.DB, error) {
-	pass := os.Getenv("POSTGRES_PASSWORD")
-	userName := os.Getenv("POSTGRES_USER")
-	dbName := os.Getenv("POSTGRES_DB")
-	connString := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", userName, pass, dbName)
+	pass := "ogttpy3ikvctrlhs"
+	userName := "doadmin"
+	host := "db-postgresql-nyc1-31181-do-user-8015056-0.b.db.ondigitalocean.com"
+	port := "25060"
+	dbName := "wealow-users-test"
+	connString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require", host, port, userName, pass, dbName)
 
 	db, err := sqlx.Open("postgres", connString)
 
@@ -42,23 +32,13 @@ func openConnection() (*sqlx.DB, error) {
 	return db, nil
 }
 
-func ensureTableExists() {
-	if _, err := pg.DB.Exec(TableCreationQuery); err != nil {
-		log.Fatal(err)
-	}
-}
-
 func clearTable() {
 	if _, err := pg.DB.Exec("DELETE FROM users"); err != nil {
 		log.Fatal(err)
 	}
-
-	if _, err := pg.DB.Exec("ALTER SEQUENCE users_id_seq RESTART WITH 1"); err != nil {
-		log.Fatal(err)
-	}
 }
 
-func TestMain(m *testing.M) {
+func TestPostGres(t *testing.T) {
 	db, err := openConnection()
 
 	if err != nil {
@@ -66,20 +46,32 @@ func TestMain(m *testing.M) {
 	}
 
 	pg = PostgService{db}
-	ensureTableExists()
-	code := m.Run()
-	clearTable()
-	pg.DB.Close()
-	os.Exit(code)
 
-}
+	t.Run("TestPostGres", func(t *testing.T) {
+		t.Run("TestCreate", func(t *testing.T) {
+			TestPostgService_Create(t)
+		})
 
-func compare(u1 *pb.User, u2 *pb.User) bool {
-	return u1.FirstName == u2.FirstName &&
-		u1.LastName == u2.LastName &&
-		u1.Email == u2.Email &&
-		u1.Uuid == u2.Uuid &&
-		u1.Confirmed == u2.Confirmed
+		t.Run("TestGetUserByUUID", func(t *testing.T) {
+			TestPostgService_GetUserByUUID(t)
+		})
+
+		t.Run("TestGetUserByEmail", func(t *testing.T) {
+			TestPostgService_GetUserByEmail(t)
+		})
+
+		t.Run("TestUpdateEmail", func(t *testing.T) {
+			TestPostgService_UpdateEmail(t)
+		})
+
+		t.Run("TestSetUSerProfile", func(t *testing.T) {
+			TestPostgService_SetUserProfile(t)
+		})
+
+		t.Run("TestUpdateUserProfile", func(t *testing.T) {
+			TestPostgService_UpdateUserProfile(t)
+		})
+	})
 }
 
 func TestPostgService_Create(t *testing.T) {
@@ -95,20 +87,10 @@ func TestPostgService_Create(t *testing.T) {
 		Country:   "Canada",
 	}
 
-	if err := pg.Create(context.Background(), u); err != nil {
-		t.Errorf("%v", err)
-	}
+	user, err := pg.Create(context.Background(), u)
 
-	tu, err := pg.GetUserByUUID(context.Background(), uid)
-
-	if err != nil {
-		t.Errorf("%v", err)
-	}
-
-	if err == nil {
-		if !compare(u, tu) {
-			t.Errorf("Expected: %v, Got: %v", u, tu)
-		}
+	if assert.NoError(t, err) {
+		assert.NotNil(t, user)
 	}
 }
 
@@ -125,18 +107,16 @@ func TestPostgService_GetUserByUUID(t *testing.T) {
 		Country:   "USA",
 	}
 
-	if err := pg.Create(context.Background(), u); err != nil {
-		t.Errorf("%v", err)
+	user, err := pg.Create(context.Background(), u)
+
+	if assert.NoError(t, err) {
+		assert.NotNil(t, user)
 	}
 
 	tu, err := pg.GetUserByUUID(context.Background(), uid)
 
-	if err != nil {
-		t.Errorf("%v", err)
-	}
-
-	if !compare(u, tu) {
-		t.Errorf("Expected: %v, Got: %v", u, tu)
+	if assert.NoError(t, err) {
+		assert.NotNil(t, tu)
 	}
 }
 
@@ -153,22 +133,20 @@ func TestPostgService_GetUserByEmail(t *testing.T) {
 		Country:   "USA",
 	}
 
-	if err := pg.Create(context.Background(), u); err != nil {
-		t.Errorf("%v", err)
+	user, err := pg.Create(context.Background(), u)
+
+	if assert.NoError(t, err) {
+		assert.NotNil(t, user)
 	}
 
-	tu, err := pg.GetUserByEmail(context.Background(), u.Email)
+	tu, err := pg.GetUserByEmail(context.Background(), user.Email)
 
-	if err != nil {
-		t.Errorf("%v", err)
-	}
-
-	if !compare(u, tu) {
-		t.Errorf("Expected: %v, Got: %v", u, tu)
+	if assert.NoError(t, err) {
+		assert.NotNil(t, tu)
 	}
 }
 
-func TestPostgService_GetUserByID(t *testing.T) {
+func TestPostgService_UpdateEmail(t *testing.T) {
 	clearTable()
 
 	uid := uuid.New().String()
@@ -181,17 +159,129 @@ func TestPostgService_GetUserByID(t *testing.T) {
 		Country:   "USA",
 	}
 
-	if err := pg.Create(context.Background(), u); err != nil {
-		t.Errorf("%v", err)
+	user, err := pg.Create(context.Background(), u)
+
+	if assert.NoError(t, err) {
+		assert.NotNil(t, user)
 	}
 
-	tu, err := pg.GetUserByID(context.Background(), 1)
-
-	if err != nil {
-		t.Errorf("%v", err)
+	newUser := &pb.User{
+		Id:    user.Id,
+		Email: "alexmeli100@gmail.com",
 	}
 
-	if !compare(u, tu) {
-		t.Errorf("Expected: %v, Got: %v", u, tu)
+	err = pg.UpdateEmail(context.Background(), newUser)
+
+	assert.NoError(t, err)
+}
+
+func TestPostgService_SetUserProfile(t *testing.T) {
+	clearTable()
+
+	uid := uuid.New().String()
+	u := &pb.User{
+		FirstName: "James",
+		LastName:  "Meli",
+		Uuid:      uid,
+		Email:     "jamesmeli100@gmail.com",
+		Confirmed: false,
+		Country:   "USA",
+	}
+
+	user, err := pg.Create(context.Background(), u)
+
+	if assert.NoError(t, err) {
+		assert.NotNil(t, user)
+	}
+
+	b := time.Now()
+
+	p := &pb.Profile{
+		BirthDate:  &b,
+		Occupation: "Student",
+		Gender:     "Male",
+		Address: &pb.Address{
+			Address1:      "110 York Mills Rd",
+			Address2:      "",
+			Country:       "Canada",
+			CityTown:      "Toronto",
+			ProvinceState: "On",
+			PostalcodeZip: "M2N13J",
+		},
+	}
+
+	user.Profile = p
+	//t.Log(user)
+
+	updatedUser, err := pg.SetUserProfile(context.Background(), user)
+
+	if assert.NoError(t, err) {
+		assert.NotNil(t, updatedUser)
+	}
+}
+
+func TestPostgService_UpdateUserProfile(t *testing.T) {
+	clearTable()
+
+	uid := uuid.New().String()
+	u := &pb.User{
+		FirstName: "James",
+		LastName:  "Meli",
+		Uuid:      uid,
+		Email:     "jamesmeli100@gmail.com",
+		Confirmed: false,
+		Country:   "USA",
+	}
+
+	user, err := pg.Create(context.Background(), u)
+
+	if assert.NoError(t, err) {
+		assert.NotNil(t, user)
+	}
+
+	b := time.Now()
+
+	p := &pb.Profile{
+		BirthDate:  &b,
+		Occupation: "Student",
+		Gender:     "Male",
+		Address: &pb.Address{
+			Address1:      "110 York Mills Rd",
+			Address2:      "",
+			Country:       "Canada",
+			CityTown:      "Toronto",
+			ProvinceState: "On",
+			PostalcodeZip: "M2N13J",
+		},
+	}
+
+	user.Profile = p
+
+	updatedUser, err := pg.SetUserProfile(context.Background(), user)
+
+	if assert.NoError(t, err) {
+		assert.NotNil(t, updatedUser)
+	}
+
+	newP := &pb.Profile{
+		BirthDate:  &b,
+		Occupation: "Doctor",
+		Gender:     "Female",
+		Address: &pb.Address{
+			Address1:      "2900 Jane Street",
+			Address2:      "",
+			Country:       "Canada",
+			CityTown:      "Toronto",
+			ProvinceState: "On",
+			PostalcodeZip: "M2N13J",
+		},
+	}
+
+	user.Profile = newP
+
+	updatedUser, err = pg.UpdateUserProfile(context.Background(), user)
+
+	if assert.NoError(t, err) {
+		assert.NotNil(t, updatedUser)
 	}
 }
