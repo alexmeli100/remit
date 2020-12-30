@@ -153,7 +153,7 @@ func ListenEvents(ctx context.Context, topic, queue string, conn stan.Conn, hand
 			errc <- err
 
 			var e *ErrorShouldAck
-			if errors.As(err, e) {
+			if errors.As(err, &e) {
 				sendAck(msg, errc)
 			}
 

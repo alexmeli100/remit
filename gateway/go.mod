@@ -12,7 +12,7 @@ require (
 	github.com/alexmeli100/remit/notificator v0.0.0-20201104013020-9aa3e4e63155
 	github.com/alexmeli100/remit/payment v0.0.7
 	github.com/alexmeli100/remit/transfer v0.0.4
-	github.com/alexmeli100/remit/users v0.0.8
+	github.com/alexmeli100/remit/users v0.0.9
 	github.com/benbjohnson/clock v1.0.3 // indirect
 	github.com/go-kit/kit v0.10.0
 	github.com/go-redis/redis/v8 v8.3.3

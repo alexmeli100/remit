@@ -31,6 +31,8 @@ github.com/alexmeli100/remit/users v0.0.0 h1:6dwNStXCZV/YhBMc1/igldRmlwh4bKs9n3m
 github.com/alexmeli100/remit/users v0.0.0/go.mod h1:nZgUKFQ8JOO9sIgCaUowkPVLVEWw0UN9dJmTDnjXiJQ=
 github.com/alexmeli100/remit/users v0.0.3 h1:Np5TNmmfDtNwVVltHO+o/yKkMjgY+aEP8lnbTr6bSso=
 github.com/alexmeli100/remit/users v0.0.3/go.mod h1:VbWLx3DsDUyumpukE6crFs3iOhxa8Dkc4JNXOHBdNvs=
+github.com/alexmeli100/remit/users v0.0.9 h1:lxJ3f5I7myVrJ+EtAV5HZJTiPvbKCOq/m5+YA3i350c=
+github.com/alexmeli100/remit/users v0.0.9/go.mod h1:um5xFps9E7H4HzUfrQnG4CxRS1IH6Js8Xdcxk+iAvYQ=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/apache/thrift v0.13.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=

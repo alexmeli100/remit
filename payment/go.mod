@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/alexmeli100/remit/events v0.0.5
-	github.com/alexmeli100/remit/users v0.0.3
+	github.com/alexmeli100/remit/users v0.0.9
 	github.com/go-kit/kit v0.10.0
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.2 // indirect
