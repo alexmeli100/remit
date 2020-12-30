@@ -106,6 +106,7 @@ message CreateRequest {
 
 message CreateReply {
  string err = 1;
+ User user = 2;
 }
 
 message GetUserByIDRequest {

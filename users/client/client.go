@@ -23,7 +23,7 @@ func encodeCreateRequest(_ context.Context, r interface{}) (interface{}, error) 
 func decodeCreateResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(*pb.CreateReply)
 
-	return endpoint.CreateResponse{Err: str2err(res.Err)}, nil
+	return endpoint.CreateResponse{Err: str2err(res.Err), User: res.User}, nil
 }
 
 func makeGetUserByIDClient(conn *grpc.ClientConn, options []grpcTrans.ClientOption) *grpcTrans.Client {

@@ -25,7 +25,7 @@ func decodeCreateRequest(_ context.Context, r interface{}) (interface{}, error) 
 func encodeCreateResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(endpoint.CreateResponse)
 
-	return &pb.CreateReply{Err: err2str(res.Err)}, nil
+	return &pb.CreateReply{Err: err2str(res.Err), User: res.User}, nil
 }
 
 func (g *grpcServer) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateReply, error) {
