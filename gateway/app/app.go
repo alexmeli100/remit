@@ -147,7 +147,7 @@ func (a *App) createUser() http.HandlerFunc {
 
 		a.respondWithJson(w, http.StatusCreated, cu)
 
-		if err := a.Events.OnUserCreated(r.Context(), u); err != nil {
+		if err := a.Events.OnUserCreated(r.Context(), cu); err != nil {
 			a.Logger.Log("method", "events.OnUserCreated", "err", err)
 		}
 	}
