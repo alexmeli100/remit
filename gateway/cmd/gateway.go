@@ -6,6 +6,7 @@ import (
 	"github.com/alexmeli100/remit/gateway/app"
 	notificatorEndpoint "github.com/alexmeli100/remit/notificator/pkg/endpoint"
 	paymentEndpoint "github.com/alexmeli100/remit/payment/pkg/endpoint"
+	transferEndpoint "github.com/alexmeli100/remit/transfer/pkg/endpoint"
 	userEndpoint "github.com/alexmeli100/remit/users/pkg/endpoint"
 	"github.com/go-kit/kit/log"
 	"github.com/go-redis/redis/v8"
@@ -27,6 +28,7 @@ var logger log.Logger
 var usersInstance string
 var notificatorInstance string
 var paymentInstance string
+var transferInstance string
 var natsInstance string
 var redisInstance string
 var redisPass string
@@ -46,6 +48,7 @@ func main() {
 	userEl := userEndpoint.GetEndpointList()
 	paymentEl := paymentEndpoint.GetEndpointList()
 	notificatorEl := notificatorEndpoint.GetEndpointList()
+	transferEl := transferEndpoint.GetEndpointList()
 
 	conn, err := events.Connect(natsInstance, NatsClusterId, NatsClientId)
 
@@ -84,10 +87,16 @@ func main() {
 		notificatorInstance,
 		svcWithTracer(tracer, logger, notificatorEl...))
 
+	transferSVC := appWithTransferService(
+		ctx,
+		transferInstance,
+		svcWithTracer(tracer, logger, transferEl...))
+
 	err = a.Initialize(
 		serverFunc,
 		userSVC,
 		paymentSVC,
+		transferSVC,
 		notificatorSVC,
 		appWithFirebase(ctx, "/opt/firebase/wealow-test-firebase.json"),
 		appWithEventSender(ctx, conn),
@@ -118,6 +127,8 @@ func initFromEnv() {
 	usersPort := os.Getenv("USER_MANAGER_SERVICE_PORT")
 	notificatorHost := os.Getenv("NOTIFICATOR_MANAGER_SERVICE_HOST")
 	notificatorPort := os.Getenv("NOTIFICATOR_MANAGER_SERVICE_PORT")
+	transferPort := os.Getenv("TRANSFER_MANAGER_SERVICE_PORT")
+	transferHost := os.Getenv("TRANSFER_MANAGER_SERVICE_HOST")
 	paymentHost := os.Getenv("PAYMENT_MANAGER_SERVICE_HOST")
 	paymentPort := os.Getenv("PAYMENT_MANAGER_SERVICE_PORT")
 	natsHost := os.Getenv("NATS_CLUSTER_SERVICE_HOST")
@@ -127,6 +138,7 @@ func initFromEnv() {
 	redisPass = os.Getenv("REDIS_PASSWORD")
 	usersInstance = usersHost + ":" + usersPort
 	notificatorInstance = notificatorHost + ":" + notificatorPort
+	transferInstance = transferHost + ":" + transferPort
 	natsInstance = natsHost + ":" + natsPort
 	paymentInstance = paymentHost + ":" + paymentPort
 	redisInstance = redisHost + ":" + redisPort

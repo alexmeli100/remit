@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/alexmeli100/remit/events"
 	eventpb "github.com/alexmeli100/remit/events/pb"
 	"github.com/alexmeli100/remit/payment/pkg/grpc/pb"
 	userPb "github.com/alexmeli100/remit/users/pkg/grpc/pb"
@@ -28,8 +29,8 @@ type PaymentStore interface {
 }
 
 type Customer struct {
-	UID        string `DB:"uid"`
-	CustomerID string `DB:"customer_id"`
+	UID        string `db:"uid"`
+	CustomerID string `db:"customer_id"`
 }
 
 type StripeService struct {
@@ -167,6 +168,11 @@ func (s *StripeService) deleteCustomer(ctx context.Context, u *userPb.User) erro
 
 func (s *StripeService) OnUserCreated(ctx context.Context, data *eventpb.EventData) error {
 	u := data.GetUser()
+
+	if u == nil {
+		return &events.ErrorShouldAck{Err: "error: got nil user"}
+	}
+
 	_, err := s.createCustomer(ctx, u)
 
 	return err

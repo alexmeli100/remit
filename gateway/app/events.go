@@ -11,6 +11,11 @@ import (
 
 func (a *App) OnUserCreated(ctx context.Context, data *eventpb.EventData) error {
 	u := data.GetUser()
+
+	if u == nil {
+		return &events.ErrorShouldAck{Err: "error: got nil user"}
+	}
+
 	client, err := a.FireApp.Auth(ctx)
 
 	if err != nil {

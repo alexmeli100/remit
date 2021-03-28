@@ -121,6 +121,19 @@ func appWithPaymentService(ctx context.Context, instance string, opts ...app.GRP
 	}
 }
 
+func appWithTransferService(ctx context.Context, instance string, opts ...app.GRPCClientOpt) func(*app.App) error {
+	return func(a *app.App) error {
+		t, err := app.CreateTransferServiceClient(ctx, instance, opts...)
+
+		if err != nil {
+			return err
+		}
+
+		a.TransferService = t
+		return nil
+	}
+}
+
 // add a listener for user events
 func appWithUserEventListener(ctx context.Context, conn stan.Conn, logger log.Logger) func(*app.App) error {
 	return func(a *app.App) error {
