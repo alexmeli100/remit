@@ -1,0 +1,3 @@
+usePassword: true
+usePasswordFile: true
+existingSecret: redis-password-secret

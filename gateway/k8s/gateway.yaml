@@ -19,9 +19,19 @@ spec:
     spec:
       containers:
       - name: gateway
+        imagePullPolicy: Always
         image: alexmeli/wealow-gateway:0.0
         ports:
-        - containerPort: 5000
+        - containerPort: 8083
+        env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: redis-password
+                name: redis-password-secret
+        envFrom:
+          - configMapRef:
+              name: gateway-config
         volumeMounts:
         - name: secret-volume
           mountPath: "/opt/firebase"
@@ -29,16 +39,18 @@ spec:
       volumes:
        - name: secret-volume
          secret:
-           secretName: firebase-service-account
+           secretName: wealow-test-firebase
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: gateway
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
-    - port: 5000
+    - port: 80
+      targetPort: 8083
   selector:
     svc: gateway
     app: wealow
+

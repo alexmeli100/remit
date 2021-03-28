@@ -1,0 +1,9 @@
+namespace: default
+secretGenerator:
+  - name: transfer-credentials
+    literals:
+      - MOMO_API_KEY=849d7c49e492476f970d66648770f4a0
+      - MOMO_USER_ID=e2858bf0-308e-4746-b454-1ea8f8a0a0cd
+      - MOMO_USER_SECRET=f2f58f93e1324c87becc9e1b479c636f
+generatorOptions:
+  disableNameSuffixHash: true

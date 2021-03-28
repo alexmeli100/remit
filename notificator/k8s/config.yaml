@@ -4,6 +4,8 @@ metadata:
   name: notificator-config
   namespace: default
 data:
-  EMAIL_HOST: "smtp.gmail.com"
-  EMAIL_PORT: "587"
-  EMAIL_ADDRESS: "alexmeli400@gmail.com"
+  WELCOME_TEMPLATE_ID: "d-a88cdf0ec3d143f3833abeb2f017cad4"
+  PASSWORD_RESET_TEMPLATE_ID: "d-b039280f5d2a41c9b15a5448a26a7b27"
+  CONFIRM_TEMPLATE_ID: "d-ac944cbc2127431ba3e48742bf910ad6"
+  EMAIL_ADDRESS: "alex.meli@wealow.com"
+  EMAIL_USERNAME: "Alex Meli"

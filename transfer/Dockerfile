@@ -5,8 +5,10 @@ ADD ./pkg /transfer/pkg
 ADD go.mod /transfer
 ADD go.sum /transfer
 
+WORKDIR /transfer/cmd
+
 RUN go get -u ./...
-RUN CGO_ENABLED=0 GOOS=linux go build -o /app/user_service -a -tags netgo -ldflags '-s -w'
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/transfer_service -a -tags netgo -ldflags '-s -w'
 
 FROM alpine:3.6 as alpine
 RUN apk add -U --no-cache ca-certificates && update-ca-certificates
