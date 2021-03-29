@@ -5,7 +5,7 @@ import (
 )
 
 type SendMoney interface {
-	SendTo(amount int, recipient, currency string) error
+	SendTo(req *TransferRequest) (*TransferResponse, error)
 }
 
 type TransferRequest struct {
@@ -15,10 +15,9 @@ type TransferRequest struct {
 	Currency        string  `json:"currency,omitempty"`
 	Service         string  `json:"service,omitempty"`
 	ReceiveCurrency string  `json:"receiveCurrency,omitempty"`
-	ExchangeRate    float64 `json:"exchangeRate,omitempty"`
-	SendFee         float64 `json:"sendFee,omitempty"`
 	ReceiveAmount   int64   `json:"receiveAmount,omitempty"`
 	SenderId        string  `json:"senderId,omitempty"`
+	OrderId         string  `json:"orderId,omitempty"`
 }
 
 type TransferResponse struct {
@@ -28,24 +27,16 @@ type TransferResponse struct {
 	Currency        string  `json:"currency,omitempty"`
 	Service         string  `json:"service,omitempty"`
 	ReceiveCurrency string  `json:"receiveCurrency,omitempty"`
-	ExchangeRate    float64 `json:"exchangeRate,omitempty"`
-	SendFee         float64 `json:"sendFee,omitempty"`
 	ReceiveAmount   int64   `json:"receiveAmount,omitempty"`
 	SenderId        string  `json:"senderId,omitempty"`
 	Status          string  `json:"status,omitempty"`
+	Token           string  `json:"token,omitempty"`
+	RemoteId        string  `json:"remoteId,omitempty"`
+	OrderId         string  `json:"orderId,omitempty"`
 	FailReason      string  `json:"failReason,omitempty"`
 }
 
 // TransferService describes the service.
 type TransferService interface {
-	Transfer(ctx context.Context, request *TransferRequest) *TransferResponse
-}
-
-//New returns a TransferService with all of the expected middleware wired in.
-func New(svc TransferService, middleware []Middleware) TransferService {
-
-	for _, m := range middleware {
-		svc = m(svc)
-	}
-	return svc
+	Transfer(ctx context.Context, request *TransferRequest) (*TransferResponse, error)
 }
