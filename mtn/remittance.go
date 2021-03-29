@@ -178,7 +178,7 @@ func (m *Remittance) SendTo(req *transfer.TransferRequest) (*transfer.TransferRe
 	return ret, nil
 }
 
-func getStatus(status string) transfer.TransferStatus {
+func getStatus(status string) string {
 	switch status {
 	case "SUCCESSFULL":
 		return transfer.StatusSuccess
