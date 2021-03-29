@@ -71,14 +71,17 @@ func main() {
 		serverWithIdleTimeout(time.Second*10),
 		serverWithWriteTimeout(time.Second*15))
 
+	// Get the user service
 	userSVC := appWithUserPostgService(ctx, db, user.LoggingMiddleware(logger))
 
+	// Get the notification service
 	sendGridApiKey := os.Getenv("SENDGRID_API_KEY")
 	notificatorSVC := appWithNotificatorService(
 		ctx,
 		sendGridApiKey,
 		notificator.LoggingMiddleware(logger))
 
+	// Get the transfer service
 	transferSVC := appWithTransferService(ctx, transfer.LoggingMiddleware(logger))
 
 	err = a.Initialize(
