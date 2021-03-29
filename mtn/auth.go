@@ -23,7 +23,7 @@ type tokenRefresher struct {
 // refresh the authorization token if expired otherwise return the old one
 func (t *tokenRefresher) refresh() (string, error) {
 	if isExpired(t.token) {
-		token, err := t.authorizer(t.config)
+		token, err := t.authorizer.authorize()
 
 		if err != nil {
 			return "", err
@@ -36,7 +36,11 @@ func (t *tokenRefresher) refresh() (string, error) {
 	return t.token.Token, nil
 }
 
-type Authorizer = func(config *Config) (*AccessToken, error)
+type Authorizer interface {
+	authorize() (*AccessToken, error)
+}
+
+//type Authorizer = func(config *Config) (*AccessToken, error)
 
 // AuthClient this struct ensures a valid token is always available for the next request handler
 type AuthClient struct {
@@ -65,23 +69,23 @@ func isExpired(t *AccessToken) bool {
 	return time.Now().Unix() > t.ExpiresIn
 }
 
-func authRemittance(config *Config) (*AccessToken, error) {
-	return authService("/remittance/token/", config)
+type AuthRemittance struct {
+	client *MomoClient
+	config *Config
 }
 
-func authService(path string, config *Config) (*AccessToken, error) {
-	client := createClient(withErrorHandler(&ErrorHandler{handler: tokenErrHandler}))
-	url := config.baseUrl + path
+func (a *AuthRemittance) authorize() (*AccessToken, error) {
+	url := a.config.baseUrl + "/remittance/token/"
 	req, err := http.NewRequest("POST", url, nil)
 
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request")
 	}
 
-	req.Header.Set("Ocp-Apim-Subscription-Key", config.primaryKey)
-	req.Header.Set("Authorization", "Basic "+getAuthToken(config))
+	req.Header.Set("Ocp-Apim-Subscription-Key", a.config.primaryKey)
+	req.Header.Set("Authorization", "Basic "+getAuthToken(a.config))
 
-	res, err := client.reqHandler.Do(req)
+	res, err := a.client.reqHandler.Do(req)
 
 	if err != nil {
 		return nil, errors.Wrap(err, "token request error")
@@ -90,7 +94,7 @@ func authService(path string, config *Config) (*AccessToken, error) {
 	defer res.Body.Close()
 	t := &AccessToken{}
 
-	err = client.resHandler.handleResponse(res, t)
+	err = a.client.resHandler.handleResponse(res, t)
 
 	t.ExpiresIn = time.Now().Unix() + t.ExpiresIn - 6
 
