@@ -2,14 +2,13 @@ package mtn
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
+	transfer "github.com/alexmeli100/remit/transfer/pkg/service"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 type TransferStatus string
@@ -39,9 +38,6 @@ type TransferRequest struct {
 	PayeeNote    string `json:"payeeNote"`
 }
 
-// TransferResponse The momo api documentation specifies the reason field as a FailedReason struct(see above)
-// but the response has a string instead which caused the unmarshalling to fail.
-// So I changed it to string and hopefully it stays this way
 type TransferResponse struct {
 	Amount                 string `json:"amount"`
 	Currency               string `json:"currency"`
@@ -61,9 +57,13 @@ type Remittance struct {
 
 func NewRemittance(config *Config) *Remittance {
 	refresher := &tokenRefresher{
-		config:     config,
-		authorizer: authRemittance,
+		config: config,
+		authorizer: &AuthRemittance{
+			client: createClient(withErrorHandler(&ErrorHandler{handler: tokenErrHandler})),
+			config: config,
+		},
 	}
+
 	auth := &AuthClient{
 		refresher: refresher,
 	}
@@ -139,60 +139,54 @@ func (m *Remittance) GetTransactionStatus(refId string) (*TransferResponse, erro
 	return &trRes, nil
 }
 
-// GetFinalStatus get the final status of the transaction
-// this function keeps polling the api for a max duration of timeout until it responds with a failed or successful status
-// The interval time for polling is specified in milliseconds
-func (m *Remittance) GetFinalStatus(refId string, interval time.Duration, timeout time.Duration) (*TransferResponse, error) {
-	ticker := time.NewTicker(interval)
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
-
-	for {
-		select {
-		case _ = <-ticker.C:
-			res, err := m.GetTransactionStatus(refId)
-
-			if err != nil {
-				return nil, err
-			}
-
-			if res.Status == TransferSuccessFul || res.Status == TransferFailed {
-				return res, nil
-			}
-		case <-ctx.Done():
-			ticker.Stop()
-			return nil, ErrorPending
-		}
-	}
-}
-
-func (m *Remittance) SendTo(amount int, recipient, currency string) error {
-	payee := &Payee{PartyId: recipient, PartyIdType: "MSISDN"}
-	id := uuid.New().String()
-
+func (m *Remittance) SendTo(req *transfer.TransferRequest) (*transfer.TransferResponse, error) {
+	payee := &Payee{PartyId: req.RecipientNumber, PartyIdType: "MSISDN"}
 	tr := &TransferRequest{
-		Amount:     strconv.Itoa(amount),
-		Currency:   currency,
-		ExternalID: id,
+		Amount:     strconv.Itoa(int(req.ReceiveAmount)),
+		Currency:   req.Currency,
+		ExternalID: req.OrderId,
 		Payee:      payee,
 	}
 
 	refId, err := m.Transfer(tr)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	res, err := m.GetFinalStatus(refId, time.Millisecond*100, time.Minute)
+	res, err := m.GetTransactionStatus(refId)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if res.Status == TransferFailed {
-		return ErrTransferFailed{
-			message: res.Reason,
-		}
+	ret := &transfer.TransferResponse{
+		Amount:          req.Amount,
+		RecipientId:     req.RecipientId,
+		Currency:        req.Currency,
+		Service:         req.Service,
+		ReceiveCurrency: req.ReceiveCurrency,
+		OrderId:         req.OrderId,
+		ReceiveAmount:   req.ReceiveAmount,
+		SenderId:        req.SenderId,
+		Status:          getStatus(res.Status),
+		FailReason:      res.Reason,
+		RemoteId:        res.FinancialTransactionId,
+		Token:           refId,
 	}
 
-	return nil
+	return ret, nil
+}
+
+func getStatus(status string) transfer.TransferStatus {
+	switch status {
+	case "SUCCESSFULL":
+		return transfer.StatusSuccess
+	case "PENDING":
+		return transfer.StatusPending
+	case "FAILED":
+		return transfer.StatusFailed
+	default:
+		return transfer.StatusUnknown
+	}
 }
