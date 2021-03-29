@@ -429,14 +429,19 @@ func (a *App) transferMoney() http.HandlerFunc {
 			return
 		}
 
-		res := a.TransferService.Transfer(r.Context(), t)
+		res, err := a.TransferService.Transfer(r.Context(), t)
 
-		if res.Status == "Failed" {
+		if err != nil {
+			a.serverError(w, errors.Wrap(err, "Transfer failed"))
+			return
+		}
+
+		if res.Status == transfer.StatusFailed {
 			a.serverError(w, errors.New(res.FailReason))
 			return
 		}
 
-		a.respondWithJson(w, http.StatusOK, map[string]string{"ok": "transfer successful"})
+		a.respondWithJson(w, http.StatusOK, map[string]string{"status": res.Status})
 	}
 }
 
