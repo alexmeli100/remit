@@ -197,7 +197,7 @@ func (c *Cashin) SendTo(req *transfer.TransferRequest) (*transfer.TransferRespon
 	return ret, nil
 }
 
-func getStatus(status string) transfer.TransferStatus {
+func getStatus(status string) string {
 	switch status {
 	case "SUCCESSFULL":
 		return transfer.StatusSuccess
