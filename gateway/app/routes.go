@@ -28,7 +28,6 @@ func (a *App) InitializeRoutes(r *mux.Router) {
 		r.HandleFunc("/contact/{id:[0-9]+}", a.deleteContact()).Methods("DELETE")
 		r.HandleFunc("/contacts/{id:[0-9]+}", a.getContacts()).Methods("GET")
 		r.HandleFunc("/transfer", a.transferMoney()).Methods("POST")
-		r.HandleFunc("/get-customer-id/uid/{uid:[a-zA-Z0-9]+}", a.getCustomerID()).Methods("GET")
 		r.HandleFunc("/create-transaction", a.createTransaction()).Methods("POST")
 		r.HandleFunc("/get-transactions/{uid:[a-zA-Z0-9]+}", a.getTransactions()).Methods("GET")
 	}

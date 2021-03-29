@@ -63,6 +63,8 @@ github.com/alexmeli100/remit/mtn v0.0.2/go.mod h1:DMEAZ9IV0SqScV5WS4zra+CmlUFzJX
 github.com/alexmeli100/remit/payment v0.0.2/go.mod h1:DXnqrYxgUIg+5eRkYY506eTtOF7KPlGeAWl6lu5/b7Q=
 github.com/alexmeli100/remit/payment v0.0.7 h1:BLehnNf0YDPBl9w4ZVeOqm11JbHdAXSC0jqI0p/0JxE=
 github.com/alexmeli100/remit/payment v0.0.7/go.mod h1:P8IcxmaBKFvGhXRO8utV4dUWXLDm0BShmCp10yu+GTE=
+github.com/alexmeli100/remit/payment v0.0.8 h1:9fx9JAxKZZsJoPOxB0wtfX5S/O5CcsAxpAKtYQt0ICU=
+github.com/alexmeli100/remit/payment v0.0.8/go.mod h1:9uaeu3FhUJByL1d6elRsz5aloVwerCBivgA6ujtRDRo=
 github.com/alexmeli100/remit/transfer v0.0.2/go.mod h1:l1GPiAEdZAeveZrK7HzkPwQmP5QSA1M2lmp9YUQ50U4=
 github.com/alexmeli100/remit/transfer v0.0.4 h1:mNBHRpGG1LKFlp5LCJEiqjNdExISV4qXbhC6OifyzEk=
 github.com/alexmeli100/remit/transfer v0.0.4/go.mod h1:MtB3HLO3g/vMcpHO0m+iotknEwe3Tl0Cs5WfA8c0QTE=
@@ -763,6 +765,7 @@ google.golang.org/grpc v1.30.0/go.mod h1:N36X2cJ7JwdamYAgDz+s+rVMFjt3numwzf/HckM
 google.golang.org/grpc v1.31.0/go.mod h1:N36X2cJ7JwdamYAgDz+s+rVMFjt3numwzf/HckM8pak=
 google.golang.org/grpc v1.31.1/go.mod h1:N36X2cJ7JwdamYAgDz+s+rVMFjt3numwzf/HckM8pak=
 google.golang.org/grpc v1.32.0/go.mod h1:N36X2cJ7JwdamYAgDz+s+rVMFjt3numwzf/HckM8pak=
+google.golang.org/grpc v1.33.2 h1:EQyQC3sa8M+p6Ulc8yy9SWSS2GVwyRc83gAbG8lrl4o=
 google.golang.org/grpc v1.33.2/go.mod h1:JMHMWHQWaTccqQQlmk3MJZS+GWXOdAesneDmEnv2fbc=
 google.golang.org/grpc v1.34.0 h1:raiipEjMOIC/TO2AvyTxP25XFdLxNIBwzDh3FM3XztI=
 google.golang.org/grpc v1.34.0/go.mod h1:WotjhfgOW/POjDeRt8vscBtXq+2VjORFy659qA51WJ8=

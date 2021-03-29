@@ -6,7 +6,6 @@ import (
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
 	notificator "github.com/alexmeli100/remit/notificator/pkg/service"
-	paymentpb "github.com/alexmeli100/remit/payment/pkg/grpc/pb"
 	payment "github.com/alexmeli100/remit/payment/pkg/service"
 	transfer "github.com/alexmeli100/remit/transfer/pkg/service"
 	user "github.com/alexmeli100/remit/users/pkg/service"
@@ -202,7 +201,7 @@ func (a *App) deleteContact() http.HandlerFunc {
 
 func (a *App) createTransaction() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tr := &paymentpb.Transaction{}
+		tr := &payment.Transaction{}
 
 		if err := decodeRequestBody(r.Body, tr); err != nil {
 			a.badRequest(w, err)
@@ -233,23 +232,6 @@ func (a *App) getTransactions() http.HandlerFunc {
 		}
 
 		a.respondWithJson(w, http.StatusOK, trs)
-	}
-}
-
-func (a *App) getCustomerID() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		uid := vars["uid"]
-
-		cid, err := a.PaymentService.GetCustomerID(r.Context(), uid)
-
-		if err != nil {
-			a.serverError(w, err)
-			return
-		}
-
-		res := map[string]string{"customerID": cid}
-		a.respondWithJson(w, http.StatusOK, res)
 	}
 }
 

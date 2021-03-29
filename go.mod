@@ -4,7 +4,6 @@ go 1.15
 
 require (
 	firebase.google.com/go/v4 v4.1.0
-	github.com/alexmeli100/remit/payment v0.0.8
 	github.com/google/uuid v1.1.3
 	github.com/gorilla/mux v1.8.0
 	github.com/jmoiron/sqlx v1.2.0
