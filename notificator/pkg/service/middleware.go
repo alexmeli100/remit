@@ -2,14 +2,14 @@ package service
 
 import (
 	"context"
-	"github.com/go-kit/kit/log"
+	"go.uber.org/zap"
 )
 
 // Middleware describes a service middleware.
 type Middleware func(NotificatorService) NotificatorService
 
 type loggingMiddleware struct {
-	logger log.Logger
+	logger *zap.Logger
 	next   NotificatorService
 }
 
@@ -17,7 +17,7 @@ func (l loggingMiddleware) SendConfirmEmail(ctx context.Context, name, addr, lin
 	err := l.next.SendConfirmEmail(ctx, name, addr, link)
 
 	defer func() {
-		_ = l.logger.Log("method", "SendConfirmEmail", "name", name, "err", err)
+		l.logger.Info("SendConfirmEmail", zap.String("name", name), zap.Error(err))
 	}()
 
 	return err
@@ -27,7 +27,7 @@ func (l loggingMiddleware) SendPasswordResetEmail(ctx context.Context, addr, lin
 	err := l.next.SendPasswordResetEmail(ctx, addr, link)
 
 	defer func() {
-		_ = l.logger.Log("method", "SendPasswordReset", "err", err)
+		l.logger.Info("SendPasswordResetEmail", zap.Error(err))
 	}()
 
 	return err
@@ -37,7 +37,7 @@ func (l loggingMiddleware) SendWelcomeEmail(ctx context.Context, name, addr stri
 	err := l.next.SendWelcomeEmail(ctx, name, addr)
 
 	defer func() {
-		_ = l.logger.Log("method", "SendWelcomeEmail", "name", name, "err", err)
+		l.logger.Info("SendWelcomeEmail", zap.String("name", name), zap.Error(err))
 	}()
 
 	return err
@@ -45,7 +45,7 @@ func (l loggingMiddleware) SendWelcomeEmail(ctx context.Context, name, addr stri
 
 // LoggingMiddleware takes a logger as a dependency
 // and returns a UsersService Middleware.
-func LoggingMiddleware(logger log.Logger) Middleware {
+func LoggingMiddleware(logger *zap.Logger) Middleware {
 	return func(next NotificatorService) NotificatorService {
 		return &loggingMiddleware{logger, next}
 	}

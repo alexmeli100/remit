@@ -1,7 +1,0 @@
-namespace: default
-secretGenerator:
-  - name: database-credentials
-    literals:
-      - POSTGRES_PASSWORD=ogttpy3ikvctrlhs
-generatorOptions:
-  disableNameSuffixHash: true

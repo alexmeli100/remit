@@ -29,7 +29,7 @@ type HttpClient struct {
 	client *http.Client
 }
 
-// helper struct to handle requests to the momo api
+// MomoClient helper struct to handle requests to the momo api
 type MomoClient struct {
 	reqHandler RequestHandler
 	resHandler ResponseHandler

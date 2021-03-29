@@ -5,42 +5,29 @@ import (
 	"encoding/json"
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
-	"fmt"
-	"github.com/alexmeli100/remit/events"
 	notificator "github.com/alexmeli100/remit/notificator/pkg/service"
 	paymentpb "github.com/alexmeli100/remit/payment/pkg/grpc/pb"
 	payment "github.com/alexmeli100/remit/payment/pkg/service"
-	transferpb "github.com/alexmeli100/remit/transfer/pkg/grpc/pb"
 	transfer "github.com/alexmeli100/remit/transfer/pkg/service"
-	userpb "github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	user "github.com/alexmeli100/remit/users/pkg/service"
-	"github.com/go-kit/kit/log"
-	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
-	"github.com/stripe/stripe-go/v71"
-	stripeclient "github.com/stripe/stripe-go/v71/client"
-	"github.com/stripe/stripe-go/v71/webhook"
+	"go.uber.org/zap"
 	"io"
-	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 )
 
 type App struct {
-	RedisClient     *redis.Client
-	StripeClient    *stripeclient.API
 	Server          *http.Server
-	Events          events.EventManager
 	UsersService    user.UsersService
 	PaymentService  payment.PaymentService
 	TransferService transfer.TransferService
 	Notificator     notificator.NotificatorService
 	FireApp         *firebase.App
-	Logger          log.Logger
+	Logger          *zap.Logger
 }
 
 func (a *App) isAuthenticatedWeb(next http.Handler) http.Handler {
@@ -97,40 +84,11 @@ func (a *App) isAuthenticated(next http.Handler) http.Handler {
 	})
 }
 
-func (a *App) checkWebHookSignature(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		maxBodyBytes := int64(65536)
-		r.Body = http.MaxBytesReader(w, r.Body, maxBodyBytes)
-		payload, err := ioutil.ReadAll(r.Body)
-
-		if err != nil {
-			err = errors.Wrap(err, "error reading request body")
-			a.Logger.Log("error", err)
-			w.WriteHeader(http.StatusServiceUnavailable)
-			return
-		}
-
-		endpointSecret := os.Getenv("STRIPE_ENDPOINT_SECRET")
-		signature := r.Header.Get("Stripe-Signature")
-		event, err := webhook.ConstructEvent(payload, signature, endpointSecret)
-
-		if err != nil {
-			err = errors.Wrap(err, "failed to verify webhook signature")
-			a.Logger.Log("error", err)
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		ctx := context.WithValue(r.Context(), "event", &event)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
-
 // create user in firebase then add the user to our database.
 // an account activation email is sent afterwards.
 func (a *App) createUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		u := &userpb.User{}
+		u := &user.User{}
 		err := decodeRequestBody(r.Body, u)
 
 		if err != nil {
@@ -138,7 +96,7 @@ func (a *App) createUser() http.HandlerFunc {
 			return
 		}
 
-		cu, err := a.UsersService.Create(r.Context(), u)
+		cu, err := a.UsersService.CreateUser(r.Context(), u)
 
 		if err != nil {
 			a.serverError(w, err)
@@ -147,15 +105,39 @@ func (a *App) createUser() http.HandlerFunc {
 
 		a.respondWithJson(w, http.StatusCreated, cu)
 
-		if err := a.Events.OnUserCreated(r.Context(), cu); err != nil {
-			a.Logger.Log("method", "events.OnUserCreated", "err", err)
+		if err := a.sendWelcomeEmail(r.Context(), cu); err != nil {
+			a.Logger.Info("Error sending welcome emails", zap.Error(err))
 		}
 	}
 }
 
+func (a *App) sendWelcomeEmail(ctx context.Context, u *user.User) error {
+	client, err := a.FireApp.Auth(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	url, err := client.EmailVerificationLink(ctx, u.Email)
+
+	if err != nil {
+		return errors.Wrap(err, "Error getting email verification link")
+	}
+
+	if err = a.Notificator.SendConfirmEmail(ctx, u.FirstName, u.Email, url); err != nil {
+		return errors.Wrap(err, "error sending confirmation email")
+	}
+
+	if err = a.Notificator.SendWelcomeEmail(ctx, u.FirstName, u.Email); err != nil {
+		return errors.Wrap(err, "error sending welcome email")
+	}
+
+	return nil
+}
+
 func (a *App) createContact() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		c := &userpb.Contact{}
+		c := &user.Contact{}
 		err := decodeRequestBody(r.Body, c)
 
 		if err != nil {
@@ -209,7 +191,7 @@ func (a *App) deleteContact() http.HandlerFunc {
 			return
 		}
 
-		if err = a.UsersService.DeleteContact(r.Context(), &userpb.Contact{Id: int64(id)}); err != nil {
+		if err = a.UsersService.DeleteContact(r.Context(), &user.Contact{Id: int64(id)}); err != nil {
 			a.serverError(w, err)
 			return
 		}
@@ -273,7 +255,7 @@ func (a *App) getCustomerID() http.HandlerFunc {
 
 func (a *App) setUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		u := &userpb.User{}
+		u := &user.User{}
 
 		if err := decodeRequestBody(r.Body, u); err != nil {
 			a.badRequest(w, err)
@@ -293,7 +275,7 @@ func (a *App) setUserProfile() http.HandlerFunc {
 
 func (a *App) updateUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		u := &userpb.User{}
+		u := &user.User{}
 
 		if err := decodeRequestBody(r.Body, u); err != nil {
 			a.badRequest(w, err)
@@ -313,7 +295,7 @@ func (a *App) updateUserProfile() http.HandlerFunc {
 
 func (a *App) updateContact() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		c := &userpb.Contact{}
+		c := &user.Contact{}
 
 		err := decodeRequestBody(r.Body, c)
 
@@ -361,72 +343,7 @@ func (a *App) getUserByUUID() http.HandlerFunc {
 	}
 }
 
-func (a *App) stripeWebHook() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		event := r.Context().Value("event").(*stripe.Event)
-		err := a.checkIfPaymentEventProcessed(r.Context(), event)
-
-		if errors.Is(err, ErrorEventProcessed) {
-			w.WriteHeader(http.StatusOK)
-			return
-		} else if err != nil {
-			a.Logger.Log("method", "stripeWebHook", "error", err)
-			w.WriteHeader(http.StatusServiceUnavailable)
-			return
-		}
-
-		switch event.Type {
-		case "payment_intent.succeeded":
-			if err := a.handlePaymentSucceded(r.Context(), w, event); err != nil {
-				w.WriteHeader(http.StatusServiceUnavailable)
-				return
-			}
-		default:
-			a.Logger.Log("error", fmt.Sprintf("unexpected event type: %s\n", event.Type))
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		w.WriteHeader(http.StatusOK)
-	}
-}
-
-func (a *App) handlePaymentSucceded(ctx context.Context, w http.ResponseWriter, e *stripe.Event) error {
-	var intent stripe.PaymentIntent
-
-	if err := json.Unmarshal(e.Data.Raw, &intent); err != nil {
-		err = errors.Wrap(err, "error parsing webhook json")
-		a.Logger.Log("error", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return nil
-	}
-
-	if err := a.Events.OnPaymentSucceded(ctx, intent.ID); err != nil {
-		a.Logger.Log("error", err)
-		return err
-	}
-
-	return nil
-}
-
-func (a *App) checkIfPaymentEventProcessed(ctx context.Context, e *stripe.Event) error {
-	var cachedEvent stripe.Event
-	err := a.getKey(ctx, e.ID, cachedEvent)
-
-	if err == redis.Nil {
-		if err := a.setKey(ctx, e.ID, e, time.Hour*24); err != nil {
-			return err
-		}
-
-		return nil
-	} else if err != nil {
-		return err
-	}
-
-	return ErrorEventProcessed
-}
-
-func (a *App) checkGetUserError(err error, w http.ResponseWriter, u *userpb.User) {
+func (a *App) checkGetUserError(err error, w http.ResponseWriter, u *user.User) {
 	if errors.Is(err, user.ErrUserNotFound) {
 		a.notFound(w, err)
 		return
@@ -465,7 +382,7 @@ func (a *App) signInWeb() http.HandlerFunc {
 		}
 
 		authTime := time.Now().Unix() - int64(decoded.Claims["auth_time"].(float64))
-		a.Logger.Log("authTime", authTime)
+		a.Logger.Info("authTime", zap.Int64("auth time difference", authTime))
 
 		if authTime > 5*60 {
 			err = errors.New("recent sign-in required")
@@ -496,7 +413,7 @@ func (a *App) signInWeb() http.HandlerFunc {
 
 func (a *App) resetPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		u := &userpb.User{}
+		u := &user.User{}
 		err := decodeRequestBody(r.Body, u)
 
 		if err != nil {
@@ -504,15 +421,25 @@ func (a *App) resetPassword() http.HandlerFunc {
 			return
 		}
 
-		err = a.Events.OnPasswordReset(r.Context(), u)
-		a.Logger.Log("method", "resetPassword", "error", err)
+		client, err := a.FireApp.Auth(r.Context())
+
+		if err != nil {
+			a.Logger.Error("Error getting firebase client", zap.Error(err))
+		}
+
+		url, err := client.PasswordResetLink(r.Context(), u.Email)
+
+		if err = a.Notificator.SendPasswordResetEmail(r.Context(), u.Email, url); err != nil {
+			a.Logger.Error("Error sending password reset link", zap.Error(err))
+		}
+
 		a.respondWithJson(w, http.StatusOK, nil)
 	}
 }
 
 func (a *App) transferMoney() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		t := &transferpb.TransferRequest{}
+		t := &transfer.TransferRequest{}
 		err := decodeRequestBody(r.Body, t)
 
 		if err != nil {
@@ -528,75 +455,6 @@ func (a *App) transferMoney() http.HandlerFunc {
 		}
 
 		a.respondWithJson(w, http.StatusOK, map[string]string{"ok": "transfer successful"})
-		if err = a.Events.OnTransferSucceded(r.Context(), res); err != nil {
-			a.Logger.Log("method", "transferMoney", "error", err)
-		}
-	}
-}
-
-func (a *App) saveUserCard() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		u := &userpb.User{}
-		err := decodeRequestBody(r.Body, u)
-
-		if err != nil {
-			a.badRequest(w, err)
-			return
-		}
-
-		s, err := a.PaymentService.SaveCard(r.Context(), u.Uuid)
-
-		if err != nil {
-			a.serverError(w, err)
-			return
-		}
-
-		a.respondWithJson(w, http.StatusOK, map[string]string{"secret": s})
-	}
-}
-
-func (a *App) getPaymentSecret() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		p := &paymentpb.PaymentRequest{}
-		err := decodeRequestBody(r.Body, p)
-
-		if err != nil {
-			a.badRequest(w, err)
-			return
-		}
-
-		s, err := a.PaymentService.GetPaymentIntentSecret(r.Context(), p)
-
-		if err != nil {
-			a.serverError(w, err)
-			return
-		}
-
-		a.respondWithJson(w, http.StatusOK, map[string]string{"secret": s})
-	}
-}
-
-func (a *App) capturePayment() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var c struct {
-			Pi     string  `json:"pi"`
-			Amount float64 `json:"amount"`
-		}
-		err := decodeRequestBody(r.Body, &c)
-
-		if err != nil {
-			a.badRequest(w, err)
-			return
-		}
-
-		s, err := a.PaymentService.CapturePayment(r.Context(), c.Pi, c.Amount)
-
-		if err != nil {
-			a.serverError(w, err)
-			return
-		}
-
-		a.respondWithJson(w, http.StatusOK, map[string]string{"secret": s})
 	}
 }
 
@@ -643,7 +501,7 @@ func getTokenFromSession(ctx context.Context, app *firebase.App, idToken string)
 }
 
 func (a *App) respondWithError(w http.ResponseWriter, code int, err error) {
-	a.Logger.Log("code", code, "error", err)
+	a.Logger.Info("json error response", zap.Int("code", code), zap.Error(err))
 	a.respondWithJson(w, code, map[string]string{"error": err.Error()})
 }
 
@@ -653,38 +511,8 @@ func (a *App) respondWithJson(w http.ResponseWriter, code int, payload interface
 
 	if payload != nil {
 		if err := json.NewEncoder(w).Encode(payload); err != nil {
-			a.Logger.Log("error", err)
+			a.Logger.Error("error sending json response", zap.Error(err))
 		}
 	}
 
-}
-
-func (a *App) getKey(ctx context.Context, key string, src interface{}) error {
-	val, err := a.RedisClient.Get(ctx, key).Result()
-
-	if err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal([]byte(val), src); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (a *App) setKey(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
-	v, err := json.Marshal(value)
-
-	if err != nil {
-		return err
-	}
-
-	err = a.RedisClient.Set(ctx, key, v, expiration).Err()
-
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

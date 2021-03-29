@@ -1,11 +1,8 @@
 package app
 
 import (
-	"errors"
 	"net/http"
 )
-
-var ErrorEventProcessed = errors.New("event has been processed")
 
 func (a *App) serverError(w http.ResponseWriter, err error) {
 	a.respondWithError(w, http.StatusInternalServerError, err)

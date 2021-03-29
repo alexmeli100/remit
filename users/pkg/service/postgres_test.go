@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -78,7 +77,7 @@ func TestPostgService_Create(t *testing.T) {
 	clearTable()
 
 	uid := uuid.New().String()
-	u := &pb.User{
+	u := &User{
 		FirstName: "Alex",
 		LastName:  "Meli",
 		Uuid:      uid,
@@ -87,7 +86,7 @@ func TestPostgService_Create(t *testing.T) {
 		Country:   "Canada",
 	}
 
-	user, err := pg.Create(context.Background(), u)
+	user, err := pg.CreateUser(context.Background(), u)
 
 	if assert.NoError(t, err) {
 		assert.NotNil(t, user)
@@ -98,7 +97,7 @@ func TestPostgService_GetUserByUUID(t *testing.T) {
 	clearTable()
 
 	uid := uuid.New().String()
-	u := &pb.User{
+	u := &User{
 		FirstName: "James",
 		LastName:  "Meli",
 		Uuid:      uid,
@@ -107,7 +106,7 @@ func TestPostgService_GetUserByUUID(t *testing.T) {
 		Country:   "USA",
 	}
 
-	user, err := pg.Create(context.Background(), u)
+	user, err := pg.CreateUser(context.Background(), u)
 
 	if assert.NoError(t, err) {
 		assert.NotNil(t, user)
@@ -124,7 +123,7 @@ func TestPostgService_GetUserByEmail(t *testing.T) {
 	clearTable()
 
 	uid := uuid.New().String()
-	u := &pb.User{
+	u := &User{
 		FirstName: "James",
 		LastName:  "Meli",
 		Uuid:      uid,
@@ -133,7 +132,7 @@ func TestPostgService_GetUserByEmail(t *testing.T) {
 		Country:   "USA",
 	}
 
-	user, err := pg.Create(context.Background(), u)
+	user, err := pg.CreateUser(context.Background(), u)
 
 	if assert.NoError(t, err) {
 		assert.NotNil(t, user)
@@ -150,7 +149,7 @@ func TestPostgService_UpdateEmail(t *testing.T) {
 	clearTable()
 
 	uid := uuid.New().String()
-	u := &pb.User{
+	u := &User{
 		FirstName: "James",
 		LastName:  "Meli",
 		Uuid:      uid,
@@ -159,13 +158,13 @@ func TestPostgService_UpdateEmail(t *testing.T) {
 		Country:   "USA",
 	}
 
-	user, err := pg.Create(context.Background(), u)
+	user, err := pg.CreateUser(context.Background(), u)
 
 	if assert.NoError(t, err) {
 		assert.NotNil(t, user)
 	}
 
-	newUser := &pb.User{
+	newUser := &User{
 		Id:    user.Id,
 		Email: "alexmeli100@gmail.com",
 	}
@@ -179,7 +178,7 @@ func TestPostgService_SetUserProfile(t *testing.T) {
 	clearTable()
 
 	uid := uuid.New().String()
-	u := &pb.User{
+	u := &User{
 		FirstName: "James",
 		LastName:  "Meli",
 		Uuid:      uid,
@@ -188,7 +187,7 @@ func TestPostgService_SetUserProfile(t *testing.T) {
 		Country:   "USA",
 	}
 
-	user, err := pg.Create(context.Background(), u)
+	user, err := pg.CreateUser(context.Background(), u)
 
 	if assert.NoError(t, err) {
 		assert.NotNil(t, user)
@@ -196,11 +195,11 @@ func TestPostgService_SetUserProfile(t *testing.T) {
 
 	b := time.Now()
 
-	p := &pb.Profile{
+	p := &Profile{
 		BirthDate:  &b,
 		Occupation: "Student",
 		Gender:     "Male",
-		Address: &pb.Address{
+		Address: &Address{
 			Address1:      "110 York Mills Rd",
 			Address2:      "",
 			Country:       "Canada",
@@ -224,7 +223,7 @@ func TestPostgService_UpdateUserProfile(t *testing.T) {
 	clearTable()
 
 	uid := uuid.New().String()
-	u := &pb.User{
+	u := &User{
 		FirstName: "James",
 		LastName:  "Meli",
 		Uuid:      uid,
@@ -233,7 +232,7 @@ func TestPostgService_UpdateUserProfile(t *testing.T) {
 		Country:   "USA",
 	}
 
-	user, err := pg.Create(context.Background(), u)
+	user, err := pg.CreateUser(context.Background(), u)
 
 	if assert.NoError(t, err) {
 		assert.NotNil(t, user)
@@ -241,11 +240,11 @@ func TestPostgService_UpdateUserProfile(t *testing.T) {
 
 	b := time.Now()
 
-	p := &pb.Profile{
+	p := &Profile{
 		BirthDate:  &b,
 		Occupation: "Student",
 		Gender:     "Male",
-		Address: &pb.Address{
+		Address: &Address{
 			Address1:      "110 York Mills Rd",
 			Address2:      "",
 			Country:       "Canada",
@@ -263,11 +262,11 @@ func TestPostgService_UpdateUserProfile(t *testing.T) {
 		assert.NotNil(t, updatedUser)
 	}
 
-	newP := &pb.Profile{
+	newP := &Profile{
 		BirthDate:  &b,
 		Occupation: "Doctor",
 		Gender:     "Female",
-		Address: &pb.Address{
+		Address: &Address{
 			Address1:      "2900 Jane Street",
 			Address2:      "",
 			Country:       "Canada",

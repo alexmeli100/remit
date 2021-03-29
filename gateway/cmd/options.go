@@ -3,34 +3,21 @@ package main
 import (
 	"context"
 	firebase "firebase.google.com/go/v4"
-	"github.com/alexmeli100/remit/events"
 	"github.com/alexmeli100/remit/gateway/app"
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/tracing/opentracing"
-	grpcTrans "github.com/go-kit/kit/transport/grpc"
-	"github.com/go-redis/redis/v8"
+	"github.com/alexmeli100/remit/mtn"
+	notificator "github.com/alexmeli100/remit/notificator/pkg/service"
+	transfer "github.com/alexmeli100/remit/transfer/pkg/service"
+	"github.com/alexmeli100/remit/users/pkg/service"
+	user "github.com/alexmeli100/remit/users/pkg/service"
 	"github.com/gorilla/mux"
-	"github.com/nats-io/stan.go"
-	stdopentracing "github.com/opentracing/opentracing-go"
+	"github.com/jmoiron/sqlx"
 	"github.com/rs/cors"
+	"go.uber.org/zap"
 	"google.golang.org/api/option"
 	"net/http"
+	"os"
 	"time"
 )
-
-func svcWithTracer(tracer stdopentracing.Tracer, logger log.Logger, endpoints ...string) app.GRPCClientOpt {
-	return func(m map[string][]grpcTrans.ClientOption) {
-		for _, endpoint := range endpoints {
-			e, ok := m[endpoint]
-
-			if !ok {
-				e = make([]grpcTrans.ClientOption, 0)
-			}
-
-			m[endpoint] = append(e, grpcTrans.ClientBefore(opentracing.ContextToGRPC(tracer, logger)))
-		}
-	}
-}
 
 // server options
 func serverWithWriteTimeout(t time.Duration) func(*http.Server) {
@@ -83,93 +70,69 @@ func appWithServer(opts ...func(*http.Server)) func(*app.App) error {
 	}
 }
 
-func appWithUserService(ctx context.Context, instance string, opts ...app.GRPCClientOpt) func(*app.App) error {
+func appWithUserPostgService(_ context.Context, db *sqlx.DB, middleware ...user.Middleware) func(*app.App) error {
 	return func(a *app.App) error {
-		u, err := app.CreateUserServiceClient(ctx, instance, opts...)
+		svc := service.NewPostgService(db)
 
-		if err != nil {
-			return err
+		for _, m := range middleware {
+			svc = m(svc)
 		}
 
-		a.UsersService = u
-		return nil
-	}
-}
-
-func appWithNotificatorService(ctx context.Context, instance string, opts ...app.GRPCClientOpt) func(*app.App) error {
-	return func(a *app.App) error {
-		n, err := app.CreateNotificatorServiceClient(ctx, instance, opts...)
-
-		if err != nil {
-			return err
-		}
-
-		a.Notificator = n
-		return nil
-	}
-}
-func appWithPaymentService(ctx context.Context, instance string, opts ...app.GRPCClientOpt) func(*app.App) error {
-	return func(a *app.App) error {
-		p, err := app.CreatePaymentServiceClient(ctx, instance, opts...)
-
-		if err != nil {
-			return err
-		}
-
-		a.PaymentService = p
-		return nil
-	}
-}
-
-func appWithTransferService(ctx context.Context, instance string, opts ...app.GRPCClientOpt) func(*app.App) error {
-	return func(a *app.App) error {
-		t, err := app.CreateTransferServiceClient(ctx, instance, opts...)
-
-		if err != nil {
-			return err
-		}
-
-		a.TransferService = t
-		return nil
-	}
-}
-
-// add a listener for user events
-func appWithUserEventListener(ctx context.Context, conn stan.Conn, logger log.Logger) func(*app.App) error {
-	return func(a *app.App) error {
-		errc, err := events.ListenAllUserEvents(
-			ctx,
-			conn,
-			"user-events-gateway",
-			a,
-			stan.SetManualAckMode(),
-			stan.AckWait(time.Minute),
-			stan.DurableName(DurableName),
-			stan.MaxInflight(25))
-
-		if err != nil {
-			return err
-		}
-
-		// log errors from user event listener
-		go func() {
-			for err = range errc {
-				logger.Log("method", "listen-user-events", "err", err)
-			}
-		}()
+		a.UsersService = svc
 
 		return nil
 	}
 }
 
-func appWithEventSender(ctx context.Context, conn stan.Conn) func(*app.App) error {
-	return func(a *app.App) error {
-		sender := events.NewEventSender(conn)
+func notificatorWithMailer(e *notificator.Mailer) func(*notificator.NotificationService) {
+	return func(svc *notificator.NotificationService) {
+		svc.EmailSender = e
+	}
+}
 
-		a.Events = sender
+func appWithNotificatorService(_ context.Context, sendGrid string, middleware ...notificator.Middleware) func(*app.App) error {
+	return func(a *app.App) error {
+		mailSvc := notificator.NewMailer(sendGrid)
+		svc := notificator.NewNotificationService(
+			notificatorWithMailer(mailSvc))
+
+		for _, m := range middleware {
+			svc = m(svc)
+		}
+
+		a.Notificator = svc
 		return nil
 	}
+}
 
+func withMtnMomo() func(*transfer.MobileTransfer) {
+	return func(t *transfer.MobileTransfer) {
+		momoApiKey := os.Getenv("MOMO_API_KEY")
+		momoUserId := os.Getenv("MOMO_USER_ID")
+		momoSecret := os.Getenv("MOMO_USER_SECRET")
+
+		momo := mtn.CreateMomoApp(nil)
+		r := momo.NewRemittance(&mtn.ProductConfig{
+			ApiSecret:  momoSecret,
+			PrimaryKey: momoApiKey,
+			UserId:     momoUserId,
+		})
+
+		t.Services[transfer.MTN] = r
+	}
+}
+
+func appWithTransferService(_ context.Context, middleware ...transfer.Middleware) func(*app.App) error {
+	return func(a *app.App) error {
+		svc := transfer.NewMobileTransfer(withMtnMomo())
+
+		for _, m := range middleware {
+			svc = m(svc)
+		}
+
+		a.TransferService = svc
+		return nil
+	}
 }
 
 func appWithFirebase(ctx context.Context, service string) func(*app.App) error {
@@ -186,28 +149,7 @@ func appWithFirebase(ctx context.Context, service string) func(*app.App) error {
 		return nil
 	}
 }
-
-func appWithRedisClient(ctx context.Context, options *redis.Options) func(*app.App) error {
-	return func(a *app.App) error {
-		client := redis.NewClient(options)
-
-		_, err := client.Ping(ctx).Result()
-
-		if err != nil {
-			return err
-		}
-
-		go func() {
-			<-ctx.Done()
-			a.Logger.Log("error", client.Close())
-		}()
-
-		a.RedisClient = client
-		return nil
-	}
-}
-
-func appWithLogger(logger log.Logger) func(*app.App) error {
+func appWithLogger(logger *zap.Logger) func(*app.App) error {
 	return func(a *app.App) error {
 		a.Logger = logger
 		return nil

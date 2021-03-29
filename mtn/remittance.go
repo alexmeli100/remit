@@ -39,7 +39,7 @@ type TransferRequest struct {
 	PayeeNote    string `json:"payeeNote"`
 }
 
-// The momo api documentation specifies the reason field as a FailedReason struct(see above)
+// TransferResponse The momo api documentation specifies the reason field as a FailedReason struct(see above)
 // but the response has a string instead which caused the unmarshalling to fail.
 // So I changed it to string and hopefully it stays this way
 type TransferResponse struct {
@@ -139,7 +139,7 @@ func (m *Remittance) GetTransactionStatus(refId string) (*TransferResponse, erro
 	return &trRes, nil
 }
 
-// get the final status of the transaction
+// GetFinalStatus get the final status of the transaction
 // this function keeps polling the api for a max duration of timeout until it responds with a failed or successful status
 // The interval time for polling is specified in milliseconds
 func (m *Remittance) GetFinalStatus(refId string, interval time.Duration, timeout time.Duration) (*TransferResponse, error) {

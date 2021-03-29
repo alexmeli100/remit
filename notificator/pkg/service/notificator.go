@@ -39,7 +39,7 @@ func NewNotificationService(opts ...func(service *NotificationService)) Notifica
 	return svc
 }
 
-func (e *NotificationService) SendConfirmEmail(ctx context.Context, name, addr, link string) error {
+func (e *NotificationService) SendConfirmEmail(_ context.Context, name, addr, link string) error {
 	templateId := os.Getenv("CONFIRM_TEMPLATE_ID")
 	tos := []string{addr}
 	data := map[string]interface{}{
@@ -51,7 +51,7 @@ func (e *NotificationService) SendConfirmEmail(ctx context.Context, name, addr, 
 
 }
 
-func (e *NotificationService) SendPasswordResetEmail(ctx context.Context, addr, link string) error {
+func (e *NotificationService) SendPasswordResetEmail(_ context.Context, addr, link string) error {
 	templateId := os.Getenv("PASSWORD_RESET_TEMPLATE_ID")
 	tos := []string{addr}
 	data := map[string]interface{}{
@@ -61,7 +61,7 @@ func (e *NotificationService) SendPasswordResetEmail(ctx context.Context, addr, 
 	return e.sendMail(templateId, tos, data)
 }
 
-func (e *NotificationService) SendWelcomeEmail(ctx context.Context, name, addr string) error {
+func (e *NotificationService) SendWelcomeEmail(_ context.Context, name, addr string) error {
 	templateId := os.Getenv("WELCOME_TEMPLATE_ID")
 	tos := []string{addr}
 	data := map[string]interface{}{

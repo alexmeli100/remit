@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/alexmeli100/remit/users/pkg/grpc/pb"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"time"
@@ -75,10 +74,10 @@ func NewPostgService(db *sqlx.DB) UsersService {
 	return &PostgService{DB: db}
 }
 
-func (s *PostgService) GetUserByID(ctx context.Context, id int64) (*pb.User, error) {
-	u := &pb.User{
+func (s *PostgService) GetUserByID(ctx context.Context, id int64) (*User, error) {
+	u := &User{
 		Id:      id,
-		Profile: &pb.Profile{Address: &pb.Address{}},
+		Profile: &Profile{Address: &Address{}},
 	}
 
 	if err := s.getUserBy(ctx, "id", id, u); err != nil {
@@ -88,10 +87,10 @@ func (s *PostgService) GetUserByID(ctx context.Context, id int64) (*pb.User, err
 	return u, nil
 }
 
-func (s *PostgService) GetUserByUUID(ctx context.Context, uuid string) (*pb.User, error) {
-	u := &pb.User{
+func (s *PostgService) GetUserByUUID(ctx context.Context, uuid string) (*User, error) {
+	u := &User{
 		Uuid:    uuid,
-		Profile: &pb.Profile{Address: &pb.Address{}},
+		Profile: &Profile{Address: &Address{}},
 	}
 
 	if err := s.getUserBy(ctx, "uuid", uuid, u); err != nil {
@@ -101,10 +100,10 @@ func (s *PostgService) GetUserByUUID(ctx context.Context, uuid string) (*pb.User
 	return u, nil
 }
 
-func (s *PostgService) GetUserByEmail(ctx context.Context, email string) (*pb.User, error) {
-	u := &pb.User{
+func (s *PostgService) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	u := &User{
 		Email:   email,
-		Profile: &pb.Profile{Address: &pb.Address{}},
+		Profile: &Profile{Address: &Address{}},
 	}
 
 	if err := s.getUserBy(ctx, "email", email, u); err != nil {
@@ -114,7 +113,7 @@ func (s *PostgService) GetUserByEmail(ctx context.Context, email string) (*pb.Us
 	return u, nil
 }
 
-func (s *PostgService) getUserBy(ctx context.Context, kind string, value interface{}, u *pb.User) error {
+func (s *PostgService) getUserBy(ctx context.Context, kind string, value interface{}, u *User) error {
 	//err := s.DB.Get(u, getUserByQuery, kind, value)
 	q := fmt.Sprintf(getUserByQuery, "users."+kind)
 	row := s.DB.QueryRowContext(ctx, q, value)
@@ -137,7 +136,7 @@ func (s *PostgService) getUserBy(ctx context.Context, kind string, value interfa
 	return nil
 }
 
-func scanProfile(row *sqlx.Row, p *pb.Profile) error {
+func scanProfile(row *sqlx.Row, p *Profile) error {
 	err := row.Scan(
 		&p.BirthDate, &p.Gender, &p.Occupation, &p.Address.Country, &p.Address.Address1,
 		&p.Address.Address2, &p.Address.CityTown, &p.Address.ProvinceState, &p.Address.PostalcodeZip)
@@ -145,14 +144,14 @@ func scanProfile(row *sqlx.Row, p *pb.Profile) error {
 	return err
 }
 
-func (s *PostgService) UpdateEmail(ctx context.Context, u *pb.User) error {
+func (s *PostgService) UpdateEmail(ctx context.Context, u *User) error {
 	_, err := s.DB.ExecContext(ctx, UpdateEmailQuery, u.Email, u.Id)
 
 	return err
 }
 
-func (s *PostgService) Create(ctx context.Context, u *pb.User) (*pb.User, error) {
-	user := &pb.User{}
+func (s *PostgService) CreateUser(ctx context.Context, u *User) (*User, error) {
+	user := &User{}
 
 	err := s.DB.QueryRowxContext(
 		ctx,
@@ -163,7 +162,7 @@ func (s *PostgService) Create(ctx context.Context, u *pb.User) (*pb.User, error)
 	return user, err
 }
 
-func (s *PostgService) SetUserProfile(ctx context.Context, u *pb.User) (*pb.User, error) {
+func (s *PostgService) SetUserProfile(ctx context.Context, u *User) (*User, error) {
 	row := s.DB.QueryRowxContext(
 		ctx,
 		createUserProfileQuery,
@@ -171,7 +170,7 @@ func (s *PostgService) SetUserProfile(ctx context.Context, u *pb.User) (*pb.User
 		u.Profile.Address.Country, u.Profile.Address.Address1, u.Profile.Address.Address2,
 		u.Profile.Address.CityTown, u.Profile.Address.ProvinceState, u.Profile.Address.PostalcodeZip)
 
-	p := &pb.Profile{Address: &pb.Address{}}
+	p := &Profile{Address: &Address{}}
 
 	if err := scanProfile(row, p); err != nil {
 		return nil, err
@@ -181,7 +180,7 @@ func (s *PostgService) SetUserProfile(ctx context.Context, u *pb.User) (*pb.User
 	return u, nil
 }
 
-func (s *PostgService) UpdateUserProfile(ctx context.Context, u *pb.User) (*pb.User, error) {
+func (s *PostgService) UpdateUserProfile(ctx context.Context, u *User) (*User, error) {
 	row := s.DB.QueryRowxContext(
 		ctx,
 		updateUserProfileQuery,
@@ -189,7 +188,7 @@ func (s *PostgService) UpdateUserProfile(ctx context.Context, u *pb.User) (*pb.U
 		u.Profile.Address.Country, u.Profile.Address.Address1, u.Profile.Address.Address2,
 		u.Profile.Address.CityTown, u.Profile.Address.ProvinceState, u.Profile.Address.PostalcodeZip)
 
-	p := &pb.Profile{Address: &pb.Address{}}
+	p := &Profile{Address: &Address{}}
 
 	if err := scanProfile(row, p); err != nil {
 		return nil, err
@@ -199,8 +198,8 @@ func (s *PostgService) UpdateUserProfile(ctx context.Context, u *pb.User) (*pb.U
 	return u, nil
 }
 
-func (s *PostgService) CreateContact(ctx context.Context, c *pb.Contact) (*pb.Contact, error) {
-	contact := &pb.Contact{}
+func (s *PostgService) CreateContact(ctx context.Context, c *Contact) (*Contact, error) {
+	contact := &Contact{}
 
 	err := s.DB.QueryRowxContext(
 		ctx,
@@ -215,8 +214,8 @@ func (s *PostgService) CreateContact(ctx context.Context, c *pb.Contact) (*pb.Co
 	return contact, err
 }
 
-func (s *PostgService) UpdateContact(ctx context.Context, c *pb.Contact) (*pb.Contact, error) {
-	contact := &pb.Contact{}
+func (s *PostgService) UpdateContact(ctx context.Context, c *Contact) (*Contact, error) {
+	contact := &Contact{}
 	err := s.DB.QueryRowxContext(
 		ctx,
 		updateContactQuery,
@@ -230,14 +229,14 @@ func (s *PostgService) UpdateContact(ctx context.Context, c *pb.Contact) (*pb.Co
 	return contact, nil
 }
 
-func (s *PostgService) DeleteContact(ctx context.Context, contact *pb.Contact) error {
+func (s *PostgService) DeleteContact(ctx context.Context, contact *Contact) error {
 	_, err := s.DB.ExecContext(ctx, deleteContactQuery, contact.Id)
 
 	return err
 }
 
-func (s *PostgService) GetContacts(ctx context.Context, uid int64) ([]*pb.Contact, error) {
-	var contacts []*pb.Contact
+func (s *PostgService) GetContacts(ctx context.Context, uid int64) ([]*Contact, error) {
+	var contacts []*Contact
 
 	err := s.DB.SelectContext(ctx, contacts, getContactsQuery, uid)
 

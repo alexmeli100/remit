@@ -38,13 +38,13 @@ func (t *tokenRefresher) refresh() (string, error) {
 
 type Authorizer = func(config *Config) (*AccessToken, error)
 
-// this struct ensures a valid token is always available for the next request handler
+// AuthClient this struct ensures a valid token is always available for the next request handler
 type AuthClient struct {
 	refresher *tokenRefresher
 	next      RequestHandler
 }
 
-// get the token from the refresher and add it to the header for the next request handler
+// Do get the token from the refresher and add it to the header for the next request handler
 func (a AuthClient) Do(r *http.Request) (*http.Response, error) {
 	token, err := a.refresher.refresh()
 

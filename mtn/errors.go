@@ -33,7 +33,7 @@ const (
 var (
 	UnSpecifiedError = errors.New("error not specied")
 	ErrorNoBody      = errors.New("no body in response")
-	// this error is return when getting the transfer status takes longer than max time
+	// ErrorPending this error is returned when getting the transfer status takes longer than max time
 	ErrorPending = errors.New("transfer still pending")
 )
 

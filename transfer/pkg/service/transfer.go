@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/alexmeli100/remit/transfer/pkg/grpc/pb"
 )
 
 const (
@@ -27,7 +26,7 @@ func NewMobileTransfer(options ...func(*MobileTransfer)) TransferService {
 	return m
 }
 
-func (m *MobileTransfer) Transfer(ctx context.Context, r *pb.TransferRequest) *pb.TransferResponse {
+func (m *MobileTransfer) Transfer(_ context.Context, r *TransferRequest) *TransferResponse {
 	s, ok := m.Services[r.Service]
 
 	if !ok {
@@ -40,8 +39,8 @@ func (m *MobileTransfer) Transfer(ctx context.Context, r *pb.TransferRequest) *p
 	return GetTransferResponse(r, err)
 }
 
-func GetTransferResponse(r *pb.TransferRequest, err error) *pb.TransferResponse {
-	res := &pb.TransferResponse{
+func GetTransferResponse(r *TransferRequest, err error) *TransferResponse {
+	res := &TransferResponse{
 		Amount:          r.Amount,
 		RecipientId:     r.RecipientId,
 		Currency:        r.Currency,
@@ -51,7 +50,6 @@ func GetTransferResponse(r *pb.TransferRequest, err error) *pb.TransferResponse 
 		SendFee:         r.SendFee,
 		ReceiveAmount:   r.ReceiveAmount,
 		SenderId:        r.SenderId,
-		PaymentIntent:   r.PaymentIntent,
 		Status:          "Success",
 	}
 
