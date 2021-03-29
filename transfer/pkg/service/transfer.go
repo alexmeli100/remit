@@ -3,12 +3,21 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/pkg/errors"
 )
 
 const (
-	// list of mobile money Services
 	MTN    = "MTN"
 	Orange = "Orange"
+)
+
+const (
+	StatusSuccess   = "SUCCESS"
+	StatusPending   = "PENDING"
+	StatusFailed    = "FAILED"
+	StatusExpired   = "EXPIRED"
+	StatusInitiated = "INITIATED"
+	StatusUnknown   = "UNKNOWN"
 )
 
 type MobileTransfer struct {
@@ -26,37 +35,19 @@ func NewMobileTransfer(options ...func(*MobileTransfer)) TransferService {
 	return m
 }
 
-func (m *MobileTransfer) Transfer(_ context.Context, r *TransferRequest) *TransferResponse {
+func (m *MobileTransfer) Transfer(_ context.Context, r *TransferRequest) (*TransferResponse, error) {
 	s, ok := m.Services[r.Service]
 
 	if !ok {
 		err := fmt.Errorf("unknown service: %s", r.Service)
-		return GetTransferResponse(r, err)
+		return nil, err
 	}
 
-	err := s.SendTo(int(r.ReceiveAmount), r.RecipientNumber, r.ReceiveCurrency)
-
-	return GetTransferResponse(r, err)
-}
-
-func GetTransferResponse(r *TransferRequest, err error) *TransferResponse {
-	res := &TransferResponse{
-		Amount:          r.Amount,
-		RecipientId:     r.RecipientId,
-		Currency:        r.Currency,
-		Service:         r.Service,
-		ReceiveCurrency: r.ReceiveCurrency,
-		ExchangeRate:    r.ExchangeRate,
-		SendFee:         r.SendFee,
-		ReceiveAmount:   r.ReceiveAmount,
-		SenderId:        r.SenderId,
-		Status:          "Success",
-	}
+	res, err := s.SendTo(r)
 
 	if err != nil {
-		res.Status = "Failed"
-		res.FailReason = err.Error()
+		return nil, errors.Wrap(err, "Failed to transfer money")
 	}
 
-	return res
+	return res, nil
 }
